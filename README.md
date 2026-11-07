@@ -18,10 +18,12 @@
 
 <br/>
 
-> **HyperNova Island** هو مشروع مفتوح المصدر (Open Source) من تطوير ونشر **أحمد موسى ([Ahmed Musa](https://github.com/ahmdmusa))**، مصمم لتقديم تجربة الجزيرة التفاعلية (Dynamic Island) الأرقى والأكثر شمولاً لأجهزة سطح المكتب بنظام ويندوز.  
+> **HyperNova Island** هو مشروع مفتوح المصدر
+(Open Source)  ([Ahmed Musa](https://github.com/ahmdmusa))
+ مصمم لتقديم تجربة الجزيرة التفاعلية (Dynamic Island) الأرقى والأكثر شمولاً لأجهزة سطح المكتب بنظام ويندوز.  
 > 
 > 🤝 **شكر وتقدير للمصدر المفتوح (Acknowledgement)**:  
-> مشروع مفتوح المصدر (Open Source) — شكر وتقدير للمهندس **عمرو (Amr)** على البذرة الأولى للمشروع.
+> مشروع مفتوح المصدر (Open Source) — شكر وتقدير ل م. **عمرو (Amr)** على البذرة الأولى للمشروع.
 
 <br/>
 
@@ -56,7 +58,6 @@
 إذا نال المشروع إعجابك وساهم في تعزيز إنتاجيتك وتركيزك اليومي، يمكنك دعم المطور (**Ahmed Musa**) عبر:
 
 * ☕ **Buy Me a Coffee (PayPal)**: [https://www.paypal.com/ncp/payment/4SWPEP8Q3YF78](https://www.paypal.com/ncp/payment/4SWPEP8Q3YF78)
-* ⚡ **InstaPay (داخل مصر)**: [https://ipn.eg/S/ahmdmusa/instapay/2yqQQN](https://ipn.eg/S/ahmdmusa/instapay/2yqQQN) — المعرّف: `ahmdmusa@instapay`
 
 ---
 
