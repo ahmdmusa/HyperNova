@@ -10,7 +10,13 @@
   const V_WIDTH = 340; // docked to a side edge
   const MAX_H = 270;
 
-  const everyMs = () => (state.features.remindEvery || 5) * 60000;
+  const everyMs = () => {
+    const rate = state.features.tasbeehPerHour;
+    if (typeof rate === 'number' && rate > 0) {
+      return Math.max(1, Math.round(60 / rate)) * 60000;
+    }
+    return (state.features.remindEvery || 5) * 60000;
+  };
   // quiet hours may wrap past midnight (23:00 -> 07:00)
   function inQuietHours() {
     const f = state.features;
@@ -23,18 +29,77 @@
   }
   const showMs = () => (state.features.remindFor || 30) * 1000;
 
-  // shuffled bag so nothing repeats until every text has been shown once
+  // Get current period (morning, evening, day)
+  function currentPeriod() {
+    if (typeof window.getPrayerPeriod === 'function') {
+      try { return window.getPrayerPeriod(); } catch {}
+    }
+    const h = new Date().getHours() + new Date().getMinutes() / 60;
+    if (h >= 4.5 && h < 11.5) return 'morning';
+    if (h >= 15.5 && h < 21.5) return 'evening';
+    return 'day';
+  }
+
+  // Pick 5-7 distinct items for today's pool with daily rotation
+  function getDailyPool(fullList, count = 6) {
+    if (!fullList || !fullList.length) return [];
+    if (fullList.length <= count) return fullList;
+    const now = new Date();
+    const daySeed = Math.floor(new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() / 86400000);
+    const startIdx = (daySeed * count) % fullList.length;
+    const selected = [];
+    for (let i = 0; i < count; i++) {
+      selected.push(fullList[(startIdx + i) % fullList.length]);
+    }
+    return selected;
+  }
+
+  // Calculate dynamic reading time based on text length (short glanceable 6-10s unless hovered)
+  function calculateReadingTime(text, baseConfigMs) {
+    const rawWords = (text || '').replace(/[ً-ٰٟۖ-ۭ]/g, '').trim().split(/\s+/).length;
+    const calc = Math.round(5000 + rawWords * 220);
+    return Math.max(6000, Math.min(10000, Math.max(calc, Math.min(baseConfigMs || 7000, 9000))));
+  }
+
+  // Shuffled bag so nothing repeats until every text has been shown once
   let bag = [];
   let last = null;
+  let lastBagPeriod = null;
+  let lastBagDay = null;
+
   function draw() {
-    let pool = REMINDERS.filter((r) => feat(KIND_FEATURE[r.kind]));
-    if (!pool.length) pool = REMINDERS;
-    bag = bag.filter((r) => pool.includes(r));
-    if (!bag.length) {
-      bag = [...pool].sort(() => Math.random() - 0.5);
+    const period = currentPeriod();
+    const todayStr = new Date().toDateString();
+
+    let sourceList = typeof DAY_REMINDERS !== 'undefined' ? DAY_REMINDERS : REMINDERS;
+    let quota = state.features.dailyAdhkarQuota || 7;
+
+    if (period === 'morning' && typeof MORNING_ADHKAR !== 'undefined' && MORNING_ADHKAR.length) {
+      sourceList = MORNING_ADHKAR;
+      quota = state.features.dailyAdhkarQuota || 7;
+    } else if (period === 'evening' && typeof EVENING_ADHKAR !== 'undefined' && EVENING_ADHKAR.length) {
+      sourceList = EVENING_ADHKAR;
+      quota = state.features.dailyAdhkarQuota || 7;
+    } else {
+      // Day pool: combine tasbeeh, prophetic duas, and quranic verses based on quotas
+      const ayatQuota = state.features.dailyAyatQuota || 3;
+      const adhkarQuota = state.features.dailyAdhkarQuota || 7;
+      quota = Math.min(sourceList.length, Math.max(4, ayatQuota + adhkarQuota));
+    }
+
+    let pool = sourceList.filter((r) => feat(KIND_FEATURE[r.kind]));
+    if (!pool.length) pool = sourceList;
+
+    const dailyPool = getDailyPool(pool, quota);
+
+    if (lastBagPeriod !== period || lastBagDay !== todayStr || !bag.length) {
+      lastBagPeriod = period;
+      lastBagDay = todayStr;
+      bag = [...dailyPool].sort(() => Math.random() - 0.5);
       if (bag.length > 1 && bag[0] === last) bag.push(bag.shift());
     }
-    last = bag.shift();
+
+    last = bag.shift() || dailyPool[0];
     return last;
   }
 
@@ -46,9 +111,17 @@
   const ayahEnds = (html) => html.replace(/(^|\s)([٠-٩]{1,3})(?=\s|$)/g, (_m, sp, n) =>
     `${sp}<i class="an">۝${n}</i>`);
   const isQuran = (item) => item.kind === 'ayah' || item.quran;
+  const formatNonQuran = (raw) => {
+    const escaped = body(raw);
+    if (/\(([^)]+)\)/.test(escaped)) {
+      const withSub = escaped.replace(/\(([^)]+)\)/g, '<div class="dhikr-subnote">($1)</div>');
+      return `<div class="dhikr-container">${withSub}</div>`;
+    }
+    return `<span>${escaped}</span>`;
+  };
   const words = (item) => (isQuran(item)
     ? `<span><i class="br">﴿</i>${ayahEnds(body(item.text))}<i class="br">﴾</i></span>`
-    : `<span>${body(item.text)}</span>`);
+    : formatNonQuran(item.text));
 
   // size the card to its text
   const measure = document.createElement('div');
@@ -71,7 +144,8 @@
       return;
     }
     // diacritics and Qur'anic marks (U+064B–065F, U+0670, U+06D6–06ED) add characters but no width
-    const len = item.text.replace(/[ً-ٰٟۖ-ۭ]/g, '').length;
+    const mainOnly = (item.text || '').replace(/\(([^)]+)\)/g, '').trim();
+    const len = (mainOnly || item.text).replace(/[ً-ٰٟۖ-ۭ]/g, '').length;
     const fs = len <= 40 ? 30 : len <= 80 ? 26 : 23;
     const w = anchor.vertical ? V_WIDTH : WIDTH;
     layer.style.setProperty('--rm-fs', `${fs}px`);
@@ -111,7 +185,7 @@
     fit(item);
     // first card before the Qur'an font finished loading: measure again once it has
     if (!fontReady) loadFonts().then(() => { fit(item); positionIsland(); });
-    total = item.ms || showMs();
+    total = item.ms || calculateReadingTime(item.text, showMs());
     state.reminderUntil = Date.now() + total;
     bar.style.width = '100%';
     render();
@@ -125,13 +199,17 @@
     render();
   }
 
+  let cardHovered = false;
+  layer.addEventListener('mouseenter', () => { cardHovered = true; });
+  layer.addEventListener('mouseleave', () => { cardHovered = false; });
+
   function tick() {
     const now = Date.now();
     const dt = now - lastTick;
     lastTick = now;
     if (state.reminderUntil) {
       if (!feat('reminders') && !previewing) return hide();
-      const reading = state.hover && lastMode === 'reminder';
+      const reading = (state.hover || cardHovered) && (lastMode === 'reminder' || state.reminderUntil > now);
       layer.classList.toggle('paused', reading);
       if (reading) state.reminderUntil += dt;
       if (now >= state.reminderUntil) {

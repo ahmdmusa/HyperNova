@@ -1,14 +1,14 @@
 {
   "name": "nova-island",
-  "version": "1.3.1",
-  "description": "A living island for your Windows desktop",
+  "version": "2.0.0",
+  "description": "HyperNova - Next-Gen Ambient Dynamic Island for Desktop",
   "main": "nova.js",
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder --win nsis",
     "dist:portable": "electron-builder --win portable"
   },
-  "author": "AmerTech",
+  "author": "Ahmed Mousa & Contributors (built upon foundational work by Amr)",
   "license": "GPL-3.0-only",
   "devDependencies": {
     "electron": "^44.7.2",
@@ -16,7 +16,7 @@
   },
   "build": {
     "appId": "com.dynamicnova.app",
-    "productName": "Nova Island",
+    "productName": "HyperNova",
     "copyright": "Copyright © 2026 Nova Island by AmerTech",
     "directories": {
       "output": "dist",
@@ -57,7 +57,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": "always",
       "createStartMenuShortcut": true,
-      "shortcutName": "Nova Island",
+      "shortcutName": "HyperNova",
       "installerIcon": "build/icon.ico",
       "uninstallerIcon": "build/icon.ico",
       "runAfterFinish": true,

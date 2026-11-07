@@ -1,6 +1,22 @@
+/* Local authentic Amiri Font */
+@font-face {
+  font-family: 'Amiri';
+  src: url('fonts/Amiri-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Amiri';
+  src: url('fonts/Amiri-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
 /* ============ tokens ============ */
 :root {
-  --font: "SF Pro Display", "Segoe UI Variable Display", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --font-ar: "Amiri", "Cairo", "Traditional Arabic", serif;
+  --font-en: "Inter", "SF Pro Display", "Segoe UI Variable Text", "Segoe UI", sans-serif;
+  --font: "Inter", "Amiri", "Cairo", "SF Pro Display", "Segoe UI Variable Text", "Segoe UI", sans-serif;
 
   --text-1: #ffffff;
   --text-2: rgba(235, 235, 245, .70);
@@ -19,7 +35,11 @@
   --orange: #ff9f0a;
   --green: #30d158;
   --red: #ff453a;
-  --yellow: #ffd60a;
+  --theme-accent: #38bdf8;
+  --glass-opacity: 0.90;
+  --glass-blur: 24px;
+  --bg-island: rgba(16, 16, 22, var(--glass-opacity));
+  --yellow: var(--theme-accent);
 
   --spring: cubic-bezier(.3, 1.3, .42, 1);
   --spring-soft: cubic-bezier(.3, 1.08, .5, 1);
@@ -52,8 +72,13 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
 
 /* ============ shell: floating capsule; docks to the top edge like the MacBook notch ============ */
 #island {
+  background: var(--bg-island);
+  backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
   --w: 236px; --h: 32px; --r: 16px;
   --tl: var(--r); --tr: var(--r); --br: var(--r); --bl: var(--r);
+  border-radius: var(--tl) var(--tr) var(--br) var(--bl);
+  overflow: hidden;
   position: absolute;
   left: var(--x, 202px);
   top: var(--y, 8px);
@@ -72,11 +97,14 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
 #island.moving { transition: width .3s var(--spring-soft), height .3s var(--spring-soft); }
 #island.moving .tint { background: rgba(14, 14, 20, .82); }
 
-#island.idle     { --w: 236px; --h: 32px;  --r: 16px; }
+#island.idle     { --w: 264px; --h: 32px;  --r: 16px; }
 #island.compact  { --w: 300px; --h: 32px;  --r: 16px; }
 #island.toast    { --w: 340px; --h: 34px;  --r: 17px; }
 #island.peek     { --w: 400px; --h: 78px;  --r: 28px; }
-#island.expanded { --w: 548px; --h: 232px; --r: 34px; }
+#island.expanded { --w: 640px; --h: 335px; --r: 32px; }
+#island.focus    { --w: 620px; --h: 76px;  --r: 20px; }
+#island.focus.has-task { --h: 154px; }
+#island.focus.has-task.has-substeps { --h: 196px; }
 #island.vertical.idle    { --w: 44px; --h: 244px; --r: 22px; }
 #island.vertical.compact { --w: 44px; --h: 136px; --r: 22px; }
 #island.vertical.toast   { --w: 44px; --h: 168px; --r: 22px; }
@@ -129,7 +157,7 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
 }
 #island:not(.vertical).idle .l-info, #island:not(.vertical).compact .l-compact, #island:not(.vertical).toast .l-toast,
 #island.vertical.idle .l-vinfo, #island.vertical.compact .l-vcompact, #island.vertical.toast .l-vtoast,
-#island.peek .l-peek, #island.expanded .l-expanded {
+#island.peek .l-peek, #island.expanded .l-expanded, #island.focus .l-focus {
   opacity: 1; filter: none; transform: none; pointer-events: auto;
   transition: opacity .26s ease .1s, filter .3s ease .1s, transform .45s var(--spring) .08s;
 }
@@ -150,9 +178,9 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
 .info-slide .side { gap: 6px; }
 .i-strong { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .i-soft { font-size: 12px; color: var(--text-2); white-space: nowrap; }
-.i-wx svg { width: 15px; height: 15px; color: var(--yellow); }
+.i-wx svg { width: 15px; height: 15px; color: var(--theme-accent) !important; }
 .i-ico { width: 14px; height: 14px; color: var(--text-2); flex: none; }
-.i-moon { width: 14px; height: 14px; color: #ffd479; flex: none; }
+.i-moon { width: 14px; height: 14px; color: var(--theme-accent) !important; flex: none; }
 .pr-slide .i-strong { font-size: 13.5px; }
 .i-bar { width: 26px; height: 4px; border-radius: 2px; background: rgba(255, 255, 255, .16); overflow: hidden; }
 .i-bar b { display: block; height: 100%; width: 0; background: var(--green); border-radius: 2px; transition: width .8s var(--ease-out), background .4s; }
@@ -167,7 +195,7 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
 .l-vinfo .i-soft { font-size: 10px; }
 .v-sep { width: 18px; height: 1px; background: rgba(255, 255, 255, .16); margin: 2px 0; }
 .v-item { display: flex; flex-direction: column; align-items: center; gap: 1px; }
-.v-item svg { width: 16px; height: 16px; color: var(--yellow); }
+.v-item svg { width: 16px; height: 16px; color: var(--theme-accent) !important; }
 .l-vcompact .c-art { width: 28px; height: 28px; border-radius: 8px; }
 .l-vcompact .eq { flex-direction: row; }
 .l-vcompact .c-time { font-size: 11.5px; }
@@ -183,8 +211,8 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
 .l-vtoast.done .ico-bell { color: var(--orange); }
 .l-vtoast.done .v-bar { display: none; }
 #vt-value { font-size: 11px; }
-.v-pr .i-soft { color: #ffd479; }
-.l-vtoast.prayer .ico-moon, .l-vtoast.prayer-soon .ico-moon { display: block; color: #ffd479; }
+.v-pr .i-soft { color: var(--theme-accent) !important; }
+.l-vtoast.prayer .ico-moon, .l-vtoast.prayer-soon .ico-moon { display: block; color: var(--theme-accent) !important; }
 .l-vtoast.prayer .v-bar, .l-vtoast.prayer-soon .v-bar { display: none; }
 
 /* ============ compact ============ */
@@ -239,9 +267,9 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
 .l-toast.low .batt b { background: var(--red); }
 .l-toast.done .batt, .l-toast.vol .batt, .l-toast.bright .batt { display: none; }
 /* prayer reminders */
-.l-toast.prayer .ico-moon, .l-toast.prayer-soon .ico-moon { display: block; color: #ffd479; }
+.l-toast.prayer .ico-moon, .l-toast.prayer-soon .ico-moon { display: block; color: var(--theme-accent) !important; }
 .l-toast.prayer .batt, .l-toast.prayer-soon .batt { display: none; }
-.l-toast.prayer #t-label { color: #ffd479; }
+.l-toast.prayer #t-label { color: var(--theme-accent) !important; }
 #island.toast.prayer-alert .glow { opacity: 1; background: radial-gradient(120% 120% at 50% 0%, rgba(255, 212, 121, .35), transparent 65%); }
 
 /* volume icon states (shared by HUD and Music view) */
@@ -253,7 +281,22 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
 /* ============ expanded ============ */
 .l-expanded { display: flex; flex-direction: column; padding: 10px 18px 16px; }
 
-.topbar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; height: 32px; margin-bottom: 12px; }
+.topbar { display: grid; grid-template-columns: auto auto auto; justify-content: space-between; align-items: center; height: 36px; margin-bottom: 12px; }
+.topbar-left-zone { justify-self: start; display: flex; align-items: center; gap: 8px; }
+.topbar-gear-btn {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  color: var(--text-2);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 0;
+}
+.topbar-gear-btn svg { width: 15px; height: 15px; transition: transform 0.35s ease; }
+.topbar-gear-btn:hover { background: rgba(255, 255, 255, 0.14); color: #fff; border-color: rgba(255, 255, 255, 0.25); }
+.topbar-gear-btn:hover svg { transform: rotate(45deg); }
 .chip {
   justify-self: start; display: flex; align-items: center; gap: 7px; height: 24px; padding: 0 10px 0 8px;
   border-radius: 99px; background: var(--fill-1); font-size: 12px; font-weight: 500; color: var(--text-2);
@@ -291,8 +334,8 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
 .wx-mini svg { width: 16px; height: 16px; }
 .wx-mini b { font-weight: 600; color: var(--text-1); }
 
-.view { display: none; flex: 1; min-height: 0; position: relative; }
-.view.active { display: flex; animation: viewin .38s var(--spring); }
+.view { display: none !important; flex: 1; min-height: 0; position: relative; }
+.view.active { display: flex !important; animation: viewin .38s var(--spring); }
 @keyframes viewin { from { opacity: 0; transform: translateY(8px) scale(.98); } }
 
 .card { background: var(--card); border-radius: 18px; box-shadow: inset 0 0 0 .5px var(--card-stroke); }
@@ -484,7 +527,7 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
   content: ""; position: absolute; left: -20px; top: -20px; width: 90px; height: 90px; border-radius: 50%;
   box-shadow: 14px 14px 0 0 rgba(255, 212, 121, .14); pointer-events: none;
 }
-.pr-next .eyebrow { color: #ffd479; letter-spacing: 0; text-transform: none; font-size: 11.5px; }
+.pr-next .eyebrow { color: var(--theme-accent) !important; letter-spacing: 0; text-transform: none; font-size: 11.5px; }
 .pr-name { font-size: 22px; font-weight: 700; line-height: 1.2; }
 .pr-count { font-size: 26px; font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; text-align: right; }
 .pr-at { font-size: 12px; color: var(--text-2); }
@@ -495,7 +538,7 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
 }
 .pr-bell svg { width: 13px; height: 13px; }
 .pr-bell .off-line { display: inline; }
-.pr-bell.on { background: rgba(255, 212, 121, .2); color: #ffd479; }
+.pr-bell.on { background: rgba(56, 189, 248, .2); color: var(--theme-accent) !important; }
 .pr-bell.on .off-line { display: none; }
 .pr-side { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .pr-list { flex: 1; display: flex; flex-direction: column; gap: 2px; }
@@ -518,7 +561,7 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
   background: linear-gradient(160deg, rgba(90, 160, 255, .22), rgba(255, 255, 255, .04)); }
 .wx.night { background: linear-gradient(160deg, rgba(110, 90, 220, .25), rgba(255, 255, 255, .04)); }
 .wx-top { display: flex; align-items: center; gap: 8px; }
-.wx-top svg { width: 30px; height: 30px; color: var(--yellow); }
+.wx-top svg { width: 30px; height: 30px; color: var(--theme-accent) !important; }
 .wx.night .wx-top svg, .wx.cloudy .wx-top svg { color: var(--text-1); }
 .wx-top b { font-size: 30px; font-weight: 600; letter-spacing: -.03em; }
 .wx-desc { font-size: 13px; font-weight: 600; }
@@ -826,8 +869,8 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
 #island.break-on #tm-ring, #island.break-on .c-time, #island.break-on .c-ico { color: var(--green); stroke: var(--green); }
 
 /* ============ Ramadan ============ */
-.pr-ramadan { margin-top: 4px; font-size: 11.5px; font-weight: 600; color: #ffd479; }
-.pr-row.iftar b::after { content: " · الإفطار"; font-weight: 500; color: #ffd479; }
+.pr-ramadan { margin-top: 4px; font-size: 11.5px; font-weight: 600; color: var(--theme-accent) !important; }
+.pr-row.iftar b::after { content: " · الإفطار"; font-weight: 500; color: var(--theme-accent) !important; }
 /* the Focus button gets its own row under the presets, in its own colour */
 .presets .focus-btn { grid-column: 1 / -1; justify-content: center; width: auto; background: rgba(255, 107, 107, .16); color: #ff8a8a; }
 .presets .focus-btn:hover { background: rgba(255, 107, 107, .26); }
@@ -973,3 +1016,3278 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
 #island.addr-line:not(.vertical).idle, #island.addr-line:not(.vertical).compact,
 #island.addr-line:not(.vertical).compact.c-wide { --w: 90px; --h: 3px; --r: 2px; }
 #island.addr-line.idle .layer, #island.addr-line.compact .layer, #island.addr-line .dl-line, #island.addr-line .pv-dots { opacity: 0 !important; pointer-events: none; }
+
+
+/* Arabic / Amiri font enforcement across all Arabic contexts */
+[lang="ar"], [dir="rtl"], .l-reminder, .l-focus, #v-focus, #v-prayer {
+  font-family: var(--font-ar) !important;
+}
+
+/* Universal scrollbar styling: never show ugly native white scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.32);
+}
+
+
+/* Light Theme Support */
+html[data-theme="light"], body.theme-light {
+  --bg-island: rgba(255, 255, 255, var(--glass-opacity));
+  --text-1: #111827;
+  --text-2: rgba(31, 41, 55, 0.75);
+  --text-3: rgba(31, 41, 55, 0.45);
+  --card: rgba(243, 244, 246, 0.85);
+  --card-stroke: rgba(0, 0, 0, 0.08);
+  --fill-1: rgba(0, 0, 0, 0.04);
+  --fill-2: rgba(0, 0, 0, 0.08);
+  --stroke: rgba(0, 0, 0, 0.08);
+}
+html[data-theme="light"] #island, body.theme-light #island {
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+
+/* Islamic Daily Corner in #v-prayer */
+.pr-daily-card {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pr-daily-tabs {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 6px;
+}
+.pr-daily-tab {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: none;
+  border: none;
+}
+.pr-daily-tab:hover {
+  color: var(--text-1);
+  background: rgba(255, 255, 255, 0.05);
+}
+.pr-daily-tab.active {
+  color: #fff;
+  background: var(--theme-accent);
+}
+.pr-daily-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--theme-accent);
+}
+.pr-daily-text {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text-1);
+}
+.pr-daily-ref {
+  font-size: 10.5px;
+  color: var(--text-3);
+}
+
+
+/* Redesigned #v-focus NeuroFocus Dashboard */
+.nf-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.nf-dash-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+.nf-streak-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fb923c;
+  background: rgba(251, 146, 60, 0.12);
+  padding: 3px 8px;
+  border-radius: 99px;
+  border: 1px solid rgba(251, 146, 60, 0.25);
+}
+.nf-deep-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  font-size: 11px;
+  font-weight: 600;
+  color: #fca5a5;
+  cursor: pointer;
+}
+.nf-deep-pill.active {
+  background: rgba(239, 68, 68, 0.28);
+  border-color: #ef4444;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+}
+.nf-task-box {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.nf-input-group {
+  display: flex;
+  gap: 6px;
+}
+.nf-task-main-input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 6px 10px;
+  color: #fff;
+  font-size: 12.5px;
+  outline: none;
+}
+.nf-btn-decompose {
+  background: var(--theme-accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0 12px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: opacity 0.15s;
+}
+.nf-btn-decompose:hover {
+  opacity: 0.9;
+}
+.nf-unstick-btn {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.nf-unstick-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+}
+.nf-audio-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+}
+.nf-audio-btn {
+  font-size: 11px;
+  padding: 4px 9px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.nf-audio-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+.nf-audio-btn.active {
+  background: var(--theme-accent);
+  border-color: var(--theme-accent);
+  color: #fff;
+}
+.nf-steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 110px;
+  overflow-y: auto;
+}
+.nf-step-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 11.5px;
+}
+.nf-step-row.current {
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  font-weight: 600;
+}
+.nf-step-row.done {
+  opacity: 0.55;
+  text-decoration: line-through;
+}
+
+/* Force LTR on media controls & sliders for deterministic mouse tracking */
+#v-media, .progress, .slider, .controls {
+  direction: ltr !important;
+}
+.slider {
+  position: relative;
+  flex: 1;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+}
+.slider::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, .18);
+  transition: height var(--dur-fast) var(--ease-out);
+}
+.slider .fill {
+  position: relative;
+  display: block;
+  height: 6px;
+  width: 0;
+  border-radius: 4px;
+  background: var(--theme-accent, #38bdf8);
+  transition: height var(--dur-fast) var(--ease-out);
+}
+.slider .knob {
+  position: absolute;
+  right: -7px;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin-top: -7px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, .5);
+  transform: scale(0.85);
+  transition: transform var(--dur-fast) var(--spring);
+}
+.slider:hover .knob, .slider.drag .knob {
+  transform: scale(1.15);
+}
+.slider:hover::before, .slider:hover .fill, .slider.drag::before, .slider.drag .fill {
+  height: 8px;
+}
+
+/* ==========================================
+   CLEAN 2-COLUMN PRAYER VIEW (ZERO COLLISION)
+   ========================================== */
+#v-prayer {
+  display: none !important;
+}
+#v-prayer.active {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  padding: 4px 6px !important;
+  overflow-y: auto !important;
+}
+.pr-col-times {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.pr-next-card {
+  background: linear-gradient(145deg, rgba(56, 189, 248, 0.15), rgba(255, 255, 255, 0.04));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.pr-next-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.pr-next-header .eyebrow {
+  color: var(--theme-accent, #38bdf8);
+  font-size: 11px;
+  font-weight: 700;
+}
+.pr-next-body {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.pr-next-body .pr-name {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-1);
+}
+.pr-next-body .pr-count {
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--theme-accent, #38bdf8);
+}
+.pr-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-3);
+}
+.pr-list-compact {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+}
+.pr-col-daily {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.pr-col-daily .pr-daily-card {
+  margin-top: 0 !important;
+  height: 100% !important;
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 8px 12px;
+}
+.pr-col-daily .pr-daily-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  min-height: 0;
+}
+.pr-col-daily .pr-daily-text {
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+  max-height: 90px;
+  overflow-y: auto;
+}
+
+/* ==========================================
+   PROMINENT DEEP FOCUS HERO IN #v-focus
+   ========================================== */
+.nf-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+  flex-shrink: 0;
+}
+.nf-deep-banner {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1.5px solid rgba(239, 68, 68, 0.35);
+  border-radius: 12px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.nf-deep-banner:hover {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: rgba(239, 68, 68, 0.6);
+  transform: translateY(-1px);
+}
+.nf-deep-banner.active {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.32), rgba(185, 28, 28, 0.25));
+  border-color: #ef4444;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.35);
+}
+.nf-deep-icon {
+  font-size: 16px;
+  filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.5));
+}
+.nf-deep-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.nf-deep-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fca5a5;
+  white-space: nowrap;
+}
+.nf-deep-banner.active .nf-deep-title {
+  color: #fff;
+}
+.nf-deep-sub {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.6);
+  white-space: nowrap;
+}
+.nf-deep-switch {
+  width: 34px;
+  height: 18px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.15);
+  position: relative;
+  transition: background 0.2s ease;
+}
+.nf-deep-banner.active .nf-deep-switch {
+  background: #ef4444;
+}
+.nf-switch-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s cubic-bezier(0.3, 1.3, 0.42, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+.nf-deep-banner.active .nf-switch-knob {
+  transform: translateX(16px);
+}
+
+
+/* Dhikr & Ayah subnotes formatting (Parentheses text smaller and below) */
+.dhikr-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+}
+.dhikr-subnote {
+  display: block;
+  font-size: 13.5px !important;
+  font-family: var(--font-ar), 'Segoe UI', sans-serif !important;
+  font-weight: 400 !important;
+  line-height: 1.45 !important;
+  color: var(--text-2) !important;
+  margin-top: 6px !important;
+  text-shadow: none !important;
+  opacity: 0.92;
+}
+.pr-subnote {
+  display: block;
+  font-size: 11px !important;
+  font-family: var(--font-ar), 'Segoe UI', sans-serif !important;
+  font-weight: 400 !important;
+  line-height: 1.35 !important;
+  color: var(--text-2) !important;
+  margin-top: 4px !important;
+  opacity: 0.88;
+}
+
+/* Ensure sliders and progress bar are responsive and have pointer cursor */
+.progress, #m-bar, .slider {
+  cursor: pointer !important;
+  touch-action: none;
+}
+
+
+/* ==========================================================================
+   ADVANCED REDESIGNED UI: TOPBAR STATUS, PRAYER RIBBON, FOCUS TODO & SOUNDS
+   ========================================================================== */
+
+
+
+/* 2. Redesigned Prayer View: Ribbon & Weather */
+.pr-header-card {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.pr-top-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.pr-upcoming-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.pr-up-lbl {
+  font-size: 11.5px;
+  color: var(--text-2);
+}
+.pr-upcoming-box .pr-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--theme-accent, #10b981);
+}
+.pr-upcoming-box .pr-at {
+  font-size: 12px;
+  color: var(--text-1);
+}
+.pr-countdown-pill {
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  padding: 2px 7px;
+  border-radius: 12px;
+}
+.pr-weather-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pr-wx-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+}
+.pr-wx-temp {
+  color: #fbbf24;
+}
+.pr-city-label {
+  font-size: 11px;
+  color: var(--text-2);
+}
+.pr-ribbon-container {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  width: 100%;
+}
+.pr-pill {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 6px 4px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  transition: all 0.2s ease;
+}
+.pr-pill-name {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-1);
+}
+.pr-pill-time {
+  font-size: 11px;
+  color: var(--text-2);
+  direction: ltr;
+}
+.pr-pill.next {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.28), rgba(16, 185, 129, 0.12)) !important;
+  border: 1.5px solid #10b981 !important;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.3) !important;
+}
+.pr-pill.next .pr-pill-name {
+  color: #fff;
+  font-weight: 700;
+}
+.pr-pill.next .pr-pill-time {
+  color: #10b981;
+  font-weight: 700;
+}
+.pr-pill.past {
+  opacity: 0.62;
+}
+
+.pr-daily-fullcard {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  padding: 8px 12px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+}
+.pr-daily-tabs-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 6px;
+}
+.pr-daily-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* 3. Redesigned Focus View: Minimalist, Smart Todo & Ambient Sound */
+.nf-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  min-height: 0;
+  padding: 2px 4px;
+}
+.nf-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  flex-shrink: 0;
+}
+.nf-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nf-main-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+}
+.nf-stats-mini {
+  font-size: 11px;
+  color: var(--text-2);
+}
+.nf-compact-deep-switch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  border-radius: 20px;
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.nf-compact-deep-switch.active {
+  background: rgba(239, 68, 68, 0.28);
+  border-color: #ef4444;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.35);
+}
+.nf-deep-icon {
+  font-size: 12px;
+}
+.nf-deep-txt {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #fca5a5;
+}
+.nf-mini-toggle-pill {
+  width: 26px;
+  height: 14px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.2);
+  position: relative;
+  display: inline-block;
+  transition: background 0.2s;
+}
+.nf-mini-toggle-pill .nf-knob {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.2s cubic-bezier(0.3, 1.3, 0.42, 1);
+}
+.nf-compact-deep-switch.active .nf-mini-toggle-pill {
+  background: #ef4444;
+}
+.nf-compact-deep-switch.active .nf-mini-toggle-pill .nf-knob {
+  transform: translateX(12px);
+}
+
+.nf-input-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  padding: 8px 10px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+}
+.nf-task-input-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: visible;
+}
+.nf-cat-select {
+  flex: none;
+  height: 30px;
+  font-size: 11px;
+  padding: 0 6px;
+  border-radius: 8px;
+}
+.nf-todo-input {
+  flex: 1 1 0%;
+  min-width: 0;
+  height: 30px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 0 8px;
+  color: #fff;
+  font-size: 12px;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+.nf-todo-input:focus {
+  border-color: var(--theme-accent, #10b981);
+}
+.nf-btn-add {
+  flex: none;
+  height: 30px;
+  padding: 0 9px;
+  background: var(--theme-accent, #10b981);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.nf-btn-decomp {
+  flex: none;
+  height: 30px;
+  padding: 0 8px;
+  background: linear-gradient(135deg, #a855f7, #6366f1);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+.nf-btn-2min {
+  flex: none;
+  height: 30px;
+  padding: 0 8px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+.nf-btn-add:hover, .nf-btn-decomp:hover, .nf-btn-2min:hover {
+  opacity: 0.9;
+}
+
+.nf-todo-list-scroll {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-height: 0;
+  padding-right: 2px;
+}
+.nf-todo-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12.5px;
+  color: var(--text-1);
+  transition: all 0.2s;
+}
+.nf-todo-check {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+.nf-todo-item.done .nf-todo-check {
+  background: var(--theme-accent, #10b981);
+  border-color: var(--theme-accent, #10b981);
+}
+.nf-todo-item.done .nf-todo-check::after {
+  content: '✓';
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+}
+.nf-todo-text {
+  flex: 1;
+  line-height: 1.35;
+}
+.nf-todo-item.done .nf-todo-text {
+  text-decoration: line-through;
+  opacity: 0.55;
+}
+.nf-todo-del {
+  background: none;
+  border: none;
+  color: var(--text-3);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 4px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.nf-todo-item:hover .nf-todo-del {
+  opacity: 1;
+}
+.nf-todo-del:hover {
+  color: #ef4444;
+}
+
+.nf-sound-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 5px 8px;
+  flex-shrink: 0;
+}
+.nf-sound-lbl {
+  font-size: 11px;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+.nf-sound-chips {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  overflow-x: auto;
+  flex: 1;
+}
+.nf-sound-chip {
+  background: rgba(255, 255, 255, 0.06);
+  border: none;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 11px;
+  color: var(--text-2);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.nf-sound-chip.active {
+  background: var(--theme-accent, #10b981);
+  color: #fff;
+  font-weight: 600;
+}
+
+
+/* ==========================================================================
+   COMPACT VERTICAL CLOCK & DUAL DATES CARD (MATCHING USER REFERENCE IMAGE)
+   ========================================================================== */
+.topbar {
+  direction: ltr !important;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  height: 40px;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+
+.topbar-left-zone {
+  direction: ltr !important;
+  justify-self: start;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.topbar .tabs {
+  direction: ltr !important;
+  justify-self: center;
+}
+
+.topbar-compact-clock-card {
+  direction: rtl !important;
+  justify-self: end;
+}
+
+.topbar-gear-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  color: var(--text-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 0;
+  flex-shrink: 0;
+}
+.topbar-gear-btn svg {
+  width: 15px;
+  height: 15px;
+  transition: transform 0.35s ease;
+}
+.topbar-gear-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.28);
+}
+.topbar-gear-btn:hover svg {
+  transform: rotate(45deg);
+}
+
+.topbar-compact-clock-card {
+  justify-self: end;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px);
+  border-radius: 12px;
+  padding: 3px 12px 4px;
+  min-width: 135px;
+  max-width: 175px;
+  white-space: nowrap !important;
+  user-select: none;
+  cursor: default;
+  transition: all 0.2s ease;
+  overflow: hidden !important;
+}
+.topbar-compact-clock-card:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.c-clock {
+  font-family: var(--font-en), "Inter", -apple-system, sans-serif !important;
+  font-size: 14.5px !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.2px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.c-hijri {
+  font-family: var(--font-ar), "Amiri", serif !important;
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  color: #f6d89b !important; /* Elegant warm golden parchment as in reference */
+  line-height: 1.15 !important;
+  white-space: nowrap !important;
+}
+
+.c-greg {
+  font-family: var(--font-en), "Inter", sans-serif !important;
+  font-size: 9px !important;
+  font-weight: 500 !important;
+  color: rgba(255, 255, 255, 0.62) !important;
+  line-height: 1.05 !important;
+  letter-spacing: 0.15px;
+  white-space: nowrap !important;
+}
+
+/* Fix music title and player layout */
+.m-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+.m-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.m-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.m-text .title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.m-text .sub {
+  font-size: 12px;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* ==========================================================================
+   TODOIST-STYLE RICH FOCUS CATEGORIES & TODO LIST
+   ========================================================================== */
+.nf-cat-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  overflow-x: auto;
+  padding: 1px 0 3px;
+  flex-shrink: 0;
+}
+.nf-cat-chip {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 2px 9px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-2);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.18s ease;
+}
+.nf-cat-chip:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.16);
+}
+.nf-cat-chip.active {
+  background: var(--theme-accent, #38bdf8);
+  border-color: var(--theme-accent, #38bdf8);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(56, 189, 248, 0.3);
+}
+
+.nf-cat-select {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 6px;
+  cursor: pointer;
+  outline: none;
+}
+.nf-cat-select option {
+  background: #1e293b;
+  color: #fff;
+}
+
+.nf-todo-cat-badge {
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 1.5px 6px;
+  border-radius: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.nf-todo-cat-badge.work {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+.nf-todo-cat-badge.personal {
+  background: rgba(52, 211, 153, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+.nf-todo-cat-badge.urgent {
+  background: rgba(239, 68, 68, 0.18);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+.nf-todo-cat-badge.project {
+  background: rgba(168, 85, 247, 0.18);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.35);
+}
+
+.nf-todo-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.18s ease;
+}
+.nf-todo-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.nf-todo-item.done {
+  opacity: 0.55;
+}
+.nf-todo-item.done .nf-todo-text {
+  text-decoration: line-through;
+  color: var(--text-3);
+}
+.nf-todo-check {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s ease;
+}
+.nf-todo-check:hover {
+  border-color: var(--theme-accent, #38bdf8);
+  transform: scale(1.1);
+}
+.nf-todo-item.done .nf-todo-check {
+  background: #10b981;
+  border-color: #10b981;
+}
+.nf-todo-item.done .nf-todo-check::after {
+  content: "✓";
+  font-size: 10px;
+  color: #fff;
+  font-weight: 800;
+}
+.nf-todo-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--text-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nf-todo-del {
+  background: none;
+  border: none;
+  color: var(--text-3);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0 4px;
+  border-radius: 4px;
+  transition: color 0.15s ease;
+}
+.nf-todo-del:hover {
+  color: #ef4444;
+}
+.nf-todo-list-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 95px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+/* ==========================================================================
+   APPLE PREMIUM DESIGN SYSTEM (Dark Glass, Black OLED, Light Daylight)
+   ========================================================================== */
+
+/* 1. Dark Mode (Default macOS Cupertino Dark Glass) */
+:root, html[data-theme="dark"], body.theme-dark {
+  --bg-island: rgba(28, 28, 32, var(--glass-opacity, 0.88));
+  --glass-stroke: rgba(255, 255, 255, 0.12);
+  --card: rgba(255, 255, 255, 0.05);
+  --card-stroke: rgba(255, 255, 255, 0.08);
+  --text-1: #f5f5f7;
+  --text-2: rgba(235, 235, 245, 0.70);
+  --text-3: rgba(235, 235, 245, 0.45);
+  --fill-1: rgba(255, 255, 255, 0.07);
+  --fill-2: rgba(255, 255, 255, 0.14);
+}
+
+/* 2. Black Mode (Cupertino OLED True Black Depth) */
+html[data-theme="black"], body.theme-black {
+  --bg-island: rgba(8, 8, 10, var(--glass-opacity, 0.96));
+  --glass-stroke: rgba(255, 255, 255, 0.09);
+  --card: rgba(20, 20, 24, 0.85);
+  --card-stroke: rgba(255, 255, 255, 0.07);
+  --text-1: #ffffff;
+  --text-2: rgba(255, 255, 255, 0.65);
+  --text-3: rgba(255, 255, 255, 0.38);
+  --fill-1: rgba(255, 255, 255, 0.05);
+  --fill-2: rgba(255, 255, 255, 0.10);
+}
+html[data-theme="black"] #island, body.theme-black #island {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.6);
+}
+
+/* 3. Light Mode (Cupertino Daylight Frosted Glass) */
+html[data-theme="light"], body.theme-light {
+  --bg-island: rgba(245, 245, 247, var(--glass-opacity, 0.88));
+  --glass-stroke: rgba(0, 0, 0, 0.10);
+  --card: rgba(255, 255, 255, 0.82);
+  --card-stroke: rgba(0, 0, 0, 0.08);
+  --text-1: #1d1d1f;
+  --text-2: #86868b;
+  --text-3: rgba(29, 29, 31, 0.45);
+  --fill-1: rgba(0, 0, 0, 0.05);
+  --fill-2: rgba(0, 0, 0, 0.10);
+}
+
+html[data-theme="light"] #island, body.theme-light #island {
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.10);
+}
+html[data-theme="light"] .topbar-compact-clock-card {
+  background: rgba(255, 255, 255, 0.75);
+  border-color: rgba(0, 0, 0, 0.09);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+html[data-theme="light"] .c-clock {
+  color: #1d1d1f !important;
+  text-shadow: none;
+}
+html[data-theme="light"] .c-hijri {
+  color: #b45309 !important;
+}
+html[data-theme="light"] .c-greg {
+  color: #64748b !important;
+}
+html[data-theme="light"] #wx-card {
+  background: rgba(255, 255, 255, 0.82) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] #wx-temp, html[data-theme="light"] #wx-desc {
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .sys-card,
+html[data-theme="light"] .clip-card,
+html[data-theme="light"] .nf-input-card,
+html[data-theme="light"] .nf-sound-card,
+html[data-theme="light"] .pr-daily-card {
+  background: rgba(255, 255, 255, 0.82) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+html[data-theme="light"] .nf-todo-input {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .nf-cat-select {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .nf-cat-select option {
+  background: #f8fafc;
+  color: #1d1d1f;
+}
+html[data-theme="light"] .topbar-gear-btn {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.12);
+  color: #4b5563;
+}
+
+/* Hide scrollbars for smooth Apple-style horizontal chip rows */
+.nf-cat-filter-bar::-webkit-scrollbar,
+.nf-sound-chips::-webkit-scrollbar {
+  display: none !important;
+  height: 0 !important;
+  width: 0 !important;
+}
+.nf-cat-filter-bar,
+.nf-sound-chips {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+
+/* ==========================================================================
+   Apple Cupertino Daylight Frosted Glass (Comprehensive Island Light Mode)
+   ========================================================================== */
+html[data-theme="light"], body.theme-light {
+  --bg-island: rgba(245, 245, 247, 0.92);
+  --glass-tint: rgba(255, 255, 255, 0.60);
+  --glass-tint-strong: rgba(255, 255, 255, 0.75);
+  --glass-stroke: rgba(0, 0, 0, 0.12);
+  --card: rgba(255, 255, 255, 0.88);
+  --card-stroke: rgba(0, 0, 0, 0.08);
+  --text-1: #1d1d1f;
+  --text-2: #6e6e73;
+  --text-3: #86868b;
+  --fill-1: rgba(0, 0, 0, 0.04);
+  --fill-2: rgba(0, 0, 0, 0.08);
+  --fill-3: rgba(0, 0, 0, 0.14);
+}
+
+/* Base Island Capsule */
+html[data-theme="light"] #island,
+body.theme-light #island {
+  background: rgba(245, 245, 247, 0.92) !important;
+  backdrop-filter: blur(32px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(190%) !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+  color: #1d1d1f !important;
+}
+
+/* Clip & Tint layers (Eliminate black underlay) */
+html[data-theme="light"] .clip,
+body.theme-light .clip {
+  background: transparent !important;
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.08) !important;
+}
+html[data-theme="light"] .tint,
+body.theme-light .tint {
+  background: rgba(255, 255, 255, 0.55) !important;
+}
+html[data-theme="light"] #island.expanded .tint,
+html[data-theme="light"] #island.peek .tint,
+body.theme-light #island.expanded .tint,
+body.theme-light #island.peek .tint {
+  background: rgba(255, 255, 255, 0.72) !important;
+}
+html[data-theme="light"] .sheen,
+body.theme-light .sheen {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.65) 0%, transparent 55%) !important;
+}
+
+/* Global Text in Light Mode */
+html[data-theme="light"] .title,
+html[data-theme="light"] .m-text .title,
+html[data-theme="light"] .c-title,
+html[data-theme="light"] .i-strong,
+html[data-theme="light"] .nf-main-title {
+  color: #1d1d1f !important;
+  text-shadow: none !important;
+}
+html[data-theme="light"] .sub,
+html[data-theme="light"] .m-text .sub,
+html[data-theme="light"] .i-soft,
+html[data-theme="light"] .vol-pct,
+html[data-theme="light"] .progress {
+  color: #6e6e73 !important;
+}
+
+/* Topbar in Light Mode */
+html[data-theme="light"] .topbar-gear-btn {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.10) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .topbar-gear-btn:hover {
+  background: rgba(0, 0, 0, 0.10) !important;
+}
+html[data-theme="light"] .tab {
+  color: #6e6e73 !important;
+  background: transparent !important;
+}
+html[data-theme="light"] .tab.active {
+  background: rgba(0, 0, 0, 0.08) !important;
+  color: #1d1d1f !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+  font-weight: 600 !important;
+}
+html[data-theme="light"] .tab svg {
+  stroke: currentColor !important;
+}
+html[data-theme="light"] #seg-thumb {
+  background: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+html[data-theme="light"] .topbar-compact-clock-card {
+  background: rgba(255, 255, 255, 0.90) !important;
+  border: 1px solid rgba(0, 0, 0, 0.10) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+}
+html[data-theme="light"] .c-clock {
+  color: #1d1d1f !important;
+  text-shadow: none !important;
+}
+html[data-theme="light"] .c-hijri {
+  color: #b45309 !important;
+}
+html[data-theme="light"] .c-greg {
+  color: #6e6e73 !important;
+}
+
+/* Media Tab Controls & Sliders */
+html[data-theme="light"] .ctl,
+html[data-theme="light"] .controls button {
+  color: #1d1d1f !important;
+  background: rgba(0, 0, 0, 0.05) !important;
+}
+html[data-theme="light"] .ctl:hover,
+html[data-theme="light"] .controls button:hover {
+  background: rgba(0, 0, 0, 0.10) !important;
+}
+html[data-theme="light"] .ctl.play {
+  background: var(--theme-accent, #007aff) !important;
+  color: #ffffff !important;
+}
+html[data-theme="light"] .ctl.play svg {
+  fill: #ffffff !important;
+  color: #ffffff !important;
+}
+html[data-theme="light"] .pip {
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .slider::before {
+  background: rgba(0, 0, 0, 0.12) !important;
+}
+html[data-theme="light"] .slider .fill {
+  background: var(--theme-accent, #007aff) !important;
+}
+html[data-theme="light"] .slider .knob {
+  background: #ffffff !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25) !important;
+  border: 0.5px solid rgba(0, 0, 0, 0.10) !important;
+}
+html[data-theme="light"] .empty-ico {
+  background: rgba(0, 0, 0, 0.06) !important;
+  color: #6e6e73 !important;
+}
+
+/* System Tab Cards & Sliders */
+html[data-theme="light"] .sys-card,
+html[data-theme="light"] .clip-card,
+html[data-theme="light"] #wx-card {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] #wx-temp,
+html[data-theme="light"] #wx-desc {
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .meter .bar {
+  background: rgba(0, 0, 0, 0.08) !important;
+}
+html[data-theme="light"] .clips-search input {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(0, 0, 0, 0.10) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .clip-item {
+  background: rgba(0, 0, 0, 0.03) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .clip-item:hover {
+  background: rgba(0, 0, 0, 0.07) !important;
+}
+
+/* Focus Tab Cards & Controls */
+html[data-theme="light"] .nf-header-card,
+html[data-theme="light"] .nf-input-card,
+html[data-theme="light"] .nf-sound-card,
+html[data-theme="light"] .nf-todo-item {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .nf-todo-input {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .nf-todo-input::placeholder {
+  color: #86868b !important;
+}
+html[data-theme="light"] .nf-cat-select {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .nf-cat-select option {
+  background: #ffffff !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .nf-filter-chip {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #6e6e73 !important;
+}
+html[data-theme="light"] .nf-filter-chip.active {
+  background: #1d1d1f !important;
+  color: #ffffff !important;
+}
+html[data-theme="light"] .nf-streak-badge {
+  background: rgba(255, 149, 0, 0.12) !important;
+  color: #b45309 !important;
+  border: 1px solid rgba(255, 149, 0, 0.25) !important;
+}
+html[data-theme="light"] .nf-todo-item-title {
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .nf-todo-item-sub {
+  color: #6e6e73 !important;
+}
+html[data-theme="light"] .nf-sound-chip {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #6e6e73 !important;
+}
+html[data-theme="light"] .nf-sound-chip.active {
+  background: #34c759 !important;
+  color: #ffffff !important;
+}
+
+/* Prayer Tab Cards */
+html[data-theme="light"] .pr-daily-card,
+html[data-theme="light"] .pr-item,
+html[data-theme="light"] .pr-hero-card {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .pr-name,
+html[data-theme="light"] .pr-time,
+html[data-theme="light"] .pr-daily-text {
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .pr-daily-source {
+  color: #6e6e73 !important;
+}
+
+/* Timer Tab */
+html[data-theme="light"] .tm-digits {
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .tm-btn {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.10) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .tm-ring circle.bg {
+  stroke: rgba(0, 0, 0, 0.10) !important;
+}
+
+/* Apps & Shelf Grid */
+html[data-theme="light"] .app-tile,
+html[data-theme="light"] .shelf-item {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .app-tile-name,
+html[data-theme="light"] .shelf-item-name {
+  color: #1d1d1f !important;
+}
+
+/* Media Tab Specific Light Theme Rules */
+html[data-theme="light"] #m-title,
+body.theme-light #m-title,
+html[data-theme="light"] #v-media .title,
+body.theme-light #v-media .title {
+  color: #1d1d1f !important;
+  font-weight: 700 !important;
+  text-shadow: none !important;
+}
+html[data-theme="light"] #m-artist,
+body.theme-light #m-artist,
+html[data-theme="light"] #v-media .sub,
+body.theme-light #v-media .sub {
+  color: #6e6e73 !important;
+  text-shadow: none !important;
+}
+html[data-theme="light"] #m-pos,
+html[data-theme="light"] #m-dur,
+body.theme-light #m-pos,
+body.theme-light #m-dur {
+  color: #86868b !important;
+}
+html[data-theme="light"] .slider,
+body.theme-light .slider {
+  background: rgba(0, 0, 0, 0.12) !important;
+}
+html[data-theme="light"] .slider .knob,
+body.theme-light .slider .knob {
+  background: #ffffff !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25) !important;
+}
+html[data-theme="light"] .eq.big i,
+body.theme-light .eq.big i {
+  background: #1d1d1f !important;
+}
+html[data-theme="light"] #vol-btn,
+body.theme-light #vol-btn {
+  color: #1d1d1f !important;
+  background: rgba(0, 0, 0, 0.05) !important;
+}
+html[data-theme="light"] .vol-pct,
+body.theme-light .vol-pct {
+  color: #6e6e73 !important;
+}
+
+/* Topbar Compact Clock: AM/PM strictly on right */
+.topbar-compact-clock-card {
+  direction: ltr !important;
+}
+.c-clock {
+  direction: ltr !important;
+  unicode-bidi: isolate !important;
+  display: inline-flex !important;
+  align-items: baseline !important;
+  justify-content: center !important;
+  gap: 3px !important;
+}
+#x-clock-time {
+  font-weight: 700;
+  font-size: 15px;
+}
+#x-clock-ampm {
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+  color: var(--accent, #38bdf8) !important;
+  margin-inline-start: 3px !important;
+  opacity: 0.95 !important;
+}
+.theme-light #x-clock-ampm {
+  color: #0284c7 !important;
+}
+#i-time .i-meridian {
+  font-size: 9.5px !important;
+  font-weight: 700 !important;
+  color: var(--accent, #38bdf8) !important;
+  margin-inline-start: 2px !important;
+}
+.theme-light #i-time .i-meridian {
+  color: #0284c7 !important;
+}
+
+/* Redesigned Prayer View Styles */
+.pr-top-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.pr-location-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: var(--text-2);
+}
+.pr-dot-sep {
+  opacity: 0.5;
+}
+.pr-weather-timer-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pr-countdown-timer-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(16, 185, 129, 0.14);
+  border: 1px solid rgba(16, 185, 129, 0.32);
+  color: var(--theme-accent, #10b981);
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+.pr-timer-lbl {
+  font-size: 10.5px;
+  opacity: 0.9;
+}
+.pr-countdown-val {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.5px;
+}
+.pr-pill-countdown {
+  font-size: 9.5px;
+  color: #10b981;
+  font-weight: 700;
+  margin-top: 1px;
+  white-space: nowrap;
+}
+
+/* Daily Islamic Corner Fullcard */
+.pr-daily-fullcard {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  padding: 10px 14px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 95px;
+}
+.pr-daily-tabs-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 6px;
+}
+.pr-daily-tab {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 8px;
+  color: var(--text-2);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.pr-daily-tab:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-1);
+}
+.pr-daily-tab.active {
+  background: var(--theme-accent, #10b981) !important;
+  color: #ffffff !important;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+}
+.pr-daily-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  min-height: 55px;
+}
+.pr-daily-badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--theme-accent, #10b981);
+}
+.pr-daily-text {
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.6;
+  color: var(--text-1);
+}
+.pr-daily-ref {
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+/* Light Theme overrides for Prayer */
+html[data-theme="light"] .pr-header-card,
+html[data-theme="light"] .pr-daily-fullcard,
+body.theme-light .pr-header-card,
+body.theme-light .pr-daily-fullcard {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
+}
+html[data-theme="light"] .pr-pill,
+body.theme-light .pr-pill {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border: 1px solid rgba(0, 0, 0, 0.07) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .pr-pill.next,
+body.theme-light .pr-pill.next {
+  background: rgba(16, 185, 129, 0.12) !important;
+  border-color: #10b981 !important;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2) !important;
+}
+html[data-theme="light"] .pr-pill-name,
+body.theme-light .pr-pill-name {
+  color: #1d1d1f !important;
+  font-weight: 700 !important;
+}
+html[data-theme="light"] .pr-pill-time,
+body.theme-light .pr-pill-time {
+  color: #6e6e73 !important;
+  font-weight: 600 !important;
+}
+html[data-theme="light"] .pr-pill.next .pr-pill-time,
+body.theme-light .pr-pill.next .pr-pill-time {
+  color: #059669 !important;
+  font-weight: 700 !important;
+}
+html[data-theme="light"] .pr-daily-tabs-bar,
+body.theme-light .pr-daily-tabs-bar {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+html[data-theme="light"] .pr-daily-tab,
+body.theme-light .pr-daily-tab {
+  color: #6e6e73 !important;
+  background: rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid transparent !important;
+}
+html[data-theme="light"] .pr-daily-tab:hover,
+body.theme-light .pr-daily-tab:hover {
+  color: #1d1d1f !important;
+  background: rgba(0, 0, 0, 0.08) !important;
+}
+html[data-theme="light"] .pr-daily-tab.active,
+body.theme-light .pr-daily-tab.active {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3) !important;
+}
+html[data-theme="light"] #pr-daily-badge,
+body.theme-light #pr-daily-badge {
+  color: #059669 !important;
+  font-weight: 700 !important;
+}
+html[data-theme="light"] #pr-daily-text,
+body.theme-light #pr-daily-text {
+  color: #1d1d1f !important;
+  font-weight: 600 !important;
+  font-size: 13.5px !important;
+  line-height: 1.6 !important;
+}
+html[data-theme="light"] #pr-daily-ref,
+body.theme-light #pr-daily-ref {
+  color: #6e6e73 !important;
+}
+html[data-theme="light"] .pr-city-label,
+html[data-theme="light"] .pr-method-label,
+body.theme-light .pr-city-label,
+body.theme-light .pr-method-label {
+  color: #6e6e73 !important;
+}
+html[data-theme="light"] .pr-countdown-timer-badge,
+body.theme-light .pr-countdown-timer-badge {
+  background: rgba(16, 185, 129, 0.12) !important;
+  border-color: rgba(16, 185, 129, 0.28) !important;
+  color: #059669 !important;
+}
+
+/* ==========================================================================
+   ENHANCED FOCUS & SLIDE PRAYER & CLIPBOARD STYLING
+   ========================================================================== */
+
+/* Prayer Idle Slide RTL & LTR Adaptation */
+.pr-slide {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  padding: 0 4px !important;
+}
+[dir="rtl"] .pr-slide, html[lang="ar"] .pr-slide, body.lang-ar .pr-slide {
+  direction: rtl !important;
+}
+[dir="ltr"] .pr-slide, html[lang="en"] .pr-slide, body.lang-en .pr-slide {
+  direction: ltr !important;
+}
+.pr-slide-main {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+.pr-slide-countdown {
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+}
+
+/* Enhanced Focus Layout & Input Row UI/UX */
+.nf-input-card {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 14px !important;
+  padding: 10px 12px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  min-height: 145px !important;
+}
+.nf-task-input-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+.nf-cat-select-wrapper {
+  flex-shrink: 0 !important;
+}
+.nf-cat-select {
+  height: 32px !important;
+  padding: 0 8px !important;
+  border-radius: 9px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  color: var(--text-1) !important;
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  outline: none !important;
+  cursor: pointer !important;
+}
+.nf-todo-input {
+  flex: 1 !important;
+  min-width: 0 !important;
+  height: 32px !important;
+  padding: 0 12px !important;
+  border-radius: 9px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: var(--text-1) !important;
+  font-size: 12px !important;
+  outline: none !important;
+}
+.nf-btn-actions-group {
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  flex-shrink: 0 !important;
+}
+.nf-btn-add, .nf-btn-decomp, .nf-btn-2min {
+  height: 32px !important;
+  border-radius: 9px !important;
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  border: none !important;
+  transition: transform 0.12s ease, opacity 0.12s ease !important;
+}
+.nf-btn-add:hover, .nf-btn-decomp:hover, .nf-btn-2min:hover {
+  opacity: 0.9 !important;
+  transform: translateY(-1px) !important;
+}
+.nf-btn-add {
+  width: 32px !important;
+  background: #10b981 !important;
+  color: #fff !important;
+  font-size: 16px !important;
+}
+.nf-btn-decomp {
+  padding: 0 10px !important;
+  background: linear-gradient(135deg, #8b5cf6, #6366f1) !important;
+  color: #fff !important;
+}
+.nf-btn-2min {
+  padding: 0 9px !important;
+  background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+  color: #fff !important;
+}
+
+/* Period Tabs Bar (Daily / Weekly / Completed) */
+.nf-period-tabs-bar {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 2px 0 6px 0 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+}
+.nf-period-tab {
+  background: none !important;
+  border: none !important;
+  color: var(--text-2) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  padding: 3px 8px !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  opacity: 0.72 !important;
+  transition: all 0.15s ease !important;
+}
+.nf-period-tab:hover {
+  opacity: 1 !important;
+}
+.nf-period-tab.active {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: var(--theme-accent, #38bdf8) !important;
+  opacity: 1 !important;
+}
+
+/* Scrollable Todo List */
+.nf-todo-list-scroll {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 5px !important;
+  max-height: 110px !important;
+  min-height: 70px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding-right: 4px !important;
+}
+.nf-todo-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: rgba(255, 255, 255, 0.035) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 8px !important;
+  padding: 6px 10px !important;
+  font-size: 11.5px !important;
+}
+.nf-todo-check {
+  width: 16px !important;
+  height: 16px !important;
+  border-radius: 4px !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.3) !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.nf-todo-item.done .nf-todo-check {
+  background: #10b981 !important;
+  border-color: #10b981 !important;
+}
+.nf-todo-item.done .nf-todo-check::after {
+  content: "✓" !important;
+  color: #fff !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+}
+.nf-todo-text {
+  flex: 1 !important;
+  color: var(--text-1) !important;
+  line-height: 1.3 !important;
+}
+.nf-todo-item.done .nf-todo-text {
+  text-decoration: line-through !important;
+  opacity: 0.5 !important;
+}
+.nf-todo-cat-badge {
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  padding: 2px 6px !important;
+  border-radius: 6px !important;
+  flex-shrink: 0 !important;
+}
+.nf-todo-cat-badge.work { background: rgba(59, 130, 246, 0.15) !important; color: #60a5fa !important; }
+.nf-todo-cat-badge.personal { background: rgba(168, 85, 247, 0.15) !important; color: #c084fc !important; }
+.nf-todo-cat-badge.urgent { background: rgba(239, 68, 68, 0.15) !important; color: #f87171 !important; }
+.nf-todo-cat-badge.project { background: rgba(245, 158, 11, 0.15) !important; color: #fbbf24 !important; }
+.nf-todo-del {
+  background: none !important;
+  border: none !important;
+  color: var(--text-3) !important;
+  font-size: 14px !important;
+  cursor: pointer !important;
+  padding: 0 4px !important;
+  opacity: 0.6 !important;
+}
+.nf-todo-del:hover {
+  opacity: 1 !important;
+  color: #ef4444 !important;
+}
+
+/* Light Theme Overrides for Focus */
+html[data-theme="light"] .nf-input-card,
+body.theme-light .nf-input-card {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
+}
+html[data-theme="light"] .nf-cat-select,
+body.theme-light .nf-cat-select {
+  background: #f0f0f2 !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .nf-todo-input,
+body.theme-light .nf-todo-input {
+  background: #f0f0f2 !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .nf-period-tabs-bar,
+body.theme-light .nf-period-tabs-bar {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+html[data-theme="light"] .nf-period-tab.active,
+body.theme-light .nf-period-tab.active {
+  background: rgba(0, 0, 0, 0.07) !important;
+  color: #0071E3 !important;
+}
+html[data-theme="light"] .nf-todo-item,
+body.theme-light .nf-todo-item {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .nf-todo-check,
+body.theme-light .nf-todo-check {
+  border-color: rgba(0, 0, 0, 0.25) !important;
+}
+
+
+/* ==========================================================================
+   HyperNova — Quran Radio & Recitation Mode (Compact Dynamic Island)
+   ========================================================================== */
+
+/* Circular Radio Toggle Button in Transport Bar */
+.quran-radio-btn {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1.5px solid rgba(234, 179, 8, 0.5) !important;
+  display: grid !important;
+  place-items: center !important;
+  cursor: pointer !important;
+  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.quran-radio-btn:hover {
+  transform: scale(1.08) !important;
+  border-color: #fbbf24 !important;
+  background: rgba(251, 191, 36, 0.12) !important;
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.35) !important;
+}
+
+.quran-radio-btn.active {
+  border-color: #10b981 !important;
+  background: rgba(16, 185, 129, 0.18) !important;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.5) !important;
+}
+
+.quran-radio-btn .qr-btn-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* Quran Radio Mode Container State */
+#v-media.quran-mode {
+  display: flex !important;
+}
+
+#v-media.quran-mode .empty {
+  display: none !important;
+}
+
+#v-media.quran-mode .media {
+  display: flex !important;
+}
+
+/* Artwork & Overlay Badge */
+#v-media.quran-mode .art-wrap {
+  position: relative !important;
+}
+
+#v-media.quran-mode #m-art {
+  border-radius: 20px !important;
+  box-shadow: 0 8px 24px rgba(6, 78, 59, 0.35) !important;
+}
+
+#v-media.quran-mode #m-art-glow {
+  filter: blur(26px) !important;
+  opacity: 0.65 !important;
+}
+
+.qr-art-badge {
+  position: absolute;
+  bottom: 6px;
+  left: 6px;
+  right: 6px;
+  background: rgba(6, 78, 59, 0.88);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  border-radius: 8px;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fbbf24;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.qr-art-badge.live {
+  background: rgba(15, 23, 42, 0.88);
+  border-color: rgba(16, 185, 129, 0.5);
+  color: #34d399;
+}
+
+.qr-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: qrPulse 1.4s infinite ease-in-out;
+}
+
+.qr-pulse-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  margin-inline-end: 5px;
+  animation: qrPulse 1.4s infinite ease-in-out;
+}
+
+@keyframes qrPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.6; }
+}
+
+/* Uthmani Ayah Headline */
+#v-media.quran-mode #m-title {
+  font-family: 'Scheherazade New', 'Amiri', 'Traditional Arabic', system-ui, serif !important;
+  font-size: 15px !important;
+  line-height: 1.45 !important;
+  color: var(--text-1) !important;
+  font-weight: 600 !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+  max-height: 44px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Emerald Equalizer Bars */
+#v-media.quran-mode .eq.emerald-eq i {
+  background: #10b981 !important;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.6) !important;
+}
+
+/* Compact Inline Dropdown Pills */
+.qr-pills-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 5px;
+  flex-wrap: nowrap;
+}
+
+.qr-pill-btn {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 999px !important;
+  padding: 3px 10px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: var(--text-1) !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  transition: all 0.18s ease !important;
+  white-space: nowrap !important;
+}
+
+.qr-pill-btn:hover {
+  background: rgba(16, 185, 129, 0.15) !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
+  color: #34d399 !important;
+}
+
+.qr-pill-btn .arr {
+  font-style: normal;
+  font-size: 9px;
+  opacity: 0.7;
+}
+
+.qr-fav-btn {
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: var(--text-3) !important;
+  font-size: 13px !important;
+  cursor: pointer !important;
+  display: grid !important;
+  place-items: center !important;
+  transition: all 0.18s ease !important;
+}
+
+.qr-fav-btn:hover,
+.qr-fav-btn.active {
+  color: #fbbf24 !important;
+  background: rgba(251, 191, 36, 0.18) !important;
+  border-color: #fbbf24 !important;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.3) !important;
+}
+
+.qr-ayah-select-wrapper {
+  display: inline-flex;
+  align-items: center;
+}
+
+.qr-ayah-select {
+  height: 25px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 0 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-1);
+  cursor: pointer;
+  outline: none;
+  transition: all 0.18s ease;
+}
+
+.qr-ayah-select:hover {
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.qr-ayah-select option {
+  background: #18181f;
+  color: #fff;
+}
+
+/* Extra Transport Controls (Repeat, Live, Speed) */
+.qr-extra-transport {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 2px;
+}
+
+.mini-icon-btn {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  cursor: pointer !important;
+  display: grid !important;
+  place-items: center !important;
+  font-size: 11px !important;
+  color: var(--text-1) !important;
+  position: relative !important;
+  transition: all 0.18s ease !important;
+}
+
+.mini-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
+  color: #34d399 !important;
+}
+
+.mini-icon-btn.active {
+  background: rgba(16, 185, 129, 0.22) !important;
+  border-color: #10b981 !important;
+  color: #34d399 !important;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4) !important;
+}
+
+.qr-repeat-ico {
+  font-size: 12px;
+}
+
+.qr-repeat-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  font-size: 8.5px;
+  font-weight: 800;
+  background: #fbbf24;
+  color: #000;
+  padding: 1px 3.5px;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+.qr-speed-txt {
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* Floating Glass Popovers */
+.qr-glass-popover {
+  position: absolute;
+  bottom: 85px;
+  right: 25px;
+  width: 310px;
+  max-height: 235px;
+  background: rgba(18, 18, 24, 0.92);
+  backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: qrPopoverIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  direction: rtl;
+}
+
+@keyframes qrPopoverIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.qr-pop-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 12px;
+  color: var(--text-1);
+}
+
+.qr-pop-close {
+  background: none;
+  border: none;
+  color: var(--text-3);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.qr-pop-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.qr-pop-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.qr-pop-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.qr-pop-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.qr-pop-item.active {
+  background: rgba(16, 185, 129, 0.18);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.qr-reciter-avatar {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.qr-reciter-info, .qr-surah-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.qr-reciter-name, .qr-surah-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.qr-reciter-sub, .qr-surah-sub {
+  font-size: 10px;
+  color: var(--text-3);
+}
+
+.qr-check {
+  color: #10b981;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.qr-surah-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fbbf24;
+  width: 22px;
+  text-align: center;
+}
+
+.qr-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  margin-left: 8px;
+}
+
+.qr-search-input {
+  flex: 1;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-1);
+  padding: 0 8px;
+  font-size: 11.5px;
+  outline: none;
+}
+
+.qr-fav-filter-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-3);
+  font-size: 13px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: all 0.15s ease;
+}
+
+.qr-fav-filter-btn.active {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.2);
+  border-color: #fbbf24;
+}
+
+.qr-item-fav-btn {
+  background: none;
+  border: none;
+  color: var(--text-3);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.qr-item-fav-btn.active {
+  color: #fbbf24;
+}
+
+.qr-empty-hint {
+  font-size: 11.5px;
+  color: var(--text-3);
+  text-align: center;
+  padding: 24px 0;
+}
+
+/* Light Theme Adaptations */
+html[data-theme="light"] .quran-radio-btn,
+body.theme-light .quran-radio-btn {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border-color: rgba(217, 119, 6, 0.5) !important;
+}
+
+html[data-theme="light"] .qr-glass-popover,
+body.theme-light .qr-glass-popover {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18) !important;
+}
+
+html[data-theme="light"] .qr-pop-head,
+body.theme-light .qr-pop-head {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07) !important;
+}
+
+html[data-theme="light"] .qr-pop-item:hover,
+body.theme-light .qr-pop-item:hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+}
+
+html[data-theme="light"] .qr-search-input,
+body.theme-light .qr-search-input,
+html[data-theme="light"] .qr-pill-btn,
+body.theme-light .qr-pill-btn,
+html[data-theme="light"] .qr-ayah-select,
+body.theme-light .qr-ayah-select,
+html[data-theme="light"] .mini-icon-btn,
+body.theme-light .mini-icon-btn {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  color: #1d1d1f !important;
+}
+
+html[data-theme="light"] .qr-ayah-select option,
+body.theme-light .qr-ayah-select option {
+  background: #ffffff !important;
+  color: #1d1d1f !important;
+}
+
+
+/* Quran Radio Mode Refinements */
+#v-media.quran-mode #m-artist {
+  display: none !important;
+}
+
+#v-media.quran-mode #m-bar .fill {
+  background: #10b981 !important;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.6) !important;
+}
+
+#v-media.quran-mode #m-bar .knob {
+  border-color: #10b981 !important;
+  background: #ffffff !important;
+}
+
+#v-media.quran-mode #m-pos,
+#v-media.quran-mode #m-dur {
+  color: #34d399 !important;
+  font-weight: 600 !important;
+}
+
+/* Focus Mode Layout Adjustments to ensure zero bottom clipping */
+.nf-todo-list-scroll {
+  max-height: 72px !important;
+  min-height: 50px !important;
+}
+
+.nf-sound-card {
+  margin-top: 3px !important;
+  padding: 4px 10px !important;
+}
+
+
+/* Clock AM/PM Hierarchy & Subtle Color */
+.c-clock {
+  display: inline-flex !important;
+  align-items: baseline !important;
+  gap: 3px !important;
+  direction: ltr !important;
+  unicode-bidi: isolate !important;
+}
+
+.c-digits {
+  font-size: 14.5px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.3px !important;
+  color: var(--text-1) !important;
+}
+
+.c-meridian {
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.6px !important;
+  color: #38bdf8 !important; /* Soft cyan/sky accent distinguishing AM/PM */
+  opacity: 0.88 !important;
+  text-transform: uppercase !important;
+}
+
+html[data-theme="light"] .c-meridian,
+body.theme-light .c-meridian {
+  color: #0071E3 !important;
+  opacity: 0.95 !important;
+}
+
+html[data-theme="black"] .c-meridian,
+body.theme-black .c-meridian {
+  color: #60a5fa !important;
+}
+
+
+/* ==========================================================================
+   HyperNova — High-DPI Vector SVG Transport System (Zero Emojis)
+   Matching User Reference Image (media_1794031333192_0f53ef43.png)
+   ========================================================================== */
+
+/* Transport Bar Container: Strict LTR Layout for Music/Quran Controls */
+#v-media .controls {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  direction: ltr !important;
+  gap: 8px !important;
+}
+
+#v-media .transport {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  direction: ltr !important;
+}
+
+/* Radio Button: Circular Emerald Accent Glow matching reference */
+.quran-radio-btn {
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 50% !important;
+  background: rgba(16, 185, 129, 0.12) !important;
+  border: 1.5px solid #10b981 !important;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.4) !important;
+  display: grid !important;
+  place-items: center !important;
+  cursor: pointer !important;
+  color: #34d399 !important;
+  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  padding: 0 !important;
+}
+
+.quran-radio-btn:hover {
+  transform: scale(1.08) !important;
+  background: rgba(16, 185, 129, 0.22) !important;
+  box-shadow: 0 0 18px rgba(16, 185, 129, 0.65) !important;
+  color: #6ee7b7 !important;
+}
+
+.quran-radio-btn.active {
+  background: rgba(16, 185, 129, 0.26) !important;
+  border-color: #10b981 !important;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.75) !important;
+}
+
+/* Vertical Separator Line between transport and extra tools */
+.qr-transport-divider {
+  width: 1px !important;
+  height: 22px !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+  margin: 0 4px !important;
+  display: inline-block !important;
+  flex-shrink: 0 !important;
+}
+
+html[data-theme="light"] .qr-transport-divider,
+body.theme-light .qr-transport-divider {
+  background: rgba(0, 0, 0, 0.14) !important;
+}
+
+/* Extra Transport Controls (Repeat, Live, Speed) */
+.qr-extra-transport {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.mini-icon-btn {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  cursor: pointer !important;
+  display: grid !important;
+  place-items: center !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+  position: relative !important;
+  transition: all 0.18s ease !important;
+  padding: 0 !important;
+}
+
+.mini-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.14) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Repeat Button: Gold Icon & Gold Pill Badge */
+#qr-btn-repeat {
+  color: #fbbf24 !important;
+}
+
+#qr-btn-repeat:hover {
+  background: rgba(251, 191, 36, 0.15) !important;
+  border-color: rgba(251, 191, 36, 0.35) !important;
+}
+
+.qr-repeat-badge {
+  position: absolute !important;
+  top: -3px !important;
+  right: -3px !important;
+  font-size: 8.5px !important;
+  font-weight: 800 !important;
+  background: #f59e0b !important;
+  color: #000000 !important;
+  width: 14px !important;
+  height: 14px !important;
+  border-radius: 50% !important;
+  display: grid !important;
+  place-items: center !important;
+  line-height: 1 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* Live Radio Button */
+#qr-btn-live.active {
+  background: rgba(16, 185, 129, 0.22) !important;
+  border-color: #10b981 !important;
+  color: #34d399 !important;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4) !important;
+}
+
+/* Speed Button */
+.qr-speed-txt {
+  font-size: 10.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.2px !important;
+}
+
+/* Volume Slider in Quran Mode: Pure Emerald Track & Crisp White Thumb Knob */
+#v-media.quran-mode #vol-slider .fill {
+  background: #10b981 !important;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5) !important;
+}
+
+#v-media.quran-mode #vol-slider .knob {
+  background: #ffffff !important;
+  border: 2px solid #10b981 !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
+}
+
+#v-media.quran-mode .vol-pct {
+  color: #34d399 !important;
+  font-weight: 700 !important;
+}
+
+/* SVG Inline Pills Styling */
+.qr-pills-bar {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin-top: 5px !important;
+  direction: rtl !important;
+}
+
+.qr-pill-btn {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 999px !important;
+  padding: 3px 9px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: var(--text-1) !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  transition: all 0.18s ease !important;
+  white-space: nowrap !important;
+}
+
+.qr-pill-btn:hover {
+  background: rgba(16, 185, 129, 0.16) !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
+  color: #34d399 !important;
+}
+
+.qr-pill-ico {
+  flex-shrink: 0 !important;
+  opacity: 0.9 !important;
+}
+
+.qr-arr-ico {
+  opacity: 0.65 !important;
+  margin-inline-start: 1px !important;
+}
+
+.qr-fav-btn {
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: var(--text-3) !important;
+  cursor: pointer !important;
+  display: grid !important;
+  place-items: center !important;
+  transition: all 0.18s ease !important;
+  padding: 0 !important;
+}
+
+.qr-fav-btn.active {
+  color: #fbbf24 !important;
+  background: rgba(251, 191, 36, 0.2) !important;
+  border-color: #fbbf24 !important;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.35) !important;
+}
+
+/* Light Mode Overrides for Vector Transport */
+html[data-theme="light"] .mini-icon-btn,
+body.theme-light .mini-icon-btn {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  color: #374151 !important;
+}
+
+html[data-theme="light"] .mini-icon-btn:hover,
+body.theme-light .mini-icon-btn:hover {
+  background: rgba(0, 0, 0, 0.09) !important;
+  color: #111827 !important;
+}
+
+html[data-theme="light"] .quran-radio-btn,
+body.theme-light .quran-radio-btn {
+  background: rgba(16, 185, 129, 0.12) !important;
+  border-color: #059669 !important;
+  color: #059669 !important;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.25) !important;
+}
+
+
+/* Focus View Layout Geometry: Perfect Fit for 240px Dynamic Island Window */
+#v-focus .nf-container {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 5px !important;
+  height: 100% !important;
+  max-height: 220px !important;
+  padding: 0 4px !important;
+  overflow: hidden !important;
+}
+
+#v-focus .nf-header-bar {
+  padding: 0 2px !important;
+  min-height: 24px !important;
+}
+
+#v-focus .nf-cat-filter-bar {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 0 !important;
+}
+
+#v-focus .nf-cat-chip {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 2px 7px !important;
+  font-size: 10.5px !important;
+}
+
+#v-focus .nf-input-card {
+  min-height: 0 !important;
+  max-height: 108px !important;
+  padding: 6px 8px !important;
+  gap: 4px !important;
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+#v-focus .nf-period-tabs-bar {
+  padding: 1px 0 4px 0 !important;
+}
+
+#v-focus .nf-todo-list-scroll {
+  max-height: 60px !important;
+  min-height: 40px !important;
+  flex: 1 !important;
+  overflow-y: auto !important;
+}
+
+#v-focus .nf-todo-item {
+  padding: 3px 6px !important;
+  font-size: 11px !important;
+}
+
+#v-focus .nf-todo-cat-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 3px !important;
+  font-size: 9.5px !important;
+  padding: 1px 5px !important;
+}
+
+#v-focus .nf-sound-card {
+  margin-top: 0 !important;
+  padding: 3px 8px !important;
+  min-height: 26px !important;
+}
+
+#v-focus .nf-sound-chip {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 3px !important;
+  padding: 2px 6px !important;
+  font-size: 10px !important;
+}
+
+
+/* Permanent Radio Launcher Button in Empty State */
+.qr-empty-launch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.28);
+  color: #34d399;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  transition: all 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.qr-empty-launch-btn:hover {
+  background: rgba(16, 185, 129, 0.22);
+  border-color: rgba(16, 185, 129, 0.45);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.25);
+}
+.qr-empty-launch-btn:active {
+  transform: scale(0.97);
+}
+
+/* ============ QR VERSE CALLIGRAPHY & SYSTEM STATS APPLE TYPOGRAPHY ============ */
+.qr-verse-display {
+  display: block;
+  font-family: 'Amiri Quran', 'Amiri', 'Traditional Arabic', serif !important;
+  font-size: 16.5px !important;
+  line-height: 1.85 !important;
+  color: #f5f5f7 !important;
+  text-align: center;
+  padding: 6px 12px;
+  margin: 4px 0;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 12px;
+  max-height: 72px;
+  overflow-y: auto;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+  direction: rtl;
+}
+.theme-light .qr-verse-display {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.28);
+  color: #064e3b !important;
+  text-shadow: none;
+}
+.i-wx {
+  margin-inline-start: 10px !important;
+  flex-shrink: 0 !important;
+}
+.i-strong, .c-digits, #i-time, .stat-val, .res-pct, .i-bar, [data-feat="slideStats"] {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", sans-serif !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+
+/* --- HyperNova V2.0 Clean Polish Styles --- */
+
+/* 1. Play Button High-Visibility Vector Icons */
+.ctl.play svg {
+  fill: #ffffff !important;
+  color: #ffffff !important;
+  display: block;
+}
+.ctl.play .i-play {
+  fill: #ffffff !important;
+}
+.ctl.play .i-pause {
+  fill: #ffffff !important;
+}
+
+/* 2. Animated Pop for Repeat Button */
+@keyframes qrPop {
+  0% { transform: scale(0.82) rotate(-14deg); }
+  50% { transform: scale(1.18) rotate(8deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+.qr-btn-pop {
+  animation: qrPop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* 3. Ultra-Slim Inline Prayer Pills (Top Bar) */
+.slim-prayer-pill {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 11px;
+  padding: 5px 8px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.slim-prayer-pill:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+.slim-prayer-pill.active-prayer {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.28) 0%, rgba(6, 95, 70, 0.42) 100%) !important;
+  border: 1px solid rgba(52, 211, 153, 0.65) !important;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.25) !important;
+}
+.slim-prayer-pill.past {
+  opacity: 0.55;
+}
+
+/* 4. Large Readable Dua / Hadith / Ayah / Dhikr Hero Card */
+.dua-hero-card {
+  background: linear-gradient(180deg, rgba(22, 26, 36, 0.95) 0%, rgba(15, 18, 25, 0.98) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 8px 24px rgba(0, 0, 0, 0.4);
+  padding: 12px 14px;
+}
+
+.segmented-bar {
+  background: #0b0d12;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  padding: 3px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.seg-btn {
+  padding: 3px 9px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #a1a1aa;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.seg-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+.seg-btn-active {
+  background: rgba(16, 185, 129, 0.22) !important;
+  color: #6ee7b7 !important;
+  font-weight: 700 !important;
+  border: 1px solid rgba(52, 211, 153, 0.4) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+.font-quran {
+  font-family: 'Amiri', 'Cairo', serif !important;
+  line-height: 2.05 !important;
+}
+
+/* 5. Shelf Image Previews (Thumbnails) */
+.file.is-img img {
+  width: 54px !important;
+  height: 54px !important;
+  object-fit: cover !important;
+  border-radius: 10px !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* 6. Compact Radio Launcher in Empty Media View */
+.qr-compact-empty-launcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.22) 0%, rgba(6, 95, 70, 0.32) 100%);
+  border: 1px solid rgba(52, 211, 153, 0.45);
+  color: #6ee7b7;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+.qr-compact-empty-launcher:hover {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.35) 0%, rgba(6, 95, 70, 0.48) 100%);
+  border-color: rgba(52, 211, 153, 0.7);
+  transform: translateY(-1px);
+}

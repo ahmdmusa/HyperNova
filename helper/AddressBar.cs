@@ -37,9 +37,14 @@ static class AddressBar {
       if (r.IsEmpty || r.Width < 200 || r.Height < 16) return "null";
       bool focus = edit.Current.HasKeyboardFocus;
       int len = 0;
-      try { len = (((ValuePattern)edit.GetCurrentPattern(ValuePattern.Pattern)).Current.Value ?? "").Length; } catch { }
-      return "{\"x\":" + (int)r.X + ",\"y\":" + (int)r.Y + ",\"w\":" + (int)r.Width + ",\"h\":" + (int)r.Height
-        + ",\"focus\":" + (focus ? "true" : "false") + ",\"len\":" + len + "}";
+      string url = "";
+      try {
+        url = ((ValuePattern)edit.GetCurrentPattern(ValuePattern.Pattern)).Current.Value ?? "";
+        len = url.Length;
+      } catch { }
+      return new Json()
+        .Add("x", (int)r.X).Add("y", (int)r.Y).Add("w", (int)r.Width).Add("h", (int)r.Height)
+        .Add("focus", focus).Add("len", len).Add("url", url).ToString();
     } catch {
       edit = null; // the window changed under us (navigated, closed): search again
       return "null";

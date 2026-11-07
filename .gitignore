@@ -1,7 +1,43 @@
+# Dependencies & Build Artefacts
 node_modules/
 dist/
+build-cache/
+*.asar
+*.asar.unpacked/
 *.log
 __pycache__/
+
+# Secrets & Local User Configurations (Strict BYOK Policy)
+*.env
+*.env.*
+*.local
+config.local.*
+userData/
+prayer-cache.json
+ai-config.json
+ai-config.json.bak
+*.bak
+*.bak*
+*.tmp
+*.tmp.*
+
+# Test screenshots & QA artifacts
+test_*.png
+qa_*.png
+v2_*.png
+*.png.bak
+
+# Test scripts & Temporary runner scripts
+test_*.js
+debug_*.js
+run_*.js
+verify_*.js
+update_*.py
+apply_*.py
+apply_*.js
+capture_*.js
+
+# Promo & Internal assets
 promo/src/out/
 promo/src/scenes/_*.html
 promo/src/prefs.html

@@ -12,8 +12,39 @@ const MAX_PINNED = 12; // 6 x 2 grid
 
 let catalog = settings.load('apps-cache.json', []);
 let pinned = settings.load('apps.json', null);
+let usage = settings.load('apps-usage.json', {});
+const ONE_WEEK_MS = 7 * 24 * 3600 * 1000;
 const iconCache = new Map();
 let onChange = () => {};
+
+function cleanUsage() {
+  const cutoff = Date.now() - ONE_WEEK_MS;
+  let modified = false;
+  for (const id in usage) {
+    if (Array.isArray(usage[id])) {
+      const filtered = usage[id].filter(t => t > cutoff);
+      if (filtered.length !== usage[id].length) {
+        usage[id] = filtered;
+        modified = true;
+      }
+    }
+  }
+  if (modified) settings.save('apps-usage.json', usage);
+}
+
+function recordUsage(id) {
+  if (!id) return;
+  cleanUsage();
+  if (!usage[id]) usage[id] = [];
+  usage[id].push(Date.now());
+  settings.save('apps-usage.json', usage);
+}
+
+function getWeeklyCount(id) {
+  const cutoff = Date.now() - ONE_WEEK_MS;
+  const list = usage[id] || [];
+  return list.filter(t => t > cutoff).length;
+}
 
 function scriptPath(name) {
   return path.join(__dirname, name).replace('app.asar', 'app.asar.unpacked');
@@ -86,7 +117,23 @@ async function describe(id) {
 }
 
 async function list() {
-  const items = await Promise.all((pinned || []).map(describe));
+  cleanUsage();
+  const pinnedIds = pinned || [];
+  const unpinned = catalog.filter(a => !pinnedIds.includes(a.id));
+  unpinned.sort((a, b) => getWeeklyCount(b.id) - getWeeklyCount(a.id));
+  
+  const frequentIds = unpinned.filter(a => getWeeklyCount(a.id) > 0).slice(0, Math.max(0, MAX_PINNED - pinnedIds.length)).map(a => a.id);
+  const displayIds = [...pinnedIds, ...frequentIds].slice(0, MAX_PINNED);
+  
+  const items = await Promise.all(displayIds.map(async (id) => {
+    const desc = await describe(id);
+    if (!desc) return null;
+    return {
+      ...desc,
+      isPinned: pinnedIds.includes(id),
+      weeklyCount: getWeeklyCount(id)
+    };
+  }));
   return items.filter(Boolean);
 }
 
@@ -122,6 +169,7 @@ function reorder(ids) {
 
 function launch(id) {
   if (!catalog.some((a) => a.id === id)) return;
+  recordUsage(id);
   spawn('explorer.exe', [`shell:AppsFolder\\${id}`], { detached: true, stdio: 'ignore' }).unref();
 }
 

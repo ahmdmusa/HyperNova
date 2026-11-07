@@ -8,11 +8,13 @@ const DEFAULTS = {
   tabShelf: true,
   tabPrayer: true,
   tabTimer: true,
+  tabFocus: true,
   tabSystem: true,
   // idle pill slides
   slideClock: true,
   slideStats: true,
   slidePrayer: true,
+  slideInterval: 15, // seconds between idle pill rotations
   // live activities
   mediaPill: true,
   mediaTitle: true,
@@ -30,9 +32,9 @@ const DEFAULTS = {
   downloads: true,
   dlToasts: true,
   // window
-  hideFullscreen: true,
-  autoUpdate: true, // download new versions from GitHub and offer a restart on the island
-  addrIsland: true, // take the right third of the browser's address bar
+  hideFullscreen: false,
+  autoUpdate: false, // download new versions from GitHub and offer a restart on the island
+  addrIsland: false, // take the right third of the browser's address bar
   // System tab
   clipboardHistory: true,
   // copied image / screenshot -> toast with "Add to Shelf"
@@ -56,11 +58,16 @@ const DEFAULTS = {
   meetings: true,
   // reminders: dhikr, du'a, Qur'an
   reminders: true,
+  adhanVoice: 'abdulbasit',
+  adhanAutoResume: true,
   remindAyah: true,
   remindDhikr: true,
   remindDua: true,
   remindEvery: 5, // minutes
   remindFor: 30, // seconds on screen
+  tasbeehPerHour: 4, // 0 to 12 short tasbeeh per hour
+  dailyAdhkarQuota: 7, // 3, 5, 7, 10, 15 adhkar daily
+  dailyAyatQuota: 3, // 1, 3, 5, 7 ayat daily
   // quiet hours for reminders (minutes after midnight; may wrap past midnight)
   quietHours: false,
   quietFrom: 23 * 60,
@@ -69,11 +76,20 @@ const DEFAULTS = {
   focusMin: 25,
   breakMin: 5,
   longBreakMin: 15,
+  appLang: 'ar',
+  themeColor: '#38bdf8',
+  deepFocus: false,
+  focusSound: true,
+  microSteps: true,
+  aiModel: 'flash',
+  islandTheme: 'dark',
+  glassOpacity: 90,
+  skipTaskbar: true,
 };
 
 // number settings and their allowed range
 const RANGES = {
-  remindEvery: [1, 240], remindFor: [5, 300], quietFrom: [0, 1439], quietTo: [0, 1439],
+  remindEvery: [1, 240], remindFor: [5, 300], tasbeehPerHour: [0, 60], dailyAdhkarQuota: [1, 30], dailyAyatQuota: [1, 20], quietFrom: [0, 1439], quietTo: [0, 1439],
   focusMin: [5, 120], breakMin: [1, 60], longBreakMin: [5, 60], hijriAdjust: [-2, 2], waterEvery: [15, 240], waterGoal: [4, 16],
 };
 
@@ -87,6 +103,19 @@ function pick(obj) {
     if (!(k in DEFAULTS)) continue;
     if (RANGES[k]) {
       if (Number.isFinite(v)) out[k] = Math.min(Math.max(Math.round(v), RANGES[k][0]), RANGES[k][1]);
+    } else if (k === 'appLang') {
+      if (v === 'ar' || v === 'en') out[k] = v;
+    } else if (k === 'themeColor') {
+      if (typeof v === 'string') out[k] = v;
+    } else if (k === 'aiModel') {
+      if (v === 'flash' || v === 'pro') out[k] = v;
+    } else if (k === 'islandTheme') {
+      if (v === 'dark' || v === 'light' || v === 'black') out[k] = v;
+    } else if (k === 'glassOpacity') {
+      if (Number.isFinite(v)) out[k] = Math.min(Math.max(Math.round(v), 20), 100);
+    } else if (k === 'skipTaskbar') {
+      if (typeof v === 'boolean') out[k] = v;
+      if (v === 'flash' || v === 'pro') out[k] = v;
     } else if (typeof v === 'boolean') out[k] = v;
   }
   return out;
@@ -114,3 +143,4 @@ function reset() {
 const onChange = (fn) => listeners.push(fn);
 
 module.exports = { get, set, reset, onChange, DEFAULTS };
+

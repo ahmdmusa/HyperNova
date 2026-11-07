@@ -3,8 +3,12 @@ const { contextBridge, ipcRenderer, webUtils } = require('electron');
 const on = (channel) => (cb) => ipcRenderer.on(channel, (_e, data) => cb(data));
 
 contextBridge.exposeInMainWorld('nova', {
+  setDeepFocus: (on) => ipcRenderer.invoke('set-deep-focus', on),
+  getDeepFocus: () => ipcRenderer.invoke('get-deep-focus'),
+  onDistractionDetected: (cb) => ipcRenderer.on('distraction-detected', (_e, title) => cb(title)),
   onMedia: on('media'),
   onToggle: on('toggle'),
+  onFocusToggle: on('focus-toggle'),
   onHover: on('hover'),
   onBackdrop: on('backdrop'),
   onStats: on('stats'),
@@ -23,6 +27,7 @@ contextBridge.exposeInMainWorld('nova', {
   openSettings: () => ipcRenderer.send('open-settings'),
   ready: () => ipcRenderer.send('island-ready'),
   onReminderNow: on('reminder-now'),
+  onAdhanPreview: on('adhan-preview'),
   onVisibility: on('visibility'),
   onPrivacy: on('privacy'),
   onCalendar: on('calendar'),
@@ -46,6 +51,7 @@ contextBridge.exposeInMainWorld('nova', {
   dragEnd: () => ipcRenderer.send('drag-end'),
 
   setRect: (r) => ipcRenderer.send('island-rect', r),
+  setFocusMode: (v) => ipcRenderer.send('focus-mode-active', v),
   mediaCmd: (cmd) => ipcRenderer.send('media-cmd', cmd),
   focusInput: (v) => ipcRenderer.send('focus-input', v),
   contextMenu: () => ipcRenderer.send('context-menu'),
@@ -81,5 +87,10 @@ contextBridge.exposeInMainWorld('nova', {
     snapshot: () => ipcRenderer.invoke('system-snapshot'),
     copyClip: (i) => ipcRenderer.send('clip-copy', i),
     clearClips: () => ipcRenderer.send('clip-clear'),
+  },
+
+  ai: {
+    breakdown: (goal) => ipcRenderer.invoke('ai-breakdown', goal),
+    getConfig: () => ipcRenderer.invoke('ai-get-config'),
   },
 });

@@ -192,7 +192,7 @@
       : p?.online
         ? 'Downloads from IDM Nova show up here live, with progress and speed.'
         : 'Start it and your downloads will show up here live.';
-    $('#dl-launch').hidden = !p?.canLaunch;
+    const elDl = $('#dl-launch'); if (elDl) elDl.hidden = !p?.canLaunch;
 
     if (items.length) lastSeen = Date.now();
     announce(items);

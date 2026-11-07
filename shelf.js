@@ -5,15 +5,27 @@ const { app, shell, nativeImage } = require('electron');
 const settings = require('./settings');
 
 const MAX_ITEMS = 24;
+const IMAGE_EXTS = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.bmp', '.ico'];
 let items = settings.load('shelf.json', []).filter((p) => typeof p === 'string' && fs.existsSync(p));
 const icons = new Map();
 
 async function iconFor(p) {
   if (!icons.has(p)) {
     let img = nativeImage.createEmpty();
-    try {
-      img = await app.getFileIcon(p, { size: 'large' });
-    } catch {}
+    const ext = path.extname(p).toLowerCase();
+    if (IMAGE_EXTS.includes(ext)) {
+      try {
+        const realImg = nativeImage.createFromPath(p);
+        if (!realImg.isEmpty()) {
+          img = realImg.resize({ width: 128, height: 128, quality: 'best' });
+        }
+      } catch (e) {}
+    }
+    if (img.isEmpty()) {
+      try {
+        img = await app.getFileIcon(p, { size: 'large' });
+      } catch {}
+    }
     icons.set(p, img);
   }
   return icons.get(p);
@@ -24,7 +36,9 @@ async function list() {
   return Promise.all(
     items.map(async (p) => {
       const img = await iconFor(p);
-      return { path: p, name: path.basename(p) || p, icon: img.isEmpty() ? '' : img.toDataURL() };
+      const ext = path.extname(p).toLowerCase();
+      const isImage = IMAGE_EXTS.includes(ext);
+      return { path: p, name: path.basename(p) || p, icon: img.isEmpty() ? '' : img.toDataURL(), isImage };
     })
   );
 }

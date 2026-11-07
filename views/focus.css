@@ -1,0 +1,521 @@
+/* ==========================================================================
+   NeuroFocus - Liquid Glass Command Bar & Dynamic Island Styles
+   Pure Obsidian Liquid Glass with Specular Highlights (macOS / Raycast Style)
+   ========================================================================== */
+
+:root {
+  --nf-glass-bg: linear-gradient(135deg, rgba(16, 20, 28, 0.92), rgba(10, 13, 18, 0.97));
+  --nf-border: 1px solid rgba(255, 255, 255, 0.14);
+  --nf-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
+  --nf-shadow: 0 30px 60px rgba(0, 0, 0, 0.85), 0 0 25px rgba(10, 132, 255, 0.14);
+  --nf-text-primary: #FFFFFF;
+  --nf-text-secondary: #8E8E93;
+  --nf-accent-blue: #0A84FF;
+  --nf-accent-success: #30D158;
+  --nf-accent-amber: #FF9F0A;
+  --nf-font: "Amiri", "Cairo", -apple-system, BlinkMacSystemFont, "Segoe UI Variable Text", "Segoe UI", sans-serif;
+}
+
+/* Island Focus Mode Sizing */
+#island.focus {
+  --w: 620px;
+  --h: 76px;
+  --r: 20px;
+}
+#island.focus.has-task {
+  --h: 154px;
+}
+#island.focus.has-task.has-substeps {
+  --h: 196px;
+}
+
+#island.focus .clip {
+  background: var(--nf-glass-bg);
+  backdrop-filter: blur(35px) saturate(210%);
+  -webkit-backdrop-filter: blur(35px) saturate(210%);
+  box-shadow: var(--nf-highlight), var(--nf-shadow);
+  border: var(--nf-border);
+}
+
+/* Layer activation */
+#island.focus .l-focus {
+  opacity: 1;
+  filter: none;
+  transform: none;
+  pointer-events: auto;
+  transition: opacity .26s ease .1s, filter .3s ease .1s, transform .45s var(--spring) .08s;
+}
+
+/* Layer container */
+.l-focus {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  padding: 12px 18px 8px 18px;
+  box-sizing: border-box;
+  font-family: var(--nf-font);
+  user-select: none;
+}
+
+/* ---------------- State 1: Input / Omnibox (Image 1) ---------------- */
+.nf-input-bar {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+}
+
+.nf-input-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  height: 38px;
+}
+
+.nf-omnibox {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--nf-text-primary);
+  font-family: var(--nf-font);
+  font-size: 15.5px;
+  font-weight: 500;
+  text-align: right;
+  direction: rtl;
+  user-select: text;
+  caret-color: var(--nf-accent-blue);
+}
+
+.nf-omnibox::placeholder {
+  color: var(--nf-text-secondary);
+  font-weight: 400;
+  opacity: 0.75;
+}
+
+.nf-kbd {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--nf-text-secondary);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 4px 9px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+  pointer-events: none;
+}
+
+/* ---------------- State 2: Active Step Card (Image 2) ---------------- */
+.nf-active-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  gap: 6px;
+}
+
+.nf-step-topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--nf-text-secondary);
+  padding: 0 2px;
+}
+
+.nf-step-progress {
+  font-weight: 500;
+  color: var(--nf-text-secondary);
+}
+
+.nf-topline-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nf-pomo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  padding: 2px 7px;
+  font-size: 11px;
+  color: var(--theme-accent, #38bdf8);
+  font-weight: 600;
+}
+
+.nf-pomo-badge.break {
+  color: #30D158;
+  background: rgba(48, 209, 88, 0.12);
+  border-color: rgba(48, 209, 88, 0.3);
+}
+
+.nf-step-deadline {
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.nf-step-hero {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--nf-text-primary);
+  line-height: 1.45;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 2px;
+  letter-spacing: -0.2px;
+}
+
+/* Sub-steps micro-checklist */
+.nf-substeps-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  margin: 2px 0;
+}
+
+.nf-substep-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 7px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.nf-substep-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.nf-substep-item.done {
+  color: rgba(255, 255, 255, 0.38);
+  text-decoration: line-through;
+  background: rgba(48, 209, 88, 0.06);
+  border-color: rgba(48, 209, 88, 0.16);
+}
+
+.nf-substep-check {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  line-height: 1;
+  transition: all 140ms ease;
+}
+
+.nf-substep-item.done .nf-substep-check {
+  background: var(--nf-accent-success);
+  border-color: var(--nf-accent-success);
+  color: #000;
+  font-weight: bold;
+}
+
+.nf-substep-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nf-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.nf-actions-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--nf-font);
+  font-size: 12.5px;
+  cursor: pointer;
+  border-radius: 9px;
+  padding: 5px 13px;
+  transition: all 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  outline: none;
+  border: none;
+}
+
+.nf-btn:active {
+  transform: scale(0.96);
+}
+
+/* Unstick button: amber accent */
+.nf-btn-unstick {
+  background: rgba(255, 159, 10, 0.14);
+  border: 1px solid rgba(255, 159, 10, 0.32);
+  color: #FFB340;
+  font-weight: 500;
+}
+.nf-btn-unstick:hover {
+  background: rgba(255, 159, 10, 0.22);
+  border-color: rgba(255, 159, 10, 0.48);
+  box-shadow: 0 0 12px rgba(255, 159, 10, 0.2);
+}
+.nf-btn-unstick.running {
+  background: rgba(255, 159, 10, 0.25);
+  border-color: rgba(255, 159, 10, 0.6);
+  box-shadow: 0 0 16px rgba(255, 159, 10, 0.35);
+  animation: unstickPulse 1.8s infinite ease-in-out;
+}
+@keyframes unstickPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+/* Pomodoro mini button */
+.nf-btn-pomo {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--theme-accent, #38bdf8);
+  font-size: 11px;
+  padding: 5px 10px;
+  border-radius: 8px;
+}
+.nf-btn-pomo:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #FFFFFF;
+}
+
+/* Cancel button: subtle glass */
+.nf-btn-cancel {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--nf-text-secondary);
+  font-weight: 400;
+}
+.nf-btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--nf-text-primary);
+}
+
+/* Done button: vibrant emerald/blue gradient */
+.nf-btn-done {
+  background: linear-gradient(135deg, rgba(48, 209, 88, 0.28), rgba(10, 132, 255, 0.35));
+  border: 1px solid rgba(48, 209, 88, 0.45);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 4px 14px rgba(48, 209, 88, 0.22);
+  color: #FFFFFF;
+  font-weight: 600;
+  padding: 5px 15px;
+}
+.nf-btn-done:hover {
+  background: linear-gradient(135deg, rgba(48, 209, 88, 0.38), rgba(10, 132, 255, 0.48));
+  border-color: rgba(48, 209, 88, 0.65);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 6px 18px rgba(48, 209, 88, 0.35);
+}
+.nf-btn-done.ready {
+  box-shadow: 0 0 16px rgba(48, 209, 88, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  animation: readyPulse 1.6s infinite ease-in-out;
+}
+@keyframes readyPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+/* ---------------- Footer Bar (Both Image 1 & Image 2) ---------------- */
+.nf-bar-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 11px;
+  color: var(--nf-text-secondary);
+  padding: 3px 2px 0 2px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.nf-status-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--nf-text-secondary);
+  letter-spacing: 0.1px;
+}
+
+.nf-pulse-dot {
+  display: inline-block;
+  width: 6.5px;
+  height: 6.5px;
+  border-radius: 50%;
+  background: var(--nf-accent-success);
+  box-shadow: 0 0 8px rgba(48, 209, 88, 0.7);
+  animation: nfPulse 2.4s infinite ease-in-out;
+}
+
+@keyframes nfPulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.25); opacity: 1; box-shadow: 0 0 12px rgba(48, 209, 88, 0.95); }
+}
+
+.nf-shortcut-hint {
+  font-size: 10.5px;
+  color: rgba(255, 255, 255, 0.38);
+  cursor: pointer;
+}
+.nf-shortcut-hint:hover {
+  color: var(--nf-text-secondary);
+}
+
+/* ---------------- Expanded Focus Dashboard View (#v-focus) ---------------- */
+.view#v-focus, #v-focus {
+  display: none !important;
+}
+
+.view#v-focus.active, #v-focus.active {
+  display: flex !important;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 12px 16px;
+  margin-top: 6px;
+  color: var(--nf-text-primary);
+  font-family: var(--font-ar, 'Amiri', 'Cairo', serif);
+  direction: rtl;
+  overflow: hidden !important;
+  scrollbar-width: none !important;
+  box-sizing: border-box;
+}
+
+.view#v-focus::-webkit-scrollbar,
+#v-focus::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.nf-dash-header { display: none !important;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nf-dash-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nf-dash-badge {
+  font-size: 10px;
+  padding: 2px 7px;
+  background: rgba(10, 132, 255, 0.16);
+  border: 1px solid rgba(10, 132, 255, 0.3);
+  border-radius: 10px;
+  color: #5AC8FA;
+}
+
+.nf-grid-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.nf-dash-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 7px 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nf-dash-card h4 {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--nf-text-secondary);
+  margin: 0;
+}
+
+.nf-deep-focus-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 69, 58, 0.08);
+  border: 1px solid rgba(255, 69, 58, 0.22);
+  border-radius: 10px;
+  padding: 7px 11px;
+}
+
+.nf-toggle {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 11px;
+  cursor: pointer;
+  transition: background 200ms ease;
+}
+
+.nf-toggle.on {
+  background: var(--nf-accent-success);
+}
+
+.nf-toggle::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: white;
+  transition: transform 200ms ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.nf-toggle.on::after {
+  transform: translateX(18px);
+}
+
+
+/* NeuroFocus Light Mode Support */
+html[data-theme="light"] #island.focus .clip,
+body.theme-light #island.focus .clip {
+  background: rgba(245, 245, 247, 0.94) !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.14) !important;
+}
+html[data-theme="light"] .nf-command-input,
+body.theme-light .nf-command-input {
+  color: #1D1D1F !important;
+}
+html[data-theme="light"] .nf-active-task-desc,
+body.theme-light .nf-active-task-desc {
+  color: #1D1D1F !important;
+}

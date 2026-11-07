@@ -18,7 +18,7 @@
     island.classList.toggle('pv-mic', mic.length > 0);
     island.classList.toggle('pv-cam', cam.length > 0);
     const parts = [cam.length && `Camera: ${cam.join(', ')}`, mic.length && `Mic: ${mic.join(', ')}`].filter(Boolean);
-    $('#pv-row').hidden = !parts.length;
+    const elPv = $('#pv-row'); if (elPv) elPv.hidden = !parts.length;
     $('#pv-apps').textContent = parts.join(' · ');
   }
 

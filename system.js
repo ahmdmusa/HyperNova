@@ -144,6 +144,7 @@ async function fetchWeather() {
       `https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}` +
       '&current=temperature_2m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1';
     const w = await (await fetch(url, { signal: AbortSignal.timeout(10000) })).json();
+    if (!w || !w.current) return;
     weather = {
       city: loc.city || '',
       temp: Math.round(w.current.temperature_2m),

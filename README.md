@@ -1,84 +1,102 @@
 <div align="center">
 
-# Nova Island
+# 🌟 HyperNova Island (v2.0.0 Production Release)
+### *Next-Gen Ambient Dynamic Island for Windows 10 & 11*
+#### **Open Source Desktop Dynamic Island • تجربة الجزيرة التفاعلية الفائقة لسطح المكتب**
 
-**A living island for your Windows desktop.**
+[![Release](https://img.shields.io/badge/Release-v2.0.0%20Final-emerald.svg?style=for-the-badge)](https://github.com/AhmedMousa1/HyperNova/releases)
+[![License: GPL-3.0](https://img.shields.io/badge/License-GPLv3-blue.svg?style=for-the-badge)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011%20(x64)-0078D4?style=for-the-badge&logo=windows)](https://github.com)
+[![Design](https://img.shields.io/badge/Design-Apple%20HIG%20%2B%20Cupertino%20Glass-000000?style=for-the-badge&logo=apple)](https://developer.apple.com/design/)
+[![Privacy](https://img.shields.io/badge/Privacy-100%25%20Local%20%7C%20Zero%20Telemetry-10b981?style=for-the-badge)](PRIVACY.md)
 
-Your music, apps, files and alerts in one glass capsule at the top of your screen — with Nova, a little companion who keeps you company.
+<br/>
 
-[**Download for Windows**](../../releases/latest) · Free and open source (GPL v3)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-PayPal-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.paypal.com/ncp/payment/4SWPEP8Q3YF78)
+[![InstaPay Egypt](https://img.shields.io/badge/InstaPay-ahmdmusa%40instapay-7c3aed?style=for-the-badge&logo=cashapp&logoColor=white)](https://ipn.eg/S/ahmdmusa/instapay/2yqQQN)
 
-[![Latest release](https://img.shields.io/github/v/release/NOVA-TECH-KIT/nova-island?style=for-the-badge&label=Version&color=3b82f6&labelColor=1c1a2e)](../../releases/latest)
-[![Stars](https://img.shields.io/github/stars/NOVA-TECH-KIT/nova-island?style=for-the-badge&label=Stars&color=f472b6&labelColor=1c1a2e&logo=github&logoColor=white)](../../stargazers)
-[![Support on Ko-fi](https://img.shields.io/badge/Support-Ko--fi-ff5e5b?style=for-the-badge&labelColor=1c1a2e&logo=kofi&logoColor=white)](https://ko-fi.com/binamer)
+<br/>
 
-![Meet Nova Island](promo/en/01-hero.png)
+> **HyperNova Island** هو مشروع مفتوح المصدر (Open Source) مصمم لتقديم تجربة الجزيرة التفاعلية (Dynamic Island) الأرقى والأكثر شمولاً لأجهزة سطح المكتب بنظام ويندوز.  
+> 
+> 🤝 **شكر وتقدير للمصدر المفتوح (Open Source Heritage)**:  
+> تم بناء هذا المشروع استكمالاً وتطويراً على الجهود الرائعة للمهندس **عمرو (Amr)** وفريق العمل الأصلي لمشروع Nova Island. تم توسيع وهندسة النظام بالكامل وإعادة صياغة واجهات المستخدم والمنظومة البرمجية وفق أعلى معايير **Apple Human Interface Guidelines (HIG)** ليصل إلى نسخته الشاملة **HyperNova V2.0**.
 
 </div>
 
-## Features
+---
 
-### Say hi to Nova
-A little companion who lives in your island. Nova keeps you company while you focus, welcomes you back, cheers your wins, and reminds you to drink water and rest your eyes.
+## ☕ لدعم استمرار المشروع وتطويره (Support the Developer)
 
-![Nova](promo/en/02-nova.png)
+إذا نال المشروع إعجابك وساهم في تعزيز إنتاجيتك وتركيزك اليومي، يمكنك دعم المطور لتغطية تكاليف السيرفرات والتطوير المستمر عبر:
 
-### Keeps playing while you browse
-Title, artwork and live waveforms of whatever is playing, plus a floating mini player in one click.
+* ☕ **PayPal (Buy Me a Coffee)**: [https://www.paypal.com/ncp/payment/4SWPEP8Q3YF78](https://www.paypal.com/ncp/payment/4SWPEP8Q3YF78)
+* ⚡ **InstaPay (داخل مصر)**: [https://ipn.eg/S/ahmdmusa/instapay/2yqQQN](https://ipn.eg/S/ahmdmusa/instapay/2yqQQN) — المعرّف: `ahmdmusa@instapay`
 
-![Browser](promo/en/03-browser.png)
+---
 
-### Never miss a prayer
-Prayer times with a heads-up before the adhan, plus dhikr, du'a and Qur'an verses in the KFGQPC Hafs script, as often as you choose.
+## 💎 أبرز مميزات الإصدار النهائي V2.0 (New in Version 2.0)
 
-![Prayer](promo/en/06-faith.png)
+### 1. 🕌 راديو وتلاوة القرآن الكريم (Interactive Quran Radio)
+- **10 من كبار القراء في مصر والعالم الإسلامي**: الحصري، المنشاوي، عبد الباسط عبد الصمد (مرتل ومجود)، مصطفى إسماعيل، الطبلاوي، البنا، العفاسي، السديس، المعيقلي.
+- **تلاوة الآيات والسور كاملة (114 سورة)**: تشغيل مباشر فوري بدون أي أخطاء في الروابط (تم إصلاح مجلد EveryAyah الصوتي بجودة 48kbps/128kbps لجميع القراء).
+- **تصميم مشغل صوتي فائق النقاء (Apple Music Style)**: واجهة أنيقة بدون أي نصوص مشتتة، تعرض اسم السورة ورقم الآية بدقة مع تحكم كامل بالصوت والسرعة والتقديم/الترجيع.
+- **أزرار تحكم تفاعلية ذكية**:
+  - زر التكرار التفاعلي ذو الأيقونات المتغيرة بحركة فيزيائية ناعمة (تكرار السورة، تكرار الآية الواحدة، التشغيل التتابعي التلقائي).
+  - زر التشغيل والإيقاف فائق التباين بأيقونات متجهة بيضاء عالية الوضوح.
+  - إمكانية فتح راديو القرآن مباشرة من زر التحكم بأسفل يسار نافذة الوسائط الفارغة.
 
-### Downloads, at a glance
-Progress, speed and time left while you work, with IDM Nova — pause, resume or open a file in one click.
+### 2. 🕋 شريط مواقيت الصلاة وبطاقة الإلهام اليومية (Redesigned Prayer & Daily Hero Card)
+- **شريط المواقيت العلوي النحيف (Ultra-Slim Prayer Strip)**:
+  - صفحة علوية مدمجة تضم اسم المدينة (`الزقازيق • هيئة المساحة المصرية`) وجرس التنبيه، وعدّاد تنازلي واحد ذكي للصلوات القادمة بدون أي تكرار.
+  - 6 كبسولات أفقية متجاورة لمواقيت الصلاة (الفجر، الشروق، الظهر، العصر، المغرب، العشاء) مع تمييز الصلاة القادمة بإضاءة زمردية فاخرة.
+- **بطاقة الإلهام والذكر الكبرى (Daily Hero Card)**:
+  - 4 فئات رئيسية: **دعاء اليوم** | **حديث اليوم** | **آية اليوم** | **ذكر اليوم**.
+  - **تبديل فوري بمجرد مرور الماوس (Hover-to-Switch)** لتسهيل القراءة السريعة دون الحاجة للضغط المتكرر.
+  - خط أميري قرآني عالي التباين وواضح مع إمكانية تكبير وتصغير حجم الخط بضغطة زر (`خط كبير A+`).
+  - سبحة قراءة تفاعلية قابلة للزيادة (`سبحة القراءة: 0 / 3`) وزر نسخ فوري للنص.
 
-![Downloads](promo/en/04-downloads.png)
+### 3. 🔊 محرك الأذان الواقعي (تكبيرتان فقط مع التلاشي السلس)
+- **8 مؤذنين بأصوات نقية مباشرة عبر CDN**: عبد الباسط، محمد رفعت، محمود علي البنا، أذان الحرم المكي، أذان المسجد النبوي، أذان المسجد الأقصى، مشاري العفاسي، أحمد النفيس.
+- **تحديد مدة التكبيرتين تلقائياً**: تشغيل تكبيرتي الإحرام (الله أكبر، الله أكبر) فقط ثم تلاشي الصوت (Fade Out) بسلاسة على مدار ثانيتين وإيقاف التشغيل تلقائياً.
+- **معاينة محلية فورية في الإعدادات**: تشغيل فوري بدون تأخير مع دعم كامل للعمل دون اتصال بالإنترنت عبر التوليف الصوتي (Web Audio Synthesis).
+- **إصلاح القوائم المنسدلة في الوضع الداكن**: فرض `color-scheme: dark` على جميع عناصر `select` و `option` لحل مشكلة اختفاء النص الأبيض على خلفية بيضاء في ويندوز.
 
-### Smart about what you do
-Copy a link, a sum or a color and the island knows what to do with it. It also lets you know when an app turns on your mic or camera.
+### 4. 🎯 نظام التركيز العصبي وإدارة المهام (NeuroFocus Engine)
+- **أصوات التركيز في الأعلى**: نقل شريط أصوات الطبيعة والهدوء (طبيعة، الفجر، سكون الليل، مكتبة، مطر، الضوضاء البنية) إلى أعلى التبويب لسهولة الوصول.
+- **وضع Deep Focus مدمج**: كبسولة أنيقة في الزاوية مع وصف واضح يمنع التشتيت.
+- **قائمة مهام واسعة قابلة للتمرير السلس**: دعم كامل لعجلة الماوس مع تصنيفات ملونة وتقسيم بالذكاء الاصطناعي وتقنية الدقيقتين.
 
-![Smart](promo/en/05-smart.png)
+### 5. 📂 معاينة الصور المصغرة الحقيقية في الرف (Shelf Previews)
+- عرض صور مصغرة واقعية (Thumbnails) لملفات الصور الملقاة على الجزيرة بدلاً من الأيقونات الرمزية الباهتة.
 
-### Your island, your way
-Turn on only what you need from one simple settings window. Vertical on the screen edge, hides in full screen, starts with Windows.
+---
 
-![Settings](promo/en/07-settings.png)
+## 🛠️ متطلبات التشغيل والتثبيت (Installation & Running)
 
-## Install
+### تشغيل النسخة الجاهزة (Portable):
+1. حمّل ملف `HyperNova 2.0.0 Portable.exe` من مجلد التوزيع أو من صفحة Releases.
+2. شغّل التطبيق مباشرة بدون الحاجة لتثبيت مسبق!
+3. اضغط `Ctrl + Alt + I` لإظهار أو إخفاء الجزيرة في أي وقت.
 
-1. Download **Nova Island Setup** from the [latest release](../../releases/latest).
-2. Run it. Windows may show "Windows protected your PC" because the app is not code-signed yet — choose **More info → Run anyway**.
-3. The island appears at the top of your screen. Press **Ctrl + Alt + I** to open it.
-
-Requires Windows 10 or 11 (64-bit).
-
-## Build from source
-
+### البناء من المصدر (Build from Source):
 ```bash
+# استنساخ المستودع
+git clone https://github.com/AhmedMousa1/HyperNova.git
+cd HyperNova
+
+# تثبيت الحزم
 npm install
-npm start          # run it
-npm run dist       # build the installer into dist/
+
+# تشغيل وضع التطوير
+npm start
+
+# بناء النسخة المحمولة (Portable Executable)
+npm run dist:win
 ```
 
-## Support Nova Island ☕
+---
 
-Nova Island is free, with no ads and no tracking, and it always will be. If it makes your day a little better, you can buy us a coffee:
-
-- **Ko-fi** (cards, PayPal): [ko-fi.com/binamer](https://ko-fi.com/binamer)
-- **InstaPay** (Egypt): [Send via InstaPay](https://ipn.eg/S/binamerbm/instapay/38txJO)
-
-Stars ⭐ and sharing it with a friend help a lot too.
-
-## License
-
-Nova Island is free software, licensed under the [GNU General Public License v3.0](LICENSE).
-
-Copyright © 2026 Nova Island by AmerTech.
-
-The Qur'an font in `fonts/` (KFGQPC HAFS Uthmanic Script by the King Fahd Glorious Quran Printing Complex) is included unmodified under its own license — see [fonts/KFGQPC-LICENSE.txt](fonts/KFGQPC-LICENSE.txt). It is not covered by the GPL.
-
-The name "Nova Island" and its logo are not covered by the GPL; please use a different name for modified versions.
+## 📜 الترخيص (License)
+هذا المشروع مرخص تحت رخصة **GNU General Public License v3.0 (GPL-3.0)**.  
+جميع الحقوق محفوظة للمطورين والمساهمين في مجتمع المصادر المفتوحة.

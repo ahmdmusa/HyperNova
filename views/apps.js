@@ -41,11 +41,12 @@
     }
     for (const a of pinned) {
       const b = document.createElement('button');
-      b.className = 'app';
+      b.className = 'app' + (a.isPinned ? ' is-pinned' : '');
       b.dataset.id = a.id;
-      b.title = a.name;
+      b.title = a.name + (a.weeklyCount ? ` (${a.weeklyCount} مرات هذا الأسبوع)` : '');
+      const pinTag = a.isPinned ? '<span class="app-pin-ico" title="مثبت">📌</span>' : '';
       b.innerHTML =
-        `<span class="app-ico ${a.icon ? '' : 'letter'}">${iconHtml(a)}</span>` +
+        `<span class="app-ico ${a.icon ? '' : 'letter'}">${iconHtml(a)}${pinTag}</span>` +
         `<span class="app-name">${esc(a.name)}</span>` +
         `<span class="x" role="button" aria-label="Remove ${esc(a.name)}">${ICON_X}</span>`;
       b.addEventListener('click', (e) => {

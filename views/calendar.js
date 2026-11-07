@@ -18,7 +18,7 @@
     // the next meeting still to come, or one running now
     const next = events.find((e) => e.end > now);
     const soon = on && next && next.start - now < 3 * 3600e3;
-    $('.mt-slide').hidden = !soon;
+    const elMt = $('.mt-slide'); if (elMt) elMt.hidden = !soon;
     if (soon) {
       $('#i-mt-title').textContent = next.title;
       $('#i-mt-when').textContent = when(next, now);

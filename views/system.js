@@ -35,14 +35,17 @@
     $('#wx-desc').textContent = info.label;
     $('#wx-meta').textContent = `${w.city ? `${w.city} · ` : ''}H ${w.hi}° L ${w.lo}°`;
     const mini = $('#wx-mini');
-    mini.hidden = false;
-    mini.querySelector('svg').innerHTML = info.svg;
-    mini.querySelector('b').textContent = `${w.temp}°`;
-    mini.title = `${info.label}${w.city ? ` in ${w.city}` : ''}`;
+    if (mini) {
+      mini.hidden = false;
+      const s = mini.querySelector('svg'); if (s) s.innerHTML = info.svg;
+      const b = mini.querySelector('b'); if (b) b.textContent = `${w.temp}°`;
+      mini.title = `${info.label}${w.city ? ` in ${w.city}` : ''}`;
+    }
     for (const pill of [$('#i-wx'), $('#v-wx')]) {
+      if (!pill) continue;
       pill.hidden = false;
-      pill.querySelector('svg').innerHTML = info.svg;
-      pill.querySelector('b').textContent = `${w.temp}°`;
+      const s = pill.querySelector('svg'); if (s) s.innerHTML = info.svg;
+      const b = pill.querySelector('b'); if (b) b.textContent = `${w.temp}°`;
     }
   }
 
@@ -63,8 +66,9 @@
   const clipList = $('#clip-list');
   function renderClips(clips) {
     clipList.innerHTML = '';
+    const isAr = (window.state?.features?.appLang || 'ar') === 'ar';
     if (!clips.length) {
-      clipList.innerHTML = '<div class="clip-empty">Copied text shows up here</div>';
+      clipList.innerHTML = `<div class="clip-empty">${isAr ? 'النصوص المنسوخة تظهر هنا تلقائياً' : 'Copied text shows up here'}</div>`;
       return;
     }
     clips.forEach((text, i) => {
@@ -89,3 +93,16 @@
     renderWeather(s.weather);
   });
 })();
+
+
+function updateSysLang() {
+  const isAr = (window.state?.features?.appLang || 'ar') === 'ar';
+  const txt = document.getElementById('clip-title-txt');
+  if (txt) txt.textContent = isAr ? 'سجل الحافظة' : 'Clipboard';
+  const btn = document.getElementById('clip-clear');
+  if (btn) btn.title = isAr ? 'مسح سجل الحافظة' : 'Clear clipboard history';
+}
+window.addEventListener('island:features', (e) => {
+  if (e.detail?.appLang) updateSysLang();
+});
+setTimeout(updateSysLang, 200);

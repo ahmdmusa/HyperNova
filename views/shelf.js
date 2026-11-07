@@ -12,7 +12,7 @@
     itemsEl.innerHTML = '';
     for (const f of items) {
       const d = document.createElement('div');
-      d.className = 'file';
+      d.className = `file ${f.isImage ? 'is-img' : ''}`;
       d.draggable = true;
       d.title = `${f.path}\nClick to open · Right-click to show in folder · Drag to use`;
       d.innerHTML =

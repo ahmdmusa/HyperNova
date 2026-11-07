@@ -1,16 +1,15 @@
 <!doctype html>
-<html lang="en" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; img-src 'self' data:">
-  <title>Nova Island Settings</title>
+  <title>HyperNova — Dynamic Island for Desktop</title>
   <link rel="stylesheet" href="prefs.css">
 </head>
 <body>
   <header class="titlebar">
     <div class="brand">
       <span class="logo" aria-hidden="true"><i></i></span>
-      <b>Nova Island</b>
+      <div class="brand-text-block"><b id="brand-app-name">HyperNova</b><span class="brand-app-sub">Dynamic Island for Desktop</span></div>
     </div>
     <div class="win-btns">
       <button data-win="minimize" aria-label="Minimize"><svg viewBox="0 0 12 12"><path d="M2 6h8"/></svg></button>
@@ -22,47 +21,109 @@
     <nav class="side" aria-label="Pages">
       <label class="search">
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input type="search" id="find" placeholder="Search" spellcheck="false" autocomplete="off">
+        <input type="search" id="find" placeholder="بحث في الإعدادات..." data-i18n-ph="search_placeholder" spellcheck="false" autocomplete="off">
       </label>
-      <a href="#general" data-page="general"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>General</a>
-      <a href="#island" data-page="island"><svg viewBox="0 0 24 24"><rect x="2" y="8" width="20" height="8" rx="4"/></svg>Island</a>
-      <a href="#companion" data-page="companion"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>Companion</a>
-      <a href="#faith" data-page="faith"><svg viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>Prayer &amp; Dhikr</a>
-      <a href="#alerts" data-page="alerts"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>Alerts &amp; Privacy</a>
-      <a href="#connections" data-page="connections"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Connections</a>
-      <a href="#support" data-page="support"><svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>Support</a>
-      <p class="side-foot"><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>I</kbd> opens the island<br><span id="version"></span></p>
+      <a href="#general" data-page="general" class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg><span data-i18n="nav_general">الإعدادات العامة</span></a>
+      <a href="#island" data-page="island"><svg viewBox="0 0 24 24"><rect x="2" y="8" width="20" height="8" rx="4"/></svg><span data-i18n="nav_island">الجزيرة</span></a>
+      <a href="#companion" data-page="companion"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg><span data-i18n="nav_companion">الرفيق الذكي</span></a>
+      <a href="#faith" data-page="faith"><svg viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg><span data-i18n="nav_faith">الصلاة والأذكار</span></a>
+      <a href="#alerts" data-page="alerts"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span data-i18n="nav_alerts">التنبيهات والخصوصية</span></a>
+      <a href="#connections" data-page="connections"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span data-i18n="nav_connections">الاتصالات والتقويم</span></a>
+      <a href="#focus" data-page="focus"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1.5"/></svg><span data-i18n="nav_focus">التركيز</span></a>
+      <p class="side-foot"><span data-i18n="shortcut_hint"><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>I</kbd> لفتح الجزيرة</span><br><span id="version"></span></p>
+          <a href="#about" data-page="about"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><span data-i18n="nav_about">حول المشروع (About)</span></a>
     </nav>
 
     <main class="content" id="content">
-      <p class="no-results" id="no-results" hidden>No matching settings</p>
+      <p class="no-results" id="no-results" data-i18n="no_results" hidden>لا توجد إعدادات مطابقة للبحث</p>
 
-      <!-- GENERAL -->
-      <section id="general" class="page">
-        <h1>General</h1>
+      <!-- GENERAL (Active by default) -->
+      <section id="general" class="page on">
+        <h1 data-i18n="general_title">الإعدادات العامة</h1>
+        
+        <!-- Language Selection Card -->
         <div class="group">
+          <h2 data-i18n="lang_group">لغة التطبيق والواجهة · Language</h2>
           <div class="card">
-            <label class="row"><b>Show island</b><input type="checkbox" class="sw" data-general="shown"></label>
-            <label class="row"><b>Start with Windows</b><input type="checkbox" class="sw" data-general="startWithWindows"></label>
-            <div class="row"><b>Orientation</b>
-              <div class="seg" role="radiogroup" aria-label="Orientation">
-                <button role="radio" data-orient="h">Horizontal</button>
-                <button role="radio" data-orient="v">Vertical</button>
+            <div class="row">
+              <div class="txt">
+                <b data-i18n="lang_select_lbl">اختيار لغة الواجهة والخط</b>
+                <small data-i18n="lang_select_sub">الخط الأميري الأصيل للعربية، أو خط Inter العصري للإنجليزية</small>
+              </div>
+              <div class="seg" role="radiogroup">
+                <button role="radio" id="btn-lang-ar" class="sel" data-i18n="lang_ar">العربية (الأميري)</button>
+                <button role="radio" id="btn-lang-en" data-i18n="lang_en">English (Inter)</button>
               </div>
             </div>
-            <label class="row"><div class="txt"><b>Browser address bar</b><small>Right third, never over tabs</small></div><input type="checkbox" class="sw" data-feature="addrIsland"></label>
-            <label class="row"><b>Hide in full screen</b><input type="checkbox" class="sw" data-feature="hideFullscreen"></label>
-            <label class="row"><b>Auto-update</b><input type="checkbox" class="sw" data-feature="autoUpdate"></label>
-            <div class="row"><b>Position</b><button class="btn" data-general-action="resetPosition">Reset</button></div>
+          </div>
+        </div>
+
+        <!-- Theme Accent Color Customization -->
+        <div class="group">
+          <h2 data-i18n="theme_group">لون الأيقونات والتطبيق المميز · Theme Color</h2>
+          <div class="card">
+            <div class="row">
+              <div class="txt">
+                <b data-i18n="theme_accent_lbl">اللون المميز للأيقونات والطقس</b>
+                <small data-i18n="theme_accent_sub">تخصيص لون أيقونة الطقس واللمسات الجمالية (أزرق سماوي، أحمر داكن، إلخ)</small>
+              </div>
+              <div class="color-palette" id="theme-color-palette">
+                <button class="color-dot sel" data-color="#38bdf8" style="--c:#38bdf8;" title="أزرق سماوي ناصع (Cyan)"></button>
+                <button class="color-dot" data-color="#e11d48" style="--c:#e11d48;" title="أحمر داكن فاخر (Crimson)"></button>
+                <button class="color-dot" data-color="#3b82f6" style="--c:#3b82f6;" title="أزرق ملكي (Royal Blue)"></button>
+                <button class="color-dot" data-color="#a855f7" style="--c:#a855f7;" title="بنفسجي ملكي (Purple)"></button>
+                <button class="color-dot" data-color="#10b981" style="--c:#10b981;" title="أخضر زمردي (Emerald)"></button>
+                <button class="color-dot" data-color="#ffd60a" style="--c:#ffd60a;" title="ذهبي أصلي (Gold)"></button>
+              </div>
+            </div>
+            <div class="row sub">
+              <div class="txt">
+                <b data-i18n="theme_mode_lbl">نمط المظهر (الثيم)</b>
+                <small data-i18n="theme_mode_sub">اختر الوضع الليلي الداكن أو الوضع الفاتح</small>
+              </div>
+              <div class="seg" role="radiogroup" id="seg-theme-mode">
+                <button role="radio" id="btn-theme-dark" class="sel" data-theme="dark" data-i18n="theme_dark">داكن (Dark)</button>
+                <button role="radio" id="btn-theme-black" data-theme="black" data-i18n="theme_black">أسود (OLED)</button>
+                <button role="radio" id="btn-theme-light" data-theme="light" data-i18n="theme_light">فاتح (Light)</button>
+              </div>
+            </div>
+            <div class="row sub">
+              <div class="txt">
+                <b data-i18n="glass_slider_lbl">مستوى الضبابية والزجاج (Glass Blur)</b>
+                <small data-i18n="glass_slider_sub">تحكم أفقي في شفافية الزجاج وضبابية الخلفية (20% - 100%)</small>
+              </div>
+              <div style="display:flex; align-items:center; gap:12px; min-width:200px;">
+                <input type="range" id="pref-glass-slider" min="20" max="100" value="90" style="flex:1; accent-color:var(--accent, #38bdf8); cursor:pointer;">
+                <span id="pref-glass-val" style="font-size:12px; font-weight:700; color:var(--accent, #38bdf8); min-width:38px; text-align:center;">90%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="card">
+            <label class="row"><b data-i18n="show_island">إظهار الجزيرة</b><input type="checkbox" class="sw" data-general="shown"></label>
+            <label class="row"><b data-i18n="start_windows">بدء التشغيل مع ويندوز</b><input type="checkbox" class="sw" data-general="startWithWindows"></label>
+            <label class="row sub"><div class="txt"><b data-i18n="taskbar_icon_lbl">إظهار الأيقونة في شريط المهام</b><small data-i18n="taskbar_icon_sub">إلغاء التفعيل لإخفاء الجزيرة من شريط المهام والاكتفاء بشريط النظام (Tray)</small></div><input type="checkbox" class="sw" id="pref-taskbar-toggle"></label>
+            <div class="row"><b data-i18n="orientation">اتجاه العرض</b>
+              <div class="seg" role="radiogroup" aria-label="Orientation">
+                <button role="radio" data-orient="h" data-i18n="orient_h">أفقي</button>
+                <button role="radio" data-orient="v" data-i18n="orient_v">رأسي</button>
+              </div>
+            </div>
+            <label class="row"><div class="txt"><b data-i18n="addr_island">الدمج في شريط المتصفح</b><small data-i18n="addr_island_sub">في الثلث الأيمن دون تغطية التبويبات</small></div><input type="checkbox" class="sw" data-feature="addrIsland"></label>
+            <label class="row"><b data-i18n="hide_fullscreen">الإخفاء التلقائي عند ملء الشاشة</b><input type="checkbox" class="sw" data-feature="hideFullscreen"></label>
+            <label class="row"><b data-i18n="auto_update">التحديث التلقائي</b><input type="checkbox" class="sw" data-feature="autoUpdate"></label>
+            <div class="row"><b data-i18n="position">موضع الجزيرة</b><button class="btn" data-general-action="resetPosition" data-i18n="reset">إعادة ضبط</button></div>
           </div>
         </div>
         <div class="group">
-          <h2>Location</h2>
+          <h2 data-i18n="location_title">الموقع الجغرافي والطقس</h2>
           <div class="card">
-            <div class="row"><div class="txt"><b>City</b><small id="loc-now">Auto</small></div><button class="btn" id="loc-auto" hidden>Use auto</button></div>
+            <div class="row"><div class="txt"><b data-i18n="city">المدينة</b><small id="loc-now">تحديد تلقائي</small></div><button class="btn" id="loc-auto" data-i18n="use_auto" hidden>استخدام التلقائي</button></div>
             <div class="row field">
-              <input type="search" id="loc-q" placeholder="Search for a city" spellcheck="false" autocomplete="off">
-              <button class="btn" id="loc-go">Search</button>
+              <input type="search" id="loc-q" placeholder="ابحث عن اسم المدينة..." data-i18n-ph="search_city" spellcheck="false" autocomplete="off">
+              <button class="btn" id="loc-go" data-i18n="search_btn">بحث</button>
             </div>
             <div class="loc-results" id="loc-results" hidden></div>
           </div>
@@ -71,67 +132,79 @@
 
       <!-- ISLAND -->
       <section id="island" class="page">
-        <h1>Island</h1>
+        <h1 data-i18n="island_title">الجزيرة</h1>
         <div class="group">
-          <h2>Tabs</h2>
+          <h2 data-i18n="tabs_title">تبويبات الجزيرة</h2>
           <div class="chips">
-            <label class="chip"><input type="checkbox" data-feature="tabMedia" data-tab><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><b>Music</b></label>
-            <label class="chip"><input type="checkbox" data-feature="tabApps" data-tab><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><b>Apps</b></label>
-            <label class="chip"><input type="checkbox" data-feature="tabShelf" data-tab><svg viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11Z"/></svg><b>Shelf</b></label>
-            <label class="chip"><input type="checkbox" data-feature="tabPrayer" data-tab><svg viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg><b>Prayer</b></label>
-            <label class="chip"><input type="checkbox" data-feature="tabTimer" data-tab><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M10 2h4"/></svg><b>Timer</b></label>
-            <label class="chip"><input type="checkbox" data-feature="tabSystem" data-tab><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><b>System</b></label>
+            <label class="chip"><input type="checkbox" data-feature="tabMedia" data-tab><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><b data-i18n="tab_music">الصوتيات</b></label>
+            <label class="chip"><input type="checkbox" data-feature="tabApps" data-tab><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><b data-i18n="tab_apps">التطبيقات</b></label>
+            <label class="chip"><input type="checkbox" data-feature="tabShelf" data-tab><svg viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11Z"/></svg><b data-i18n="tab_shelf">الرف الذكي</b></label>
+            <label class="chip"><input type="checkbox" data-feature="tabPrayer" data-tab><svg viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg><b data-i18n="tab_prayer">الصلاة</b></label>
+            <label class="chip"><input type="checkbox" data-feature="tabTimer" data-tab><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M10 2h4"/></svg><b data-i18n="tab_timer">المؤقت</b></label>
+            <label class="chip"><input type="checkbox" data-feature="tabFocus" data-tab><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1.5"/></svg><b data-i18n="tab_focus">التركيز</b></label>
+            <label class="chip"><input type="checkbox" data-feature="tabSystem" data-tab><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><b data-i18n="tab_system">النظام</b></label>
           </div>
-          <p class="hint warn" id="tabs-warn" hidden>Keep at least one tab</p>
+          <p class="hint warn" id="tabs-warn" data-i18n="tabs_warn" hidden>يجب الإبقاء على تبويب واحد على الأقل</p>
         </div>
         <div class="group">
-          <h2>Collapsed</h2>
+          <h2 data-i18n="collapsed_title">الشريط المصغر (عند التصغير)</h2>
           <div class="card">
-            <label class="row"><b>Clock &amp; weather</b><input type="checkbox" class="sw" data-feature="slideClock"></label>
-            <label class="row"><b>CPU &amp; memory</b><input type="checkbox" class="sw" data-feature="slideStats"></label>
-            <label class="row"><b>Next prayer</b><input type="checkbox" class="sw" data-feature="slidePrayer"></label>
+            <label class="row"><b data-i18n="slide_clock">الساعة وحالة الطقس</b><input type="checkbox" class="sw" data-feature="slideClock"></label>
+            <label class="row"><b data-i18n="slide_stats">استهلاك المعالج والذاكرة</b><input type="checkbox" class="sw" data-feature="slideStats"></label>
+            <label class="row"><b data-i18n="slide_prayer">موعد الصلاة القادمة</b><input type="checkbox" class="sw" data-feature="slidePrayer"></label>
+            <div class="row">
+              <div class="txt">
+                <b data-i18n="slide_interval_lbl">معدل تبديل الشرائح تلقائياً</b>
+                <small data-i18n="slide_interval_sub">الوقت بين كل شريحة وأخرى لتجنب التبديل السريع المزعج</small>
+              </div>
+              <div class="stepper" data-num="slideInterval" data-steps="0,5,10,15,30,60" data-unit="slideSec">
+                <button data-dir="-1" aria-label="Less">−</button>
+                <output></output>
+                <button data-dir="1" aria-label="More">+</button>
+              </div>
+            </div>
           </div>
         </div>
         <div class="group">
-          <h2>Now playing</h2>
+          <h2 data-i18n="now_playing_title">مشغل الصوتيات الحالي</h2>
           <div class="card">
-            <label class="row"><b>Show media</b><input type="checkbox" class="sw" data-feature="mediaPill"></label>
-            <label class="row sub" data-needs="mediaPill"><b>Title</b><input type="checkbox" class="sw" data-feature="mediaTitle"></label>
-            <label class="row"><b>New track card</b><input type="checkbox" class="sw" data-feature="trackPeek"></label>
+            <label class="row"><b data-i18n="show_media">إظهار عناصر التحكم بالصوتيات</b><input type="checkbox" class="sw" data-feature="mediaPill"></label>
+            <label class="row sub" data-needs="mediaPill"><b data-i18n="media_title">اسم المقطع الصوتي</b><input type="checkbox" class="sw" data-feature="mediaTitle"></label>
+            <label class="row"><b data-i18n="track_peek">إشعار عند تشغيل مقطع جديد</b><input type="checkbox" class="sw" data-feature="trackPeek"></label>
           </div>
         </div>
       </section>
 
       <!-- COMPANION -->
       <section id="companion" class="page">
-        <h1>Companion</h1>
+        <h1 data-i18n="companion_title">الرفيق الذكي</h1>
         <div class="group">
-          <h2>Nova</h2>
+          <h2 data-i18n="nova_title">الروبوت المساعد نوفا</h2>
           <div class="card">
-            <label class="row"><b>Eyes</b><input type="checkbox" class="sw" data-feature="novaEyes"></label>
-            <label class="row"><b>At the adhan</b><input type="checkbox" class="sw" data-feature="novaPrayer"></label>
-            <label class="row"><b>Focus sessions</b><input type="checkbox" class="sw" data-feature="novaFocus"></label>
-            <label class="row"><b>Celebrations</b><input type="checkbox" class="sw" data-feature="celebrate"></label>
+            <label class="row"><b data-i18n="nova_eyes">تعبيرات الأعين التفاعلية</b><input type="checkbox" class="sw" data-feature="novaEyes"></label>
+            <label class="row"><b data-i18n="nova_prayer">التفاعل عند دخول وقت الصلاة</b><input type="checkbox" class="sw" data-feature="novaPrayer"></label>
+            <label class="row"><b data-i18n="nova_focus">ارتداء عصابة الرأس أثناء التركيز</b><input type="checkbox" class="sw" data-feature="novaFocus"></label>
+            <label class="row"><b data-i18n="nova_celebrate">الاحتفال التفاعلي بإنجاز المهام</b><input type="checkbox" class="sw" data-feature="celebrate"></label>
           </div>
         </div>
         <div class="group">
-          <h2>Moments</h2>
+          <h2 data-i18n="moments_title">اللحظات الذكية والتنبيهات</h2>
           <div class="card">
-            <label class="row"><b>Morning brief</b><input type="checkbox" class="sw" data-feature="morningBrief"></label>
-            <label class="row"><b>Welcome back</b><input type="checkbox" class="sw" data-feature="welcomeBack"></label>
-            <label class="row"><b>Break reminders</b><input type="checkbox" class="sw" data-feature="wellbeing"></label>
-            <label class="row"><b>Network</b><input type="checkbox" class="sw" data-feature="netToasts"></label>
-            <label class="row"><div class="txt"><b>Smart clipboard</b><small>Links, colors, math</small></div><input type="checkbox" class="sw" data-feature="smartClipboard"></label>
+            <label class="row"><b data-i18n="morning_brief">الموجز الصباحي الذكي</b><input type="checkbox" class="sw" data-feature="morningBrief"></label>
+            <label class="row"><b data-i18n="welcome_back">تحية العودة عند فتح الجهاز</b><input type="checkbox" class="sw" data-feature="welcomeBack"></label>
+            <label class="row"><b data-i18n="break_reminders">تذكيرات أخذ استراحة للعين</b><input type="checkbox" class="sw" data-feature="wellbeing"></label>
+            <label class="row"><b data-i18n="net_toasts">تنبيهات حالة الإنترنت والشبكة</b><input type="checkbox" class="sw" data-feature="netToasts"></label>
+            <label class="row"><div class="txt"><b data-i18n="smart_clip">سجل الحافظة الذكي</b><small data-i18n="smart_clip_sub">معاينة الروابط، الألوان، والحسابات</small></div><input type="checkbox" class="sw" data-feature="smartClipboard"></label>
           </div>
         </div>
         <div class="group">
-          <h2>Water</h2>
+          <h2 data-i18n="water_title">تذكير شرب الماء الصحي</h2>
           <div class="card">
-            <label class="row"><b>Water reminder</b><input type="checkbox" class="sw" data-feature="water"></label>
-            <div class="row sub" data-needs="water"><b>Every</b>
+            <label class="row"><b data-i18n="water_remind">تفعيل تذكيرات شرب الماء</b><input type="checkbox" class="sw" data-feature="water"></label>
+            <div class="row sub" data-needs="water"><b data-i18n="water_every">تكرار التنبيه كل</b>
               <div class="stepper" data-num="waterEvery" data-steps="15,30,45,60,90,120,180,240" data-unit="min"><button data-dir="-1" aria-label="Less">−</button><output></output><button data-dir="1" aria-label="More">+</button></div>
             </div>
-            <div class="row sub" data-needs="water"><b>Daily goal</b>
+            <div class="row sub" data-needs="water"><b data-i18n="water_goal">الهدف اليومي المستهدف</b>
               <div class="stepper" data-num="waterGoal" data-steps="4,5,6,7,8,9,10,11,12,14,16" data-unit="glass"><button data-dir="-1" aria-label="Less">−</button><output></output><button data-dir="1" aria-label="More">+</button></div>
             </div>
           </div>
@@ -140,118 +213,352 @@
 
       <!-- PRAYER & DHIKR -->
       <section id="faith" class="page">
-        <h1>Prayer &amp; Dhikr</h1>
+        <h1 data-i18n="faith_title">الصلاة والأذكار</h1>
         <div class="group">
-          <h2>Prayer</h2>
+          <h2 data-i18n="prayer_title">مواقيت الصلاة</h2>
           <div class="card">
-            <label class="row"><b>Prayer alerts</b><input type="checkbox" class="sw" data-feature="prayerAlerts"></label>
-            <label class="row"><b>Hanafi Asr</b><input type="checkbox" class="sw" data-feature="asrHanafi"></label>
-            <div class="row"><div class="txt"><b>Hijri date</b><small>Match local moon sighting</small></div>
+            <label class="row"><b data-i18n="prayer_alerts">تنبيهات دخول الصلاة والأذان</b><input type="checkbox" class="sw" data-feature="prayerAlerts"></label>
+            <!-- Auto Resume Radio after Adhan -->
+            <label class="row sub" data-needs="prayerAlerts">
+              <div class="txt">
+                <b data-i18n="adhan_resume_lbl">استئناف راديو القرآن بعد الأذان تلقائياً</b>
+                <small data-i18n="adhan_resume_sub">استئناف التلاوة تلقائياً بعد ثانيتين من انتهاء تكبيرتي الأذان</small>
+              </div>
+              <input type="checkbox" class="sw" data-feature="adhanAutoResume">
+            </label>
+
+
+
+            <!-- Muadhin Voice Selector (2 Takbeers Only) -->
+            <div class="row sub" data-needs="prayerAlerts">
+              <div class="txt">
+                <b data-i18n="adhan_voice_lbl">صوت المؤذن للتنبيه (تكبيرتان فقط)</b>
+                <small data-i18n="adhan_voice_sub">سماع تكبيرتي الإحرام (الله أكبر، الله أكبر) بصوت خاشع ومريح</small>
+              </div>
+              <div class="adhan-voice-picker" style="display:flex; align-items:center; gap:8px;">
+                <select id="pref-adhan-voice" class="adhan-select" data-feature="adhanVoice" style="height:32px; font-size:12px; border-radius:8px; padding:0 8px; background:#1c1f28; border:1px solid rgba(255,255,255,0.14); color:#f4f4f5; color-scheme:dark;">
+                  <option value="abdulbasit">الشيخ عبد الباسط عبد الصمد</option>
+                  <option value="refaat">الشيخ محمد رفعت (أذان زمان)</option>
+                  <option value="banna">الشيخ محمود علي البنا (القاهرة)</option>
+                  <option value="makkah">أذان الحرم المكي (علي أحمد ملا)</option>
+                  <option value="madinah">أذان المسجد النبوي الشريف</option>
+                  <option value="aqsa">أذان المسجد الأقصى المبارك</option>
+                  <option value="alafasy">الشيخ مشاري راشد العفاسي</option>
+                  <option value="nafees">الشيخ أحمد النفيس (خاشع)</option>
+                </select>
+                <button type="button" id="btn-preview-adhan" class="mini-btn" style="padding:4px 10px; font-size:11px; border-radius:8px; cursor:pointer;" title="معاينة التكبيرتين">🔊 معاينة</button>
+              </div>
+            </div>
+            <label class="row"><b data-i18n="hanafi_asr">حساب صلاة العصر على المذهب الحنفي</b><input type="checkbox" class="sw" data-feature="asrHanafi"></label>
+            <div class="row"><div class="txt"><b data-i18n="hijri_date">تعديل التاريخ الهجري</b><small data-i18n="hijri_sub">مطابقة رؤية الهلال المحلية</small></div>
               <div class="stepper" data-num="hijriAdjust" data-steps="-2,-1,0,1,2" data-unit="day"><button data-dir="-1" aria-label="One day less">−</button><output></output><button data-dir="1" aria-label="One day more">+</button></div>
+            </div>
+          </div>
+                </div>
+        <!-- Offline Cache Storage Group (Always Available) -->
+        <div class="group">
+          <h2 data-i18n="cache_group_title">التخزين المحلي والذاكرة المؤقتة (Offline Cache)</h2>
+          <div class="card">
+            <div class="row" style="align-items:center;">
+              <div class="txt">
+                <b data-i18n="cache_mgr_lbl">الذاكرة المؤقتة (القرآن والأصوات)</b>
+                <small data-i18n="cache_mgr_sub">حجم البيانات المخزنة محلياً لتسريع التلاوة أوفلاين</small>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span id="cache-size-display" style="font-size:11px; font-weight:700; color:var(--text-2); background:rgba(255,255,255,0.06); padding:4px 10px; border-radius:6px;">0.00 ميجابايت</span>
+                <button type="button" id="btn-clear-cache" class="mini-btn" style="padding:4px 12px; font-size:11px; border-radius:8px; cursor:pointer;" title="مسح الكاش" data-i18n="btn_clear_cache">مسح الكاش</button>
+              </div>
             </div>
           </div>
         </div>
         <div class="group">
-          <h2>Dhikr, du'a &amp; Qur'an</h2>
+          <h2 data-i18n="dhikr_title">الأذكار والأدعية والقرآن الكريم</h2>
           <div class="card">
-            <label class="row"><b>Show reminders</b><input type="checkbox" class="sw" data-feature="reminders"></label>
-            <div class="row sub" data-needs="reminders"><b>Every</b>
+            <label class="row"><b data-i18n="show_reminders">إظهار التذكيرات الدورية</b><input type="checkbox" class="sw" data-feature="reminders"></label>
+            <div class="row sub" data-needs="reminders"><b data-i18n="remind_every">تكرار التنبيه كل</b>
               <div class="stepper" data-num="remindEvery" data-steps="1,2,3,5,10,15,20,30,45,60,90,120,180,240" data-unit="min"><button data-dir="-1" aria-label="Less">−</button><output></output><button data-dir="1" aria-label="More">+</button></div>
             </div>
-            <div class="row sub" data-needs="reminders"><b>On screen for</b>
+            <div class="row sub" data-needs="reminders"><b data-i18n="remind_for">مدة بقاء التنبيه على الشاشة</b>
               <div class="stepper" data-num="remindFor" data-steps="10,15,20,30,45,60,90,120,180,300" data-unit="s"><button data-dir="-1" aria-label="Less">−</button><output></output><button data-dir="1" aria-label="More">+</button></div>
             </div>
-            <label class="row sub" data-needs="reminders"><b>Qur'an verses</b><input type="checkbox" class="sw" data-feature="remindAyah" data-kind></label>
-            <label class="row sub" data-needs="reminders"><b>Dhikr</b><input type="checkbox" class="sw" data-feature="remindDhikr" data-kind></label>
-            <label class="row sub" data-needs="reminders"><b>Du'a</b><input type="checkbox" class="sw" data-feature="remindDua" data-kind></label>
-            <label class="row sub" data-needs="reminders"><b>Quiet hours</b><input type="checkbox" class="sw" data-feature="quietHours"></label>
-            <div class="row sub2" data-needs="reminders quietHours"><b>From</b>
+            <!-- Hourly Dhikr / Tasbeeh Rate -->
+            <div class="row sub" data-needs="reminders">
+              <div class="txt">
+                <b data-i18n="tasbeeh_rate_lbl">معدل التسابيح والاستغفار في الساعة</b>
+                <small data-i18n="tasbeeh_rate_sub">تذكير خفيف خاطف بذكر مأثور أو استغفار دون مقاطعة تركيزك</small>
+              </div>
+              <div class="stepper" data-num="tasbeehPerHour" data-steps="0,1,2,4,6,12" data-unit="perHour"><button data-dir="-1" aria-label="Less">−</button><output></output><button data-dir="1" aria-label="More">+</button></div>
+            </div>
+            <!-- Daily Morning & Evening Adhkar Quota -->
+            <div class="row sub" data-needs="reminders">
+              <div class="txt">
+                <b data-i18n="daily_adhkar_lbl">حصة أذكار الصباح والمساء اليومية</b>
+                <small data-i18n="daily_adhkar_sub">عدد الأذكار الموثقة المختارة لكل فترة وتتبدّل دورياً كل يوم</small>
+              </div>
+              <div class="stepper" data-num="dailyAdhkarQuota" data-steps="3,5,7,10,15" data-unit="adhkar"><button data-dir="-1" aria-label="Less">−</button><output></output><button data-dir="1" aria-label="More">+</button></div>
+            </div>
+            <!-- Daily Quranic Verses Quota -->
+            <div class="row sub" data-needs="reminders">
+              <div class="txt">
+                <b data-i18n="daily_ayat_lbl">حصة الآيات القرآنية اليومية وتدبرها</b>
+                <small data-i18n="daily_ayat_sub">عدد الآيات الكريمة المعروضة للتدبر والسكينة اليومية</small>
+              </div>
+              <div class="stepper" data-num="dailyAyatQuota" data-steps="1,3,5,7" data-unit="verses"><button data-dir="-1" aria-label="Less">−</button><output></output><button data-dir="1" aria-label="More">+</button></div>
+            </div>
+            <label class="row sub" data-needs="reminders"><b data-i18n="remind_ayah">آيات من القرآن الكريم</b><input type="checkbox" class="sw" data-feature="remindAyah" data-kind></label>
+            <label class="row sub" data-needs="reminders"><b data-i18n="remind_dhikr">أذكار نبوية شريفة</b><input type="checkbox" class="sw" data-feature="remindDhikr" data-kind></label>
+            <label class="row sub" data-needs="reminders"><b data-i18n="remind_dua">أدعية مأثورة</b><input type="checkbox" class="sw" data-feature="remindDua" data-kind></label>
+            <label class="row sub" data-needs="reminders"><b data-i18n="quiet_hours">ساعات الهدوء (إسكات التنبيهات)</b><input type="checkbox" class="sw" data-feature="quietHours"></label>
+            <div class="row sub2" data-needs="reminders quietHours"><b data-i18n="quiet_from">من الساعة</b>
               <div class="stepper" data-num="quietFrom" data-steps="time" data-unit="time"><button data-dir="-1" aria-label="Earlier">−</button><output></output><button data-dir="1" aria-label="Later">+</button></div>
             </div>
-            <div class="row sub2" data-needs="reminders quietHours"><b>To</b>
+            <div class="row sub2" data-needs="reminders quietHours"><b data-i18n="quiet_to">إلى الساعة</b>
               <div class="stepper" data-num="quietTo" data-steps="time" data-unit="time"><button data-dir="-1" aria-label="Earlier">−</button><output></output><button data-dir="1" aria-label="Later">+</button></div>
             </div>
           </div>
-          <div class="actions"><button class="btn accent" id="rm-preview">Show one now</button></div>
+          <div class="actions"><button class="btn accent" id="rm-preview" data-i18n="show_preview">عرض تذكير تجريبي الآن</button></div>
         </div>
       </section>
 
       <!-- ALERTS & PRIVACY -->
       <section id="alerts" class="page">
-        <h1>Alerts &amp; Privacy</h1>
+        <h1 data-i18n="alerts_title">التنبيهات والخصوصية</h1>
         <div class="group">
-          <h2>Alerts</h2>
+          <h2 data-i18n="alerts_group">تنبيهات النظام والشاشة</h2>
           <div class="card">
-            <label class="row"><b>Volume</b><input type="checkbox" class="sw" data-feature="hudVolume"></label>
-            <label class="row"><b>Brightness</b><input type="checkbox" class="sw" data-feature="hudBrightness"></label>
-            <label class="row"><b>Battery</b><input type="checkbox" class="sw" data-feature="battery"></label>
-            <label class="row"><b>Keyboard language</b><input type="checkbox" class="sw" data-feature="kbdToast"></label>
-            <label class="row"><b>Caps Lock</b><input type="checkbox" class="sw" data-feature="capsToast"></label>
-            <label class="row"><b>Screenshots</b><input type="checkbox" class="sw" data-feature="screenshotToast"></label>
+            <label class="row"><b data-i18n="alert_volume">إشعار تغيير مستوى الصوت</b><input type="checkbox" class="sw" data-feature="hudVolume"></label>
+            <label class="row"><b data-i18n="alert_brightness">إشعار تغيير مستوى السطوع</b><input type="checkbox" class="sw" data-feature="hudBrightness"></label>
+            <label class="row"><b data-i18n="alert_battery">تنبيهات حالة البطارية والشحن</b><input type="checkbox" class="sw" data-feature="battery"></label>
+            <label class="row"><b data-i18n="alert_kbd">إشعار تبديل لغة لوحة المفاتيح</b><input type="checkbox" class="sw" data-feature="kbdToast"></label>
+            <label class="row"><b data-i18n="alert_caps">إشعار تفعيل مفتاح Caps Lock</b><input type="checkbox" class="sw" data-feature="capsToast"></label>
+            <label class="row"><b data-i18n="alert_screenshot">إشعار لقطة الشاشة والنسخ السريع</b><input type="checkbox" class="sw" data-feature="screenshotToast"></label>
           </div>
         </div>
         <div class="group">
-          <h2>Privacy</h2>
+          <h2 data-i18n="privacy_group">مؤشرات الخصوصية والأمان</h2>
           <div class="card">
-            <label class="row"><b>Mic &amp; camera dots</b><input type="checkbox" class="sw" data-feature="privacyDots"></label>
-            <label class="row"><div class="txt"><b>Clipboard history</b><small>Kept in memory only</small></div><input type="checkbox" class="sw" data-feature="clipboardHistory"></label>
+            <label class="row"><b data-i18n="privacy_dots">إظهار نقطة استخدام المايك والكاميرا</b><input type="checkbox" class="sw" data-feature="privacyDots"></label>
+            <label class="row"><div class="txt"><b data-i18n="clip_hist">حفظ سجل الحافظة في الذاكرة المؤقتة فقط</b><small data-i18n="clip_hist_sub">يُمسح تلقائياً عند إغلاق التطبيق لحماية بياناتك</small></div><input type="checkbox" class="sw" data-feature="clipboardHistory"></label>
           </div>
         </div>
       </section>
 
       <!-- CONNECTIONS -->
       <section id="connections" class="page">
-        <h1>Connections</h1>
+        <h1 data-i18n="connections_title">الاتصالات والتقويم</h1>
         <div class="group">
-          <h2>Calendar</h2>
+          <h2 data-i18n="calendar_title">التقويم والمواعيد</h2>
           <div class="card">
-            <label class="row"><b>Upcoming meetings</b><input type="checkbox" class="sw" data-feature="meetings"></label>
+            <label class="row"><b data-i18n="upcoming_meetings">تنبيهات الاجتماعات القادمة</b><input type="checkbox" class="sw" data-feature="meetings"></label>
             <div class="row field" data-needs="meetings">
-              <input type="url" id="cal-url" placeholder="iCal link (https://… .ics)" spellcheck="false" autocomplete="off">
-              <button class="btn" id="cal-save">Save</button>
+              <input type="url" id="cal-url" placeholder="رابط تقويم iCal (https://... .ics)" data-i18n-ph="cal_placeholder" spellcheck="false" autocomplete="off">
+              <button class="btn" id="cal-save" data-i18n="save_btn">حفظ</button>
             </div>
-            <div class="row" data-needs="meetings"><b>Status</b><small class="val" id="cal-status">Not linked</small></div>
+            <div class="row" data-needs="meetings"><b data-i18n="cal_status_lbl">حالة الاتصال</b><small class="val" id="cal-status">غير مربوط</small></div>
           </div>
           <details class="how" data-needs="meetings">
-            <summary>How to get the link</summary>
-            <p><b>Google:</b> Settings › your calendar › Secret address in iCal format</p>
-            <p><b>Outlook:</b> Settings › Calendar › Shared calendars › Publish (ICS)</p>
+            <summary data-i18n="how_to_link">كيفية الحصول على الرابط</summary>
+            <p><b data-i18n="cal_how_google">Google: الإعدادات › تقويمك › العنوان السري بتنسيق iCal</b></p>
+            <p><b data-i18n="cal_how_outlook">Outlook: الإعدادات › التقويم › التقويمات المشتركة › نشر (ICS)</b></p>
           </details>
         </div>
         <div class="group">
-          <h2>IDM Nova</h2>
+          <h2 data-i18n="downloads_title">تنزيلات IDM نوفا</h2>
           <div class="card">
-            <label class="row"><b>Downloads</b><input type="checkbox" class="sw" data-feature="downloads"></label>
-            <label class="row sub" data-needs="downloads"><b>Download alerts</b><input type="checkbox" class="sw" data-feature="dlToasts"></label>
+            <label class="row"><b data-i18n="downloads_toggle">مراقبة التنزيلات</b><input type="checkbox" class="sw" data-feature="downloads"></label>
+            <label class="row sub" data-needs="downloads"><b data-i18n="dl_alerts">إشعار انتهاء التنزيل مع زر الفتح</b><input type="checkbox" class="sw" data-feature="dlToasts"></label>
           </div>
         </div>
         <div class="group">
-          <h2>Troubleshooting</h2>
+          <h2 data-i18n="troubleshooting_title">التشخيص والدعم الفني</h2>
           <div class="card">
-            <div class="row"><div class="txt"><b>System helper</b><small id="bridge-detail" hidden></small></div><span class="status" id="bridge-state">…</span></div>
-            <div class="row"><b>Error log</b>
-              <div class="btns"><button class="btn" id="open-log">Open</button><button class="btn" id="copy-report">Copy report</button></div>
+            <div class="row"><div class="txt"><b data-i18n="system_helper">المساعد البرمجي للنظام (HyperHelper)</b><small id="bridge-detail" hidden></small></div><span class="status" id="bridge-state">…</span></div>
+            <div class="row"><b data-i18n="error_log">سجل الأخطاء والتشخيص</b>
+              <div class="btns"><button class="btn" id="open-log" data-i18n="open_btn">عرض</button><button class="btn" id="copy-report" data-i18n="copy_report_btn">نسخ التقرير</button></div>
             </div>
-            <div class="row"><b>All settings</b><button class="btn danger" id="reset-all">Reset</button></div>
+            <div class="row"><b data-i18n="all_settings">جميع الإعدادات</b><button class="btn danger" id="reset-all" data-i18n="reset_btn">إعادة ضبط المصنع</button></div>
           </div>
         </div>
       </section>
 
-      <!-- SUPPORT -->
-      <section id="support" class="page">
-        <h1>Support</h1>
-        <p class="lead">Nova Island is free, with no ads, and always will be. If it makes your day a little better:</p>
+            <!-- FOCUS (NeuroFocus) -->
+      <section id="focus" class="page">
+        <h1 data-i18n="focus_page_title">التركيز والإنتاجية (NeuroFocus)</h1>
+
+        <!-- SMART POMODORO -->
         <div class="group">
+          <h2 data-i18n="pomo_group">جلسات بومودورو الذكية · Pomodoro Sessions</h2>
           <div class="card">
-            <div class="row"><div class="txt"><b>Buy us a coffee</b><small>Ko-fi · cards and PayPal</small></div><button class="btn accent" data-support="kofi">Ko-fi</button></div>
-            <div class="row"><div class="txt"><b>InstaPay</b><small>From Egypt</small></div><button class="btn" data-support="instapay">InstaPay</button></div>
-            <div class="row"><div class="txt"><b>Star on GitHub</b><small>Free, and it helps others find Nova</small></div><button class="btn" data-support="github">⭐ Star</button></div>
+            <div class="row">
+              <div class="txt">
+                <b data-i18n="pomo_work_lbl">مدة جلسة التركيز والعمل</b>
+                <small data-i18n="pomo_work_sub">المدة الزمنية لكل جولة عمل مركزة</small>
+              </div>
+              <div class="stepper" data-num="focusMin" data-steps="15,20,25,30,45,50,60,90" data-unit="min">
+                <button data-dir="-1" aria-label="Less">−</button>
+                <output></output>
+                <button data-dir="1" aria-label="More">+</button>
+              </div>
+            </div>
+            <div class="row sub">
+              <div class="txt">
+                <b data-i18n="pomo_break_lbl">مدة الاستراحة القصيرة</b>
+                <small data-i18n="pomo_break_sub">استراحة سريعة لإراحة العين واستعادة النشاط</small>
+              </div>
+              <div class="stepper" data-num="breakMin" data-steps="2,3,5,7,10,15" data-unit="min">
+                <button data-dir="-1" aria-label="Less">−</button>
+                <output></output>
+                <button data-dir="1" aria-label="More">+</button>
+              </div>
+            </div>
+            <div class="row sub">
+              <div class="txt">
+                <b data-i18n="pomo_longbreak_lbl">مدة الاستراحة الطويلة</b>
+                <small data-i18n="pomo_longbreak_sub">استراحة كافية بعد إتمام 4 جولات عمل</small>
+              </div>
+              <div class="stepper" data-num="longBreakMin" data-steps="10,15,20,25,30" data-unit="min">
+                <button data-dir="-1" aria-label="Less">−</button>
+                <output></output>
+                <button data-dir="1" aria-label="More">+</button>
+              </div>
+            </div>
+            <label class="row sub">
+              <div class="txt">
+                <b data-i18n="nova_focus">ارتداء عصابة الرأس أثناء التركيز</b>
+                <small data-i18n="nova_focus_sub">رسوم تفاعلية متحركة للرفيق نوفا بعصابة الرأس عند بدء الجلسة</small>
+              </div>
+              <input type="checkbox" class="sw" data-feature="novaFocus">
+            </label>
+            <label class="row sub">
+              <div class="txt">
+                <b data-i18n="focus_sound_lbl">التنبيهات الصوتية للجلسات</b>
+                <small data-i18n="focus_sound_sub">نغمات صوتية هادئة عند بدء وانتهاء جولة العمل</small>
+              </div>
+              <input type="checkbox" class="sw" data-feature="focusSound">
+            </label>
+          </div>
+        </div>
+
+        <!-- DEEP FOCUS FORCE MAJEURE -->
+        <div class="group">
+          <h2 data-i18n="deep_group">القوة القاهرة للتركيز العميق (Deep Focus)</h2>
+          <div class="card">
+            <div class="row">
+              <div class="txt">
+                <b data-i18n="deep_toggle_lbl">تفعيل وضع القوة القاهرة</b>
+                <small data-i18n="deep_toggle_sub">إخفاء أيقونات سطح المكتب تلقائياً، وتصغير النوافذ وحظر المشتتات أثناء الجلسة</small>
+              </div>
+              <input type="checkbox" class="sw" id="pref-deep-focus-toggle">
+            </div>
+            <div class="row sub">
+              <div class="txt">
+                <b data-i18n="deep_blocked_lbl">المنصات والمواقع المشتتة المحظورة تلقائياً</b>
+                <small data-i18n="deep_blocked_sub">يتم تصغير نوافذها وحظرها فوراً عند محاولة فتحها</small>
+                <div class="chips-grid">
+                  <span class="chip blocked"><span class="dot"></span>Facebook</span>
+                  <span class="chip blocked"><span class="dot"></span>YouTube</span>
+                  <span class="chip blocked"><span class="dot"></span>Instagram</span>
+                  <span class="chip blocked"><span class="dot"></span>TikTok</span>
+                  <span class="chip blocked"><span class="dot"></span>X / Twitter</span>
+                  <span class="chip blocked"><span class="dot"></span>Reddit</span>
+                  <span class="chip blocked"><span class="dot"></span>Netflix</span>
+                  <span class="chip blocked"><span class="dot"></span>Twitch</span>
+                  <span class="chip blocked"><span class="dot"></span>Discord</span>
+                  <span class="chip blocked"><span class="dot"></span>Steam</span>
+                  <span class="chip blocked"><span class="dot"></span>Telegram</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI TASK BREAKDOWN ENGINE (BYOK) -->
+        <div class="group">
+          <div id="ai-byok-settings-container"></div>
+        </div>
+
+        <!-- SHORTCUTS -->
+        <div class="group">
+          <h2 data-i18n="shortcuts_group">اختصارات لوحة المفاتيح والتركيز</h2>
+          <div class="card">
+            <div class="row"><div class="txt"><b data-i18n="sc_focus">فتح شريط التركيز والمهام</b></div><span class="val"><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>F</kbd></span></div>
+            <div class="row"><div class="txt"><b data-i18n="sc_island">فتح / إغلاق الجزيرة</b></div><span class="val"><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>I</kbd></span></div>
+            <div class="row"><div class="txt"><b data-i18n="sc_esc">إخفاء الجزيرة السريع</b></div><span class="val"><kbd>Esc</kbd></span></div>
           </div>
         </div>
       </section>
-    </main>
+
+    
+        <!-- PAGE 8: ABOUT & COMMUNITY SUPPORT -->
+        <section id="p-about" class="page" role="tabpanel" dir="rtl">
+          <div class="about-hero-card">
+            <div class="about-title-row">
+              <div class="about-app-name">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" class="text-sky-400"><circle cx="12" cy="12" r="10"/><path d="m12 8 4 4-4 4M8 12h8"/></svg>
+                <span>HyperNova Dynamic Island</span>
+              </div>
+              <span class="about-ver-badge">الإصدار V2.0 Final</span>
+            </div>
+            <p class="about-tagline">
+              الجزيرة التفاعلية الذكية لسطح المكتب (Desktop Dynamic Island) — تجمع بين الإنتاجية العالية، راديو وتلاوات القرآن الكريم بأصوات كبار القراء، مواقيت وأصوات الأذان الدقيقة، ونظام التركيز العصبي وإدارة المهام.
+            </p>
+
+            <div class="about-credit-box">
+              <div style="font-weight:700; color:#38bdf8; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                <span>مشروع مفتوح المصدر (Open Source) واعتراف بالفضل</span>
+              </div>
+              هذا المشروع مفتوح المصدر بالكامل ومتاح لمجتمع المطورين. نود تقديم خالص الشكر والتقدير للمهندس <b>عمرو (Amr)</b> وفريق العمل على الجهود الأساسية الملهمة التي بدأوا بها فكرة الجزيرة لسطح المكتب. تم استكمال وتطوير هذا المشروع وتوسعته وإعادة هندسته بالكامل ليصبح <b>HyperNova V2.0</b>، شاملاً راديو القرآن الكريم المباشر، وتكبيرتي الأذان الحية، ونظام NeuroFocus للمهام، والتصميم فائق النقاء المطابق لمعايير Apple HIG.
+            </div>
+
+            <div class="about-actions-grid">
+              <a href="https://www.paypal.com/ncp/payment/4SWPEP8Q3YF78" target="_blank" class="btn-coffee" id="btn-coffee-link">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+                <span>Buy Me a Coffee (دعم المطور)</span>
+              </a>
+              <a href="https://github.com/AhmedMousa1/HyperNova" target="_blank" class="btn-github" id="btn-github-link">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                <span>GitHub · صفحة المشروع والتحديثات</span>
+              </a>
+                          <a href="https://ipn.eg/S/ahmdmusa/instapay/2yqQQN" target="_blank" class="btn-instapay" id="btn-instapay-link" title="إرسال نقود عبر InstaPay مصر">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 9V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><rect x="9" y="9" width="12" height="10" rx="2"/><circle cx="15" cy="14" r="2"/></svg>
+                <span>InstaPay (انستاباي مصر)</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="group">
+            <h2 data-i18n="about_tech_specs">المواصفات التقنية والمصادر</h2>
+            <div class="card">
+              <div class="row">
+                <div class="txt">
+                  <b>الترخيص البرمجي (License)</b>
+                  <small>مفتوح المصدر تحت ترخيص MIT / GPL</small>
+                </div>
+                <span class="val" style="color:#6ee7b7; font-weight:700;">Open Source</span>
+              </div>
+              <div class="row">
+                <div class="txt">
+                  <b>المكتبات والتقنيات المستخدمة</b>
+                  <small>Electron 32, Tailwind CSS, Web Audio API, EveryAyah CDN, AlAdhan API</small>
+                </div>
+                <span class="val">Desktop App</span>
+              </div>
+              <div class="row">
+                <div class="txt">
+                  <b>رابط التبرع والمساهمة</b>
+                  <small>للمساهمة في استمرار وتطوير المشروع وتغطية خوادم البث الصوتي</small>
+                </div>
+                <a href="https://www.paypal.com/ncp/payment/4SWPEP8Q3YF78" target="_blank" style="color:#f59e0b; font-size:12px; font-weight:700;">PayPal ☕</a> &nbsp;|&nbsp; <a href="https://ipn.eg/S/ahmdmusa/instapay/2yqQQN" target="_blank" style="color:#a78bfa; font-size:12px; font-weight:700;">InstaPay ⚡ (ahmdmusa)</a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
   </div>
-  <div class="saved" id="saved" role="status">Saved</div>
+  <div class="saved" id="saved" role="status">تم الحفظ بنجاح</div>
+  <script src="ai-settings.js"></script>
   <script src="prefs.js"></script>
 </body>
 </html>

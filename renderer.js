@@ -31,6 +31,7 @@ const state = {
   reminderUntil: 0, // a dhikr / du'a / verse card is on screen until then (views/reminders.js)
   reminderSize: [500, 140],
   sceneUntil: 0, // the island is a character (views/scene.js) until then
+  focusMode: false,
 };
 const feat = (key) => state.features[key] !== false;
 
@@ -73,7 +74,7 @@ const fmt = (sec) => {
 };
 
 // ---------------- mode ----------------
-const SIZE = { idle: 1, compact: 2, toast: 3, peek: 4, reminder: 4, scene: 4, expanded: 5 };
+const SIZE = { idle: 1, compact: 2, toast: 3, peek: 4, reminder: 4, scene: 4, focus: 5, expanded: 6 };
 
 function timerActive() {
   return state.timer.running || state.timer.remaining > 0;
@@ -89,6 +90,8 @@ function compactKind() {
 
 function currentMode() {
   const now = Date.now();
+  // NeuroFocus Command Bar & Single-Step Capsule
+  if (state.focusMode && !anchor.vertical) return 'focus';
   // a character scene (adhan, water, focus) owns the island until it ends or is closed
   if (state.sceneUntil > now && !anchor.vertical) return 'scene';
   // a toast with a button (Join) stays under the cursor so it can be clicked
@@ -109,7 +112,7 @@ function render() {
   const mode = currentMode();
   if (mode !== lastMode) {
     island.classList.toggle('shrinking', !!lastMode && SIZE[mode] < SIZE[lastMode]);
-    island.classList.remove('idle', 'compact', 'toast', 'peek', 'reminder', 'scene', 'expanded');
+    island.classList.remove('idle', 'compact', 'toast', 'peek', 'reminder', 'scene', 'expanded', 'focus');
     island.classList.add(mode);
     const prev = lastMode;
     lastMode = mode;
@@ -131,7 +134,7 @@ function render() {
     if (typeof positionIsland === 'function') positionIsland();
   }
   setCompactTitle(!showTitle ? '' : kind === 'media' ? state.media.title : state.dl.title);
-  $('.c-title').hidden = !showTitle;
+  const elCTitle = $('.c-title'); if (elCTitle) elCTitle.hidden = !showTitle;
 }
 
 // Title between the art and the equalizer; scrolls back and forth when it doesn't fit.
@@ -203,6 +206,10 @@ bridge.onToggle(() => {
   render();
 });
 
+bridge.onFocusToggle?.(() => {
+  window.neuroFocus?.toggle();
+});
+
 // ---------------- drag to move (docks when dropped at the top edge) ----------------
 const NO_DRAG = 'button, input, .slider, .file, .app, .pick, .picker, .clip-item, .shelf-items';
 let press = null;
@@ -256,7 +263,7 @@ island.addEventListener('click', (e) => {
 // on it, then pushed back inside the window, so near the bottom or the sides the island
 // opens upward / inward instead of off screen. Sizes mirror style.css.
 const DIMS = {
-  idle: [236, 32], compact: [300, 32], toast: [340, 34], peek: [400, 78], expanded: [548, 232],
+  idle: [236, 32], compact: [300, 32], toast: [340, 34], peek: [400, 78], focus: [620, 76], expanded: [580, 260],
 };
 const COMPACT_WIDE = 380; // compact with a title (media / download)
 const VDIMS = { ...DIMS, idle: [44, 244], compact: [44, 136], toast: [44, 168] };
@@ -266,6 +273,10 @@ function positionIsland() {
   let [w, h] = (anchor.vertical ? VDIMS : DIMS)[lastMode] || DIMS.idle;
   if (lastMode === 'compact' && !anchor.vertical && island.classList.contains('c-wide')) w = COMPACT_WIDE;
   if (lastMode === 'reminder') [w, h] = state.reminderSize;
+  if (lastMode === 'focus') {
+    const hasTask = island.classList.contains('has-task');
+    [w, h] = [620, hasTask ? 125 : 76];
+  }
   // in the browser's address bar: a slim pill, or a thin line while the user types there
   if (anchor.addr && !anchor.vertical && (lastMode === 'idle' || lastMode === 'compact')) {
     [w, h] = anchor.addr === 'line' ? [90, 3] : [anchor.sw, anchor.sh];
@@ -394,7 +405,19 @@ function frame() {
 }
 
 // ---------------- tabs ----------------
-$$('.tab').forEach((btn) => btn.addEventListener('click', () => selectTab(btn.dataset.tab)));
+let tabHoverTimer = null;
+$$('.tab').forEach((btn) => {
+  btn.addEventListener('click', () => selectTab(btn.dataset.tab));
+  btn.addEventListener('mouseenter', () => {
+    clearTimeout(tabHoverTimer);
+    tabHoverTimer = setTimeout(() => {
+      selectTab(btn.dataset.tab);
+    }, 110);
+  });
+  btn.addEventListener('mouseleave', () => {
+    clearTimeout(tabHoverTimer);
+  });
+});
 function selectTab(tab) {
   state.tab = tab;
   $$('.tab').forEach((b) => {
@@ -405,25 +428,75 @@ function selectTab(tab) {
   $$('.view').forEach((v) => v.classList.toggle('active', v.id === `v-${tab}`));
 }
 
-// ---------------- clock ----------------
+// ---------------- clock & compact vertical card (Image 2 reference) ----------------
 function tickClock() {
   const d = new Date();
-  const time = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-  const date = d.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
-  $('#x-clock').textContent = $('#i-time').textContent = time;
-  $('#x-date').textContent = $('#i-date').textContent = date;
-  $('#v-time').textContent = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-  $('#v-day').textContent = d.toLocaleDateString([], { weekday: 'short', day: 'numeric' });
+  
+  // 1. Clock (e.g. 6:17 AM - AM/PM strictly on right)
+  const hours = d.getHours();
+  const minutes = d.getMinutes().toString().padStart(2, '0');
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const hour12 = hours % 12 || 12;
+  const time = `${hour12}:${minutes} ${ampm}`;
+  
+  // 2. Authentic Hijri Date via Um Al-Qura (e.g. ٢٦ جمادى الأولى ١٤٤٨ هـ)
+  let hijriStr = '';
+  try {
+    hijriStr = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    }).format(d);
+  } catch {
+    hijriStr = '٢٦ جمادى الأولى ١٤٤٨ هـ';
+  }
+
+  // 3. Gregorian Date formatted exactly like reference (e.g. Friday, Nov 06, 2026)
+  const gregStr = d.toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric'
+  });
+
+  // Update Compact Card with sub-scaled, colored AM/PM
+  const xClock = $('#x-clock');
+  if (xClock) {
+    xClock.innerHTML = `<span id="x-clock-time" class="c-digits">${hour12}:${minutes}</span><span id="x-clock-ampm" class="c-meridian">${ampm}</span>`;
+  }
+  const xHijri = $('#x-hijri');
+  if (xHijri) xHijri.textContent = hijriStr;
+  const xDate = $('#x-date');
+  if (xDate) xDate.textContent = gregStr;
+
+  // Sync other views if present
+  if ($('#i-time')) $('#i-time').innerHTML = `<span class="i-digits">${hour12}:${minutes}</span> <span class="i-meridian">${ampm}</span>`;
+    const isArLang = document.documentElement.lang === 'ar' || document.documentElement.dir === 'rtl';
+  const idleDateStr = d.toLocaleDateString(isArLang ? 'ar-EG' : 'en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric'
+  });
+  if ($('#i-date')) $('#i-date').textContent = idleDateStr;
+  if ($('#v-time')) $('#v-time').textContent = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+  if ($('#v-day')) $('#v-day').textContent = d.toLocaleDateString([], { weekday: 'short', day: 'numeric' });
 }
 tickClock();
-setInterval(tickClock, 5000);
+setInterval(tickClock, 1000);
 
 // ---------------- idle pill: rotates clock/weather, CPU/RAM and the next prayer ----------------
 let infoSlide = 0;
-setInterval(() => {
-  if (lastMode !== 'idle') return;
-  showSlide(infoSlide + 1);
-}, 6000);
+let slideIntervalTimer = null;
+function resetSlideTimer() {
+  if (slideIntervalTimer) clearInterval(slideIntervalTimer);
+  const sec = (state.features?.slideInterval !== undefined) ? Number(state.features.slideInterval) : 15;
+  if (sec <= 0) return; // 0 = fixed slide (no rotation)
+  slideIntervalTimer = setInterval(() => {
+    if (lastMode !== 'idle') return;
+    showSlide(infoSlide + 1);
+  }, sec * 1000);
+}
+resetSlideTimer();
 
 // Shows the n-th slide among those turned on; with all of them off the clock stays.
 function showSlide(n) {
@@ -460,24 +533,30 @@ function makeSlider(el, { onInput, onCommit } = {}) {
   };
   const at = (e) => {
     const r = el.getBoundingClientRect();
-    return (e.clientX - r.left) / r.width;
+    if (!r.width) return 0;
+    const isRtl = window.getComputedStyle(el).direction === 'rtl';
+    const ratio = (e.clientX - r.left) / r.width;
+    return isRtl ? 1 - ratio : ratio;
   };
   el.addEventListener('pointerdown', (e) => {
+    e.stopPropagation();
     dragging = true;
     el.classList.add('drag');
-    el.setPointerCapture(e.pointerId);
+    try { el.setPointerCapture(e.pointerId); } catch {}
     set(at(e));
     onInput?.(value);
   });
   el.addEventListener('pointermove', (e) => {
     if (!dragging) return;
+    e.stopPropagation();
     set(at(e));
     onInput?.(value);
   });
-  const end = () => {
+  const end = (e) => {
     if (!dragging) return;
     dragging = false;
     el.classList.remove('drag');
+    try { el.releasePointerCapture(e.pointerId); } catch {}
     onCommit?.(value);
   };
   el.addEventListener('pointerup', end);
@@ -509,9 +588,14 @@ const APP_NAMES = {
 function appName(id) {
   if (!id) return '';
   const raw = id.split('!').pop().split('\\').pop().replace(/\.exe$/i, '');
+  // Filter out raw hexadecimal IDs (e.g. 308046B0AF4A3462) or GUIDs
+  if (/^[0-9a-fA-F_-]{10,}$/.test(raw) || /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}/.test(raw)) {
+    return 'HyperNova';
+  }
   const key = raw.toLowerCase().replace(/[^a-z]/g, '');
   for (const k of Object.keys(APP_NAMES)) if (key.includes(k)) return APP_NAMES[k];
-  return raw.split('.').pop();
+  const cleaned = raw.split('.').pop();
+  return /^[0-9a-fA-F_-]{10,}$/.test(cleaned) ? 'HyperNova' : cleaned;
 }
 
 function setAccent(r, g, b) {
@@ -593,6 +677,11 @@ let lastTrack = null;
 let hasRealArt = false;
 bridge.onMedia((m) => {
   if (m.error) return;
+  if (window.quranRadio?.state?.isRadioMode) {
+    // Keep Quran Radio in foreground
+    window.quranRadio.updateUI();
+    return;
+  }
   const lock = state.playLock;
   if (lock && Date.now() < lock.until && m.has && m.playing !== lock.value) {
     m.playing = lock.value;
@@ -625,11 +714,16 @@ bridge.onMedia((m) => {
     $('#m-artist').textContent = $('#p-artist').textContent = sub;
     $('#p-eyebrow').textContent = appName(m.app) ? `Now Playing · ${appName(m.app)}` : 'Now Playing';
   }
-  $('#x-app-name').textContent = m.has ? appName(m.app) || 'Media' : 'Idle';
-  $('#v-media').classList.toggle('browser-src', m.has && BROWSERS.some((b) => (m.app || '').toLowerCase().includes(b)) && !(m.app || '').toLowerCase().includes('firefox'));
-  $('#v-media').classList.toggle('none', !m.has);
-  setPlayingUI(!!m.playing);
-  $('#m-progress').classList.toggle('hidden', !(m.dur > 0));
+  const isAr = document.documentElement.lang === 'ar' || document.documentElement.dir === 'rtl';
+  const idleText = isAr ? 'جاهز للعمل' : 'Idle';
+  $('#x-app-name').textContent = m.has ? appName(m.app) || (isAr ? 'وسائط' : 'Media') : idleText;
+  const isQuranRadio = window.quranRadio && window.quranRadio.state && window.quranRadio.state.isRadioMode;
+  if (!isQuranRadio) {
+    $('#v-media').classList.toggle('browser-src', m.has && BROWSERS.some((b) => (m.app || '').toLowerCase().includes(b)) && !(m.app || '').toLowerCase().includes('firefox'));
+    $('#v-media').classList.toggle('none', !m.has);
+    setPlayingUI(!!m.playing);
+    $('#m-progress').classList.toggle('hidden', !(m.dur > 0));
+  }
 
   handleVolume(m);
   handleBrightness(m);
@@ -643,7 +737,15 @@ function mediaPos() {
   return Math.min(pos, m.dur || 0);
 }
 
+let seekLockUntil = 0;
 const seek = makeSlider($('#m-bar'), {
+  onInput: (v) => {
+    const m = state.media;
+    if (!m.has || !(m.dur > 0)) return;
+    const pos = v * m.dur;
+    $('#m-pos').textContent = fmt(pos);
+    $('#m-dur').textContent = `-${fmt(m.dur - pos)}`;
+  },
   onCommit: (v) => {
     const m = state.media;
     if (!m.has || !(m.dur > 0)) return;
@@ -651,21 +753,34 @@ const seek = makeSlider($('#m-bar'), {
     bridge.mediaCmd(`seek ${sec.toFixed(1)}`);
     state.media.pos = sec;
     state.mediaAt = performance.now();
+    seekLockUntil = Date.now() + 1500;
   },
 });
 
 function tickProgress() {
+  if (window.quranRadio?.state?.isRadioMode) return;
   const m = state.media;
   if (!m.has || !(m.dur > 0)) return;
   const pos = seek.dragging ? parseFloat($('#m-bar').getAttribute('aria-valuenow')) / 100 * m.dur : mediaPos();
   $('#m-pos').textContent = fmt(pos);
   $('#m-dur').textContent = `-${fmt(m.dur - pos)}`;
-  if (!seek.dragging) seek.set(pos / m.dur);
+  if (!seek.dragging && Date.now() > seekLockUntil) seek.set(pos / m.dur);
 }
 
 $$('[data-cmd]').forEach((btn) =>
-  btn.addEventListener('click', () => {
+  btn.addEventListener('click', (e) => {
     const cmd = btn.dataset.cmd;
+    if (window.quranRadio && window.quranRadio.state && window.quranRadio.state.isRadioMode) {
+      e.stopPropagation();
+      if (cmd === 'toggle') {
+        window.quranRadio.togglePlayPause();
+      } else if (cmd === 'prev') {
+        window.quranRadio.previousAyah();
+      } else if (cmd === 'next') {
+        window.quranRadio.nextAyah();
+      }
+      return;
+    }
     bridge.mediaCmd(cmd);
     if (cmd === 'toggle' && state.media.has) {
       // optimistic UI; hold it until the player reports the new state (it lags ~0.5 s),
@@ -721,6 +836,12 @@ function setVolume(v) {
   volSlider.set(state.vol);
   showVolPct(state.vol, false);
   sendVol(state.vol);
+  if (window.quranRadio && window.quranRadio.primaryAudio) {
+    try {
+      window.quranRadio.primaryAudio.volume = state.vol;
+      window.quranRadio.primaryAudio.muted = false;
+    } catch (e) {}
+  }
 }
 function showVolPct(vol, muted) {
   volIconClass($('.vol'), vol, muted);
@@ -733,12 +854,23 @@ $('#vol-btn').addEventListener('click', () => {
   state.volLockUntil = Date.now() + 900;
   showVolPct(state.vol ?? 0, state.muted);
   bridge.mediaCmd('mute');
+  if (window.quranRadio && window.quranRadio.primaryAudio) {
+    try {
+      window.quranRadio.primaryAudio.muted = state.muted;
+    } catch (e) {}
+  }
 });
 
 island.addEventListener('wheel', (e) => {
-  if (e.target.closest('.picker-list, .clip-list, .shelf-items') || state.vol === null) return;
+  // If user is inside any scrollable container or view, let normal scroll happen freely!
+  const isScrollTarget = e.target.closest('.scrollable, .view, .pr-daily-body, .nf-dashboard, .apps-list, .clip-list, .picker-list, .shelf-items, [style*="overflow"], [class*="list"], #v-focus, #v-prayer, #v-apps');
+  if (isScrollTarget) return;
+
+  // Only adjust volume if explicitly targeting volume slider, volume button, or HUD
+  const isVolTarget = e.target.closest('#vol-btn, #vol-slider, .hud, .m-vol');
+  if (!isVolTarget || state.vol === null) return;
+
   e.preventDefault();
-  // proportional to the scroll distance: one mouse notch ≈ 3%, touchpads move in fine steps
   const perPx = e.deltaMode === 1 ? 0.01 : 0.0003;
   const step = Math.max(-0.05, Math.min(0.05, -e.deltaY * perPx));
   setVolume(state.vol + step);
@@ -763,14 +895,14 @@ const brightSlider = makeSlider($('#bright-slider'), {
   onInput: (v) => {
     state.bright = Math.round(v * 100);
     state.brightLockUntil = Date.now() + 2500;
-    $('#bright-val').textContent = `${state.bright}%`;
+    const elBrightVal = $('#bright-val'); if (elBrightVal) elBrightVal.textContent = `${state.bright}%`;
     sendBright(v);
   },
 });
 
 function handleBrightness(m) {
   if (typeof m.bright !== 'number') return;
-  $('#bright-row').hidden = m.bright < 0;
+  const elBrightRow = $('#bright-row'); if (elBrightRow) elBrightRow.hidden = m.bright < 0;
   if (m.bright < 0 || Date.now() < state.brightLockUntil) return;
   const changed = state.bright >= 0 && m.bright !== state.bright;
   state.bright = m.bright;
@@ -1018,7 +1150,7 @@ setInterval(() => {
 }, 250);
 
 // ---------------- settings ----------------
-const TAB_FEATURE = { media: 'tabMedia', apps: 'tabApps', shelf: 'tabShelf', prayer: 'tabPrayer', timer: 'tabTimer', system: 'tabSystem' };
+const TAB_FEATURE = { media: 'tabMedia', apps: 'tabApps', shelf: 'tabShelf', prayer: 'tabPrayer', timer: 'tabTimer', focus: 'tabFocus', system: 'tabSystem' };
 
 // Hide tabs that are switched off (Downloads shows itself only around download activity).
 function refreshTabs() {
@@ -1041,8 +1173,26 @@ function refreshTabs() {
 
 function applyFeatures(f) {
   state.features = f || {};
+  const appLang = state.features.appLang || 'ar';
+  if (state.features.themeColor) {
+    document.documentElement.style.setProperty('--theme-accent', state.features.themeColor);
+    document.documentElement.style.setProperty('--yellow', state.features.themeColor);
+  }
+  if (state.features.glassOpacity) {
+    const op = Number(state.features.glassOpacity) / 100;
+    document.documentElement.style.setProperty('--glass-opacity', op.toFixed(2));
+    document.documentElement.style.setProperty('--glass-blur', `${Math.round(op * 28)}px`);
+  }
+  const currentTheme = state.features.islandTheme || 'dark';
+  document.documentElement.setAttribute('data-theme', currentTheme);
+  document.body.classList.toggle('theme-light', currentTheme === 'light');
+  document.body.classList.toggle('theme-dark', currentTheme === 'dark');
+  document.body.classList.toggle('theme-black', currentTheme === 'black');
+  document.documentElement.lang = appLang;
+  document.documentElement.dir = appLang === 'ar' ? 'rtl' : 'ltr';
   $$('[data-feat]').forEach((el) => el.classList.toggle('off', !feat(el.dataset.feat)));
   if ($('.info-slide.on')?.classList.contains('off')) showSlide(0);
+  resetSlideTimer();
   refreshTabs();
   render();
   window.dispatchEvent(new CustomEvent('island:features', { detail: state.features }));
@@ -1056,3 +1206,53 @@ selectTab('media');
 drawTimer();
 render();
 wake(1500);
+
+
+// Universal pointerdown hook so any input in the island takes focus immediately
+document.addEventListener('pointerdown', (e) => {
+  const isInput = e.target.closest('input, textarea, [contenteditable="true"]');
+  if (isInput) {
+    bridge.focusInput?.(true);
+    setTimeout(() => isInput.focus(), 25);
+  }
+}, true);
+
+// Universal Escape key listener
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    if (window.neuroFocus?.isOpen?.() || state.focusMode) {
+      e.preventDefault();
+      window.neuroFocus?.hide();
+      bridge.focusInput?.(false);
+    } else if (state.expanded || state.hover) {
+      e.preventDefault();
+      collapse();
+      bridge.focusInput?.(false);
+    }
+  }
+});
+
+bridge.onDistractionDetected?.((item) => {
+  const isAr = document.documentElement.lang === 'ar' || document.documentElement.dir === 'rtl';
+  if (typeof playScene === 'function') {
+    playScene({
+      who: 'nova',
+      props: ['band', 'laptop'],
+      arms: 'type',
+      tone: 'focus',
+      badge: isAr ? 'قوة قاهرة · DEEP FOCUS' : 'DEEP FOCUS · ACTIVE',
+      title: isAr ? 'تنبيه التركيز العميق 🎯' : 'Focus Alert 🎯',
+      sub: isAr
+        ? `تم تصغير <bdi dir="ltr"><b>${item || 'التطبيق'}</b></bdi> تلقائياً لمنع التشتت.<br>ركّز في مهمتك يا بطل، خطوات صغيرة وتنجز!`
+        : `Minimized <bdi dir="ltr"><b>${item || 'App'}</b></bdi> to eliminate distractions.<br>Keep going, you got this!`,
+      ms: 7000,
+      lang: isAr ? 'ar' : 'en'
+    });
+  }
+});
+
+
+window.state = state;
+window.render = render;
+window.selectTab = selectTab;
+window.applyFeatures = applyFeatures;

@@ -12,6 +12,7 @@ contextBridge.exposeInMainWorld('prefs', {
   onGeneral: on('general'),
   window: (action) => ipcRenderer.send('prefs-window', action),
   previewReminder: () => ipcRenderer.send('reminder-preview'),
+  previewAdhan: (voice) => ipcRenderer.send('adhan-preview', voice),
   bridgeStatus: () => ipcRenderer.invoke('bridge-status'),
   openLog: () => ipcRenderer.send('open-log'),
   copyReport: () => ipcRenderer.invoke('copy-report'),
@@ -23,4 +24,10 @@ contextBridge.exposeInMainWorld('prefs', {
   setCalendar: (url) => ipcRenderer.invoke('cal-set', url),
   onCalendar: on('calendar'),
   openSupport: (key) => ipcRenderer.send('open-support', key),
+  ai: {
+    getConfig: () => ipcRenderer.invoke('ai-get-config'),
+    saveConfig: (cfg) => ipcRenderer.invoke('ai-save-config', cfg),
+    deleteKey: () => ipcRenderer.invoke('ai-delete-key'),
+    testKey: (cfg) => ipcRenderer.invoke('ai-test-key', cfg),
+  },
 });

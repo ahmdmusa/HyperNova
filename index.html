@@ -2,9 +2,10 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'">
-  <title>Nova Island</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src 'self' data:; img-src 'self' data: https: blob:; media-src 'self' https: data: blob:; connect-src 'self' https:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'">
+  <title>HyperNova</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="views/focus.css">
 </head>
 <body>
   <div id="island" class="idle" role="region" aria-label="Dynamic Island">
@@ -55,12 +56,15 @@
           <div class="side"><span class="i-soft" lang="ar">بعد</span><b id="i-rmd-left" class="i-strong"></b></div>
         </div>
         <div class="info-slide pr-slide" data-feat="slidePrayer" hidden>
-          <div class="side">
+          <div class="side pr-slide-main">
             <svg class="s i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-            <b id="i-pr-name" class="i-strong" lang="ar"></b>
-            <span id="i-pr-time" class="i-soft"></span>
+            <b id="i-pr-name" class="i-strong"></b>
+            <span id="i-pr-time" class="i-soft" dir="ltr"></span>
           </div>
-          <div class="side"><span class="i-soft" lang="ar">بعد</span><b id="i-pr-left" class="i-strong"></b></div>
+          <div class="side pr-slide-countdown">
+            <span class="i-soft" id="i-pr-lbl">بعد</span>
+            <b id="i-pr-left" class="i-strong" dir="ltr"></b>
+          </div>
         </div>
       </div>
 
@@ -144,6 +148,50 @@
         <div class="rm-time" aria-hidden="true"><b></b></div>
       </div>
 
+      <!-- focus: NeuroFocus Liquid Glass Command Bar / Single-Step Focus -->
+      <div class="layer l-focus" dir="rtl" lang="ar" aria-live="polite">
+        <!-- Mode 1: Empty Omnibox Input (Image 1) -->
+        <div class="nf-input-bar" id="nf-input-bar">
+          <div class="nf-input-row">
+            <input type="text" id="nf-task-input" class="nf-omnibox" placeholder="..عاش! اكتب مهمة جديدة" spellcheck="false" autocomplete="off" />
+            <span class="nf-kbd">Enter ↵</span>
+          </div>
+          <div class="nf-bar-footer">
+            <span class="nf-status-tag"><i class="nf-pulse-dot"></i> محرك التركيز الذكي نشط</span>
+            <span class="nf-shortcut-hint">Esc للإخفاء</span>
+          </div>
+        </div>
+
+        <!-- Mode 2: Single-Step Active Capsule (Image 2) -->
+        <div class="nf-active-card" id="nf-active-card" hidden>
+          <div class="nf-step-topline">
+            <span id="nf-step-progress" class="nf-step-progress">الخطوة 1 من 3 · حوالي 10 دقائق</span>
+            <div class="nf-topline-left">
+              <span id="nf-pomo-badge" class="nf-pomo-badge" title="مؤقت بومودورو"><i class="nf-pomo-ico">⏱️</i> <b id="nf-pomo-time">25:00</b></span>
+              <span id="nf-step-deadline" class="nf-step-deadline">التسليم: غداً</span>
+            </div>
+          </div>
+          <div id="nf-step-hero" class="nf-step-hero">
+            افتح المتصفح وضع الرابط في شريط العنوان فقط
+          </div>
+          <div id="nf-substeps-container" class="nf-substeps-container"></div>
+          <div class="nf-actions-row">
+            <button id="nf-btn-unstick" class="nf-btn nf-btn-unstick" title="كسر الشلل التنفيذي بخطوة فيزيائية لمدة دقيقتين">
+              <span id="nf-unstick-text">فك الشلل (دقيقتين)</span>
+            </button>
+            <div class="nf-actions-left">
+              <button id="nf-btn-pomo-toggle" class="nf-btn nf-btn-pomo" title="تشغيل / إيقاف مؤقت بومودورو">▶</button>
+              <button id="nf-btn-cancel" class="nf-btn nf-btn-cancel">إلغاء</button>
+              <button id="nf-btn-done" class="nf-btn nf-btn-done">تمت الخطوة ✓</button>
+            </div>
+          </div>
+          <div class="nf-bar-footer">
+            <span class="nf-status-tag"><i class="nf-pulse-dot"></i> محرك التركيز الذكي نشط</span>
+            <span class="nf-shortcut-hint">Esc للإخفاء</span>
+          </div>
+        </div>
+      </div>
+
       <!-- vertical (docked to the left/right edge) -->
       <div class="layer vlayer l-vinfo">
         <b id="v-time" class="i-strong"></b>
@@ -187,7 +235,12 @@
       <!-- expanded -->
       <div class="layer l-expanded">
         <header class="topbar">
-          <div class="chip"><span class="dot"></span><span id="x-app-name">Idle</span></div>
+          <div class="topbar-left-zone">
+            <button class="topbar-gear-btn" id="open-settings" title="الإعدادات" aria-label="Settings">
+              <svg class="s" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+            </button>
+            <div class="chip"><span class="dot"></span><span id="x-app-name">جاهز للعمل</span></div>
+          </div>
           <nav class="seg" role="tablist" aria-label="Views">
             <span class="seg-thumb" aria-hidden="true"></span>
             <button role="tab" data-tab="media" class="tab" aria-label="Music">
@@ -197,7 +250,7 @@
               <svg class="s" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Apps</span>
             </button>
             <button role="tab" data-tab="shelf" class="tab" aria-label="Shelf">
-              <svg class="s" viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11Z"/></svg><span>Shelf</span><i class="badge" id="shelf-badge"></i>
+              <svg class="s" viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11Z"/></svg><span>Shelf</span><i class="badge" id="shelf-badge"></i>
             </button>
             <button role="tab" data-tab="downloads" class="tab" aria-label="Downloads" hidden>
               <svg class="s" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg><span>Downloads</span><i class="badge" id="dl-badge"></i>
@@ -208,14 +261,19 @@
             <button role="tab" data-tab="timer" class="tab" aria-label="Timer">
               <svg class="s" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M10 2h4"/></svg><span>Timer</span>
             </button>
+            <button role="tab" data-tab="focus" class="tab" aria-label="NeuroFocus">
+              <svg class="s" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1.5"/></svg><span>Focus</span>
+            </button>
             <button role="tab" data-tab="system" class="tab" aria-label="System">
               <svg class="s" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><span>System</span>
             </button>
           </nav>
-          <div class="clock">
-            <button class="gear" id="open-settings" title="Settings" aria-label="Settings"><svg class="s" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg></button>
-            <span class="wx-mini" id="wx-mini" hidden><svg class="s" viewBox="0 0 24 24"></svg><b></b></span>
-            <span class="clock-time"><b id="x-clock"></b><span id="x-date"></span></span>
+          
+          <!-- Compact Vertical Clock & Dates Widget (Matching User Reference Image Exactly) -->
+          <div class="topbar-compact-clock-card" id="clock-card" dir="rtl">
+            <b id="x-clock" class="c-clock" dir="ltr"><span id="x-clock-time">--:--</span> <span id="x-clock-ampm">--</span></b>
+            <span id="x-hijri" class="c-hijri">--</span>
+            <span id="x-date" class="c-greg">--</span>
           </div>
         </header>
 
@@ -223,9 +281,20 @@
         <section id="v-media" class="view none" role="tabpanel">
           <div class="empty">
             <div class="empty-ico"><svg class="s" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
-            <div>
+            <div class="empty-text-wrap">
               <div class="title">Nothing playing</div>
               <div class="sub wrap">Play something in Spotify, YouTube or any player and it shows up here.</div>
+              <div style="margin-top: 12px;">
+                <button type="button" id="qr-empty-launch-btn" class="qr-compact-empty-launcher" title="تشغيل راديو وتلاوة القرآن الكريم">
+                  <svg class="qr-svg-ico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2.5" y="7" width="19" height="14" rx="3.5"></rect>
+                    <path d="M16 3.5l-5 3.5"></path>
+                    <circle cx="7.5" cy="14" r="2.5"></circle>
+                    <path d="M14 11h4M14 14h4M14 17h2"></path>
+                  </svg>
+                  <span>تشغيل راديو القرآن الكريم</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -255,6 +324,15 @@
 
               <div class="controls">
                 <div class="transport">
+                  <!-- Radio Toggle Button for Quran Radio Mode -->
+                  <button type="button" id="qr-btn-toggle-radio" class="ctl quran-radio-btn" title="راديو القرآن الكريم (Interactive Quran Radio)" aria-label="Quran Radio">
+                    <svg class="qr-svg-ico" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="2.5" y="7" width="19" height="14" rx="3.5"></rect>
+                      <path d="M16 3.5l-5 3.5"></path>
+                      <circle cx="7.5" cy="14" r="2.5"></circle>
+                      <path d="M14 11h4M14 14h4M14 17h2"></path>
+                    </svg>
+                  </button>
                   <button data-cmd="prev" class="ctl" aria-label="Previous">
                     <svg viewBox="0 0 24 24"><path d="M6.5 5.5h2v13h-2zM20 6.2v11.6a.8.8 0 0 1-1.2.7l-8.6-5.8a.85.85 0 0 1 0-1.4l8.6-5.8a.8.8 0 0 1 1.2.7Z"/></svg>
                   </button>
@@ -343,28 +421,98 @@
 
         <!-- PRAYER -->
         <section id="v-prayer" class="view" role="tabpanel" dir="rtl" lang="ar">
-          <div class="pr">
-            <div class="card pr-next">
-              <div class="eyebrow">الصلاة القادمة</div>
-              <div class="pr-name" id="pr-next-name">—</div>
-              <div class="pr-count" id="pr-count" dir="ltr">--:--:--</div>
-              <div class="pr-at" id="pr-next-time"></div>
-              <div class="pr-ramadan" id="pr-ramadan" hidden></div>
-              <div class="pr-meta">
-                <span id="pr-hijri"></span>
-                <button id="pr-alerts" class="pr-bell on" title="تنبيه قبل الصلاة بعشر دقائق وعند الأذان">
-                  <svg class="s" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"/><path class="off-line" d="M3 3l18 18"/></svg>
-                  <span>التنبيهات</span>
-                </button>
+            <div class="relative z-10 flex flex-col gap-2 w-full">
+
+              <!-- 1. ULTRA-SLIM PRAYER BAR (Miniaturized inline pills + compact location/countdown) -->
+              <div class="bg-[#151820]/85 border border-white/[0.08] rounded-2xl px-3 py-2 flex flex-col gap-1.5 shadow-md">
+                
+                <!-- Micro Header: Location on Right + Next Prayer Countdown on Left (NO duplicate countdown!) -->
+                <div class="flex items-center justify-between gap-2 px-0.5">
+                  <div class="flex items-center gap-1.5 text-[11px] text-zinc-300">
+                    <button id="pr-alerts" type="button" title="تنبيهات الأذان" class="w-5 h-5 rounded-md bg-emerald-500/15 border border-emerald-400/30 flex items-center justify-center text-emerald-300 transition">
+                      <svg class="w-3 h-3 s" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                      </svg>
+                    </button>
+                    <span id="pr-city" class="font-bold text-zinc-100">الزقازيق</span>
+                    <span class="text-zinc-500">•</span>
+                    <span id="pr-method" class="text-[10px] text-zinc-400 truncate">هيئة المساحة المصرية</span>
+                  </div>
+
+                  <div class="flex items-center gap-1.5 bg-[#0c0e13] border border-emerald-500/30 px-2.5 py-0.5 rounded-full shadow-inner">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="text-[10px] text-zinc-300">القادمة: <strong id="nextPrayerNameLabel" class="text-emerald-300 font-bold">العصر</strong></span>
+                    <span id="pr-count" class="font-mono text-[11px] font-bold text-emerald-400" dir="ltr">-01:25:35</span>
+                  </div>
+                </div>
+
+                <!-- 6 Miniaturized Inline Prayer Pills (Name & Time side-by-side, single row!) -->
+                <div id="pr-list" class="grid grid-cols-6 gap-1.5 w-full">
+                  <!-- Dynamically populated by prayer.js -->
+                </div>
               </div>
+
+              <!-- 2. EXPANDED, HIGH-LEGIBILITY DUA / HADITH / AYAH / DHIKR HERO CARD -->
+              <div class="dua-hero-card flex flex-col justify-between gap-2.5">
+                
+                <!-- Card Top Bar: Segmented Category Tabs on Right + Controls & Font Size on Left -->
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/[0.06] pb-1.5">
+                  <!-- Segmented Tabs + Category Badge -->
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <div id="inspirationTabs" class="segmented-bar">
+                      <button type="button" class="seg-btn seg-btn-active pr-daily-tab" data-daily="dua">دعاء اليوم</button>
+                      <button type="button" class="seg-btn pr-daily-tab" data-daily="hadith">حديث اليوم</button>
+                      <button type="button" class="seg-btn pr-daily-tab" data-daily="ayah">آية اليوم</button>
+                      <button type="button" class="seg-btn pr-daily-tab" data-daily="dhikr">ذكر اليوم</button>
+                    </div>
+                    <span id="pr-daily-badge" class="text-[11px] font-bold px-2 py-0.5 rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-500/25">
+                      دعاء الثبات
+                    </span>
+                  </div>
+
+                  <!-- Left Toolbar: Font Size A+/A-, Stepper Counter, Copy Button -->
+                  <div class="flex items-center gap-1.5">
+                    <button id="btnFontSizeToggle" type="button" title="تكبير / تصغير حجم الخط" class="px-2 py-1 rounded-lg bg-white/[0.06] hover:bg-white/10 text-[11px] font-bold text-amber-300 transition">
+                      خط كبير A+
+                    </button>
+                    <div class="flex items-center gap-1 bg-black/40 px-1.5 py-0.5 rounded-lg border border-white/5">
+                      <button id="btnPrevInsp" type="button" title="السابق" class="w-5 h-5 rounded hover:bg-white/10 flex items-center justify-center text-zinc-300 hover:text-white transition">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                      </button>
+                      <span id="inspCounter" class="font-mono text-[10px] text-zinc-400 px-1">1/3</span>
+                      <button id="btnNextInsp" type="button" title="التالي" class="w-5 h-5 rounded hover:bg-white/10 flex items-center justify-center text-zinc-300 hover:text-white transition">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                      </button>
+                    </div>
+                    <button id="btnCopyInsp" type="button" title="نسخ النص" class="w-6 h-6 rounded-lg bg-white/[0.06] hover:bg-emerald-500/20 border border-white/10 flex items-center justify-center text-zinc-300 hover:text-emerald-300 transition">
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Card Main Body: High-Contrast Serif/Amiri Quran Font -->
+                <div class="py-1 px-1 text-center sm:text-right">
+                  <p id="pr-daily-text" class="font-quran text-xl sm:text-[22px] font-bold text-amber-50 leading-relaxed tracking-wide">
+                    «يَا مُقَلِّبَ الْقُلُوبِ ثَبِّتْ قَلْبِي عَلَى دِينِكَ، اللَّهُمَّ مُصَرِّفَ الْقُلُوبِ صَرِّفْ قُلُوبَنَا عَلَى طَاعَتِكَ»
+                  </p>
+                </div>
+
+                <!-- Card Footer: Citation + Interactive Tasbih Counter -->
+                <div class="flex items-center justify-between gap-2 pt-1 border-t border-white/[0.04] text-[11.5px]">
+                  <span id="pr-daily-ref" class="text-zinc-400 font-medium">
+                    📖 جامع الترمذي (٣٥٢٢) وصحيح مسلم (٢٦٥٤) • حديث صحيح
+                  </span>
+                  <button id="btnTasbihCount" type="button" class="px-2.5 py-0.5 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-400/30 text-[11px] font-bold text-emerald-300 transition active:scale-95">
+                    سبحة القراءة: <span id="tasbihNum" class="font-mono">0</span> / 3
+                  </button>
+                </div>
+
+              </div>
+
             </div>
-            <div class="pr-side">
-              <div class="pr-list" id="pr-list"></div>
-              <div class="pr-foot" id="pr-city"></div>
-            </div>
-          </div>
-          <div class="pr-loading" id="pr-loading">جاري تحميل مواقيت الصلاة…</div>
-        </section>
+          </section>
 
         <!-- TIMER -->
         <section id="v-timer" class="view" role="tabpanel">
@@ -431,13 +579,126 @@
 
             <div class="card clips">
               <div class="clips-head">
-                <span><svg class="s" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>Clipboard</span>
+                <span id="clip-title-lbl"><svg class="s" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg><span id="clip-title-txt">سجل الحافظة</span></span>
                 <button id="clip-clear" class="mini-btn" aria-label="Clear clipboard history">
                   <svg class="s" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
                 </button>
               </div>
               <div id="clip-list" class="clip-list"></div>
             </div>
+          </div>
+        </section>
+
+        <!-- FOCUS / NEUROFOCUS -->
+        <section id="v-focus" class="view" role="tabpanel" dir="rtl" lang="ar">
+          <div class="nf-container flex flex-col gap-2">
+            
+            <!-- 1. Ambient Soundscapes Bar at the TOP per user request ("الاصوات تبقي فوق") -->
+            <div class="nf-sound-card">
+              <span class="nf-sound-lbl" id="nf-ui-sound-lbl">أصوات التركيز:</span>
+              <div class="nf-sound-chips">
+                <button type="button" class="nf-sound-chip active" data-sound="none">
+                  <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+                  <span>صامت</span>
+                </button>
+                <button type="button" class="nf-sound-chip" data-sound="nature">
+                  <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/></svg>
+                  <span>طبيعة</span>
+                </button>
+                <button type="button" class="nf-sound-chip" data-sound="fajr">
+                  <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6M4.93 4.93l4.24 4.24M2 12h6M20 12h2M12 18v4M4.93 19.07l4.24-4.24"/></svg>
+                  <span>الفجر</span>
+                </button>
+                <button type="button" class="nf-sound-chip" data-sound="night">
+                  <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                  <span>سكون الليل</span>
+                </button>
+                <button type="button" class="nf-sound-chip" data-sound="library">
+                  <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                  <span>مكتبة</span>
+                </button>
+                <button type="button" class="nf-sound-chip" data-sound="rain">
+                  <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/><path d="m8 19-2 3M12 19l-2 3M16 19l-2 3"/></svg>
+                  <span>مطر</span>
+                </button>
+                <button type="button" class="nf-sound-chip" data-sound="brown">
+                  <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg>
+                  <span>بُنية</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- 2. Header Bar with Compact Deep Focus in the Corner with Subtitle -->
+            <div class="nf-header-bar flex items-center justify-between">
+              <div class="nf-title-group flex items-center gap-2">
+                <b class="nf-main-title" id="nf-ui-title">ركّز · Focus</b>
+                <span class="nf-streak-badge" id="nf-dash-streak">🔥 3 أيام</span>
+                <span class="nf-stats-mini" id="nf-dash-completed-steps">✓ 0 منجزة</span>
+              </div>
+              
+              <!-- Compact Deep Focus Toggle in corner with subtitle per user request -->
+              <div class="flex flex-col items-end">
+                <div id="nf-dash-deep-toggle" class="nf-compact-deep-switch" role="switch" aria-checked="false" title="تفعيل وضع القوة القاهرة لحظر المشتتات">
+                  <span class="nf-deep-icon"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
+                  <span class="nf-deep-txt" id="nf-ui-deep-txt">Deep Focus</span>
+                  <span class="nf-mini-toggle-pill"><i class="nf-knob"></i></span>
+                </div>
+                <small class="text-[9.5px] text-zinc-400 mt-0.5">حجب المشتتات والتركيز الكامل</small>
+              </div>
+            </div>
+
+            <!-- 3. Categories Filter Bar -->
+            <div class="nf-cat-filter-bar">
+              <button type="button" class="nf-cat-chip active" data-cat="all">
+                <svg class="nf-chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                <span>الكل</span>
+              </button>
+              <button type="button" class="nf-cat-chip" data-cat="work">
+                <svg class="nf-chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                <span>عمل</span>
+              </button>
+              <button type="button" class="nf-cat-chip" data-cat="personal">
+                <svg class="nf-chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span>شخصي</span>
+              </button>
+              <button type="button" class="nf-cat-chip" data-cat="urgent">
+                <svg class="nf-chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                <span>عاجل</span>
+              </button>
+              <button type="button" class="nf-cat-chip" data-cat="project">
+                <svg class="nf-chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                <span>مشاريع</span>
+              </button>
+            </div>
+
+            <!-- 4. Smart Todo Row + Large Organized Scrollable List -->
+            <div class="nf-input-card">
+              <div class="nf-task-input-row">
+                <input type="text" id="nf-dash-task-input" class="nf-todo-input" placeholder="اكتب مهمتك أو مشروعك هنا..." spellcheck="false" autocomplete="off" />
+                <div class="nf-btn-actions-group">
+                  <button type="button" id="nf-btn-add-task" class="nf-btn-add" title="إضافة مهمة" aria-label="إضافة مهمة">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  </button>
+                  <button type="button" id="nf-btn-decompose" class="nf-btn-decomp" title="تفكيك المشروع لخطوات ذكية بالذكاء الاصطناعي" aria-label="تفكيك بالذكاء الاصطناعي">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3Z"/></svg>
+                    <span>فكك</span>
+                  </button>
+                  <button type="button" id="nf-btn-unstick" class="nf-btn-2min" title="ابدأ دقيقتين فقط لكسر التسويف" aria-label="بدء دقيقتين">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    <span>2د</span>
+                  </button>
+                </div>
+              </div>
+              <!-- Period Tabs Bar (Daily / Weekly / Completed) -->
+              <div class="nf-period-tabs-bar">
+                <button type="button" class="nf-period-tab active" data-period="daily" id="nf-tab-daily">مهام اليوم</button>
+                <button type="button" class="nf-period-tab" data-period="weekly" id="nf-tab-weekly">مهام الأسبوع</button>
+                <button type="button" class="nf-period-tab" data-period="done" id="nf-tab-done">المكتملة</button>
+              </div>
+              <!-- Interactive Scrollable Large Todo List with Easy Mouse Scroll -->
+              <div id="nf-dash-steps-list" class="nf-todo-list-scroll" style="min-height: 120px; max-height: 145px; overflow-y: auto;"></div>
+            </div>
+
           </div>
         </section>
       </div>
@@ -490,9 +751,9 @@
   <script src="views/apps.js"></script>
   <script src="views/shelf.js"></script>
   <script src="views/system.js"></script>
+  <script src="views/reminders-data.js"></script>
   <script src="views/prayer.js"></script>
   <script src="views/downloads.js"></script>
-  <script src="views/reminders-data.js"></script>
   <script src="views/reminders.js"></script>
   <script src="views/privacy.js"></script>
   <script src="views/keyboard.js"></script>
@@ -505,6 +766,8 @@
   <script src="views/nova.js"></script>
   <script src="views/scene.js"></script>
   <script src="views/water.js"></script>
+  <script src="views/focus.js"></script>
+  <script src="views/quran-radio.js"></script>
   <script src="views/ready.js"></script>
 </body>
 </html>

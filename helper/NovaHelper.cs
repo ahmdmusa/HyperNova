@@ -55,8 +55,42 @@ static class Audio {
 }
 
 static class Win {
+
+  [DllImport("shell32.dll")] public static extern void SHChangeNotify(int e, int f, IntPtr a, IntPtr b);
+  [DllImport("wininet.dll")] public static extern bool InternetSetOption(IntPtr h, int o, IntPtr b, int l);
+
+  public static void SetDesktopIcons(bool hide) {
+    try {
+      using (var k = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", true)) {
+        if (k != null) {
+          k.SetValue("HideIcons", hide ? 1 : 0, Microsoft.Win32.RegistryValueKind.DWord);
+        }
+      }
+      SHChangeNotify(0x08000000, 0x1000, IntPtr.Zero, IntPtr.Zero);
+    } catch { }
+  }
+
+  public static void SetPacProxy(bool enable, string pacUrl) {
+    try {
+      using (var k = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Internet Settings", true)) {
+        if (k != null) {
+          if (enable && !string.IsNullOrEmpty(pacUrl)) {
+            k.SetValue("AutoConfigURL", pacUrl, Microsoft.Win32.RegistryValueKind.String);
+          } else {
+            k.DeleteValue("AutoConfigURL", false);
+          }
+        }
+      }
+      InternetSetOption(IntPtr.Zero, 39, IntPtr.Zero, 0);
+      InternetSetOption(IntPtr.Zero, 37, IntPtr.Zero, 0);
+    } catch { }
+  }
+
   [StructLayout(LayoutKind.Sequential)] public struct RECT { public int L, T, R, B; }
   [StructLayout(LayoutKind.Sequential)] public struct MONITORINFO { public int cbSize; public RECT rcMonitor; public RECT rcWork; public int dwFlags; }
+    [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr h, int cmd);
+  [DllImport("user32.dll")] public static extern bool ShowWindowAsync(IntPtr h, int cmd);
+  [DllImport("user32.dll")] public static extern bool PostMessage(IntPtr h, uint msg, IntPtr w, IntPtr l);
   [DllImport("user32.dll")] static extern IntPtr GetForegroundWindow();
   [DllImport("user32.dll")] static extern bool GetWindowRect(IntPtr h, out RECT r);
   [DllImport("user32.dll")] static extern IntPtr MonitorFromWindow(IntPtr h, int flags);
@@ -252,6 +286,31 @@ static class Program {
   static int bright = -1;
 
   static void Handle(string cmd) {
+
+    if (cmd == "hide-desktop-icons") {
+      Win.SetDesktopIcons(true);
+      return;
+    }
+    if (cmd == "show-desktop-icons") {
+      Win.SetDesktopIcons(false);
+      return;
+    }
+    if (cmd.StartsWith("pac-on ")) {
+      Win.SetPacProxy(true, cmd.Substring(7).Trim());
+      return;
+    }
+    if (cmd == "pac-off") {
+      Win.SetPacProxy(false, "");
+      return;
+    }
+    if (cmd == "minimize-fg") {
+      IntPtr h = Win.ForegroundHandle();
+      if (h != IntPtr.Zero) {
+        Win.PostMessage(h, 0x0112, (IntPtr)0xF020, IntPtr.Zero);
+        Win.ShowWindowAsync(h, 6);
+      }
+      return;
+    }
     Match m;
     if ((m = AppCmd.Match(cmd)).Success) {
       var t = Find(m.Groups[2].Value);

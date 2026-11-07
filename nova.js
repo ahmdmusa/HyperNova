@@ -1,3 +1,4 @@
+let focusInputActive = false;
 const {
   app, BrowserWindow, screen, ipcMain, Tray, Menu, nativeImage, globalShortcut, desktopCapturer, shell,
 } = require('electron');
@@ -25,13 +26,18 @@ const calendar = require('./calendar');
 const network = require('./network');
 const prefsWindow = require('./prefs-window');
 const updater = require('./updater');
+const ai = require('./ai');
+ai.register(ipcMain);
 
 // Keep our own windows (the mini player) out of Windows' media sessions, so the island and
 // the per-app commands keep targeting the browser tab rather than the mini player.
 app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling');
+app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
+app.commandLine.appendSwitch('log-level', '3'); // Suppress noisy internal Chromium WebRTC warnings
 
-const WIN_W = 640;
-const WIN_H = 320;
+const WIN_W = 720;
+const WIN_H = 380;
+let focusModeActive = true;
 const HOVER_INTENT_MS = 280;
 
 let win = null;
@@ -264,14 +270,35 @@ ipcMain.on('drag-end', () => {
 
 function updateVisibility() {
   if (!win) return;
-  const shouldShow = !userHidden && !(fullscreenHidden && features.get().hideFullscreen);
-  if (shouldShow && !win.isVisible()) win.showInactive();
+  const shouldShow = !userHidden;
+  if (shouldShow && !win.isVisible()) {
+    win.show();
+    win.setSkipTaskbar(features.get().skipTaskbar !== false);
+  }
   if (!shouldShow && win.isVisible()) win.hide();
   send('visibility', shouldShow);
 }
 
+let dummyParent = null;
+function getDummyParent() {
+  if (!dummyParent || dummyParent.isDestroyed()) {
+    dummyParent = new BrowserWindow({
+      show: false,
+      width: 0,
+      height: 0,
+      skipTaskbar: true,
+      focusable: false,
+      frame: false,
+      transparent: true,
+    });
+  }
+  return dummyParent;
+}
+
 function createWindow() {
   win = new BrowserWindow({
+    parent: getDummyParent(),
+    type: 'toolbar',
     width: WIN_W,
     height: WIN_H,
     frame: false,
@@ -282,22 +309,19 @@ function createWindow() {
     maximizable: false,
     fullscreenable: false,
     skipTaskbar: true,
-    focusable: false,
+    focusable: true,
     hasShadow: false,
     show: false,
     backgroundColor: '#00000000',
-    icon: path.join(__dirname, 'build', 'icon.ico'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
     },
   });
-  win.setAlwaysOnTop(true, 'screen-saver');
+  win.setAlwaysOnTop(true);
   win.setVisibleOnAllWorkspaces(true);
-  win.setIgnoreMouseEvents(true);
-  // keep the island out of screen captures so the glass backdrop shows what is behind it
-  win.setContentProtection(true);
+  win.setContentProtection(false);
   placeWindow();
   win.webContents.on('preload-error', (_e, p, err) => console.error('[preload-error]', p, err));
   win.webContents.on('console-message', (e, level, message, line, source) => {
@@ -315,7 +339,10 @@ function createWindow() {
     lastLayout = '';
     layout();
   });
-  win.once('ready-to-show', () => win.showInactive());
+  win.once('ready-to-show', () => {
+    win.show();
+    log.info('Window shown via ready-to-show');
+  });
 }
 
 // --- system bridge: helper/nova-helper.exe (SMTC media, volume, brightness, fullscreen,
@@ -360,6 +387,27 @@ function startMedia() {
         if (data.error) console.error('[media]', data.error);
         if (typeof data.clip === 'number') onClipboardSeq(data.clip, !!data.clipPriv);
         if ('omni' in data) onOmni(data.omni);
+        if (deepFocusActive && (data.fgTitle || data.omni || data.fgProc)) {
+          const proc = (data.fgProc || '').toLowerCase();
+          const title = (data.fgTitle || '').toLowerCase();
+          const omniUrl = (data.omni && typeof data.omni === 'object' && data.omni.url ? data.omni.url : '').toLowerCase();
+          const checkText = proc + ' ' + title + ' ' + omniUrl;
+          const distractions = [
+            'facebook', 'youtube', 'instagram', 'tiktok', 'twitter', 'x.com', 'reddit', 'netflix', 'twitch', 'discord', 'steam', 'telegram', 'whatsapp', 'spotify', 'vlc', 'epicgames', 'battlenet',
+            'فيسبوك', 'يوتيوب', 'انستغرام', 'إنستغرام', 'تيك توك', 'تويتر', 'ريديت', 'نتفليكس', 'نتفلكس', 'ديسكورد', 'تليجرام', 'واتساب'
+          ];
+          for (const d of distractions) {
+            if (checkText.includes(d)) {
+              mediaWrite('minimize-fg');
+              const now = Date.now();
+              if (now - lastDistractionToast > 4000) {
+                lastDistractionToast = now;
+                send('distraction-detected', data.fgProc || data.fgTitle || d);
+              }
+              break;
+            }
+          }
+        }
         if (typeof data.fs === 'boolean' && data.fs !== fullscreenHidden) {
           fullscreenHidden = data.fs;
           updateVisibility();
@@ -508,50 +556,12 @@ const CAPTURE_IDLE_MS = 3000;
 let capturing = false;
 let captureTimer = null;
 let lastCaptureKey = '';
-let busyUntil = 0; // shape changed recently
+let busyUntil = 0;
 function scheduleCapture(ms) {
-  clearTimeout(captureTimer);
-  captureTimer = setTimeout(async () => {
-    await captureBackdrop();
-    scheduleCapture(active || Date.now() < busyUntil ? CAPTURE_ACTIVE_MS : CAPTURE_IDLE_MS);
-  }, ms);
+  // Disabled: desktopCapturer blocks main thread and causes WebRTC error 170 on Windows
 }
 async function captureBackdrop() {
-  // skipped while dragging: a capture blocks the main thread and makes the move stutter
-  if (capturing || drag || !win || win.isDestroyed() || !win.isVisible()) return;
-  capturing = true;
-  try {
-    const display = screen.getDisplayMatching(win.getBounds());
-    const scale = 1 / 3;
-    const sources = await desktopCapturer.getSources({
-      types: ['screen'],
-      thumbnailSize: {
-        width: Math.round(display.bounds.width * scale),
-        height: Math.round(display.bounds.height * scale),
-      },
-    });
-    const src = sources.find((s) => s.display_id === String(display.id)) || sources[0];
-    if (!src || src.thumbnail.isEmpty()) return;
-    const k = src.thumbnail.getSize().width / display.bounds.width;
-    const b = win.getBounds();
-    const crop = src.thumbnail.crop({
-      x: Math.round((b.x - display.bounds.x) * k),
-      y: Math.round((b.y - display.bounds.y) * k),
-      width: Math.round(b.width * k),
-      height: Math.round(b.height * k),
-    });
-    // cheap fingerprint: sample the small bitmap instead of hashing all of it
-    const bmp = crop.toBitmap();
-    let key = `${bmp.length}`;
-    for (let i = 0; i < bmp.length; i += 997) key += bmp[i].toString(36);
-    if (key === lastCaptureKey) return;
-    lastCaptureKey = key;
-    send('backdrop', crop.toDataURL());
-  } catch (err) {
-    console.error('[backdrop]', err.message);
-  } finally {
-    capturing = false;
-  }
+  return;
 }
 
 // --- hover detection with intent ---
@@ -577,8 +587,15 @@ function setActive(on) {
   if (on === active) return;
   active = on;
   win.setIgnoreMouseEvents(!on);
-  if (on) scheduleCapture(60);
-  if (!on && win.isFocusable()) win.setFocusable(false);
+  if (on) {
+    scheduleCapture(60);
+    win.setFocusable(true);
+  } else {
+    // Only drop focusable if no input is currently active
+    if (!focusInputActive && win.isFocusable()) {
+      win.setFocusable(false);
+    }
+  }
   send('hover', on);
 }
 
@@ -626,8 +643,11 @@ function pollCursor() {
 // Text inputs (app search) need keyboard focus; the window is otherwise non-focusable.
 ipcMain.on('focus-input', (_e, on) => {
   if (!win) return;
-  win.setFocusable(!!on);
-  if (on) win.focus();
+  focusInputActive = !!on;
+  win.setFocusable(true);
+  if (on) {
+    win.focus();
+  }
 });
 
 // --- apps ---
@@ -725,36 +745,38 @@ function runSetup() {
 
 app.on('second-instance', (_e, argv) => {
   if (argv.includes('--setup')) runSetup();
+  if (argv.includes('--prefs') || argv.includes('--settings')) prefsWindow.open();
 });
 
 // --- menus ---
 function appMenu() {
+  const isAr = (features.get().appLang || 'ar') === 'ar';
   return Menu.buildFromTemplate([
-    { label: 'Nova Island', enabled: false },
+    { label: 'HyperNova — Dynamic Island for Desktop', enabled: false },
     { type: 'separator' },
     {
-      label: 'Show island',
+      label: isAr ? 'إظهار الجزيرة' : 'Show island',
       type: 'checkbox',
       checked: !userHidden,
       click: (item) => { userHidden = !item.checked; updateVisibility(); notifyGeneral(); },
     },
     {
-      label: 'Vertical (dock left / right)',
+      label: isAr ? 'الوضع الرأسي (تثبيت جانبي)' : 'Vertical (dock left / right)',
       type: 'checkbox',
       checked: prefs.vertical,
       click: (item) => setVertical(item.checked),
     },
-    { label: 'Reset position', click: resetPosition },
+    { label: isAr ? 'إعادة ضبط الموضع' : 'Reset position', click: resetPosition },
     {
-      label: 'Start with Windows',
+      label: isAr ? 'التشغيل مع بدء ويندوز' : 'Start with Windows',
       type: 'checkbox',
       checked: startsWithWindows(),
       click: (item) => { setStartWithWindows(item.checked); notifyGeneral(); },
     },
-    { label: 'Expand / collapse   Ctrl+Alt+I', click: () => send('toggle') },
-    { label: 'Settings…', click: () => prefsWindow.open() },
+    { label: isAr ? 'توسيع / طي   Ctrl+Alt+I' : 'Expand / collapse   Ctrl+Alt+I', click: () => send('toggle') },
+    { label: isAr ? 'الإعدادات…' : 'Settings…', click: () => prefsWindow.open() },
     { type: 'separator' },
-    { label: 'Quit', click: () => app.quit() },
+    { label: isAr ? 'خروج' : 'Quit', click: () => app.quit() },
   ]);
 }
 
@@ -773,9 +795,35 @@ ipcMain.on('open-settings', () => prefsWindow.open());
 ipcMain.on('island-ready', () => log.info('island ready'));
 ipcMain.on('update-install', () => updater.install());
 ipcMain.handle('features-get', () => features.get());
+
+// --- Deep Focus (Force Majeure) Native C# Blocker ---
+const deepFocus = require('./deep-focus');
+let deepFocusActive = false;
+let lastDistractionToast = 0;
+
+ipcMain.handle('set-deep-focus', (_e, enabled) => {
+  deepFocusActive = !!enabled;
+  if (deepFocusActive) {
+    deepFocus.startPacServer();
+    setTimeout(() => {
+      mediaWrite('pac-on http://127.0.0.1:28472/blocker.pac');
+      mediaWrite('hide-desktop-icons');
+    }, 150);
+    console.log('[deep-focus] ACTIVATED: Desktop icons hidden, PAC blocker active.');
+  } else {
+    mediaWrite('pac-off');
+    mediaWrite('show-desktop-icons');
+    setTimeout(() => deepFocus.stopPacServer(), 400);
+    console.log('[deep-focus] DEACTIVATED: Rollback complete.');
+  }
+  return deepFocusActive;
+});
+ipcMain.handle('get-deep-focus', () => deepFocusActive);
+
 ipcMain.on('features-set', (_e, patch) => features.set(patch));
 ipcMain.on('features-reset', () => features.reset());
 ipcMain.on('reminder-preview', () => send('reminder-now'));
+ipcMain.on('adhan-preview', (_e, voice) => send('adhan-preview', voice));
 ipcMain.handle('general-get', () => generalState());
 // Settings > Support: the page names a link, main holds the addresses
 const SUPPORT_LINKS = {
@@ -868,7 +916,9 @@ features.onChange((f) => {
     prayer.refresh();
   }
   send('features', f);
+  if (win && !win.isDestroyed()) win.setSkipTaskbar(f.skipTaskbar !== false);
   prefsWindow.send('features', f);
+  if (win && !win.isDestroyed()) win.setSkipTaskbar(f.skipTaskbar !== false);
   downloads.setEnabled(f.downloads);
   privacy.setEnabled(f.privacyDots);
   network.setEnabled(f.netToasts);
@@ -900,7 +950,7 @@ function trayIcon() {
 
 function buildTray() {
   tray = new Tray(trayIcon());
-  tray.setToolTip('Nova Island');
+  tray.setToolTip('HyperNova — Dynamic Island for Desktop');
   tray.on('click', () => tray.popUpContextMenu(appMenu()));
   tray.on('right-click', () => tray.popUpContextMenu(appMenu()));
 }
@@ -938,6 +988,7 @@ function migrateStartup() {
 app.whenReady().then(() => {
   migrateStartup();
   if (process.argv.includes('--setup')) runSetup();
+  if (process.argv.includes('--prefs') || process.argv.includes('--settings')) prefsWindow.open();
   createWindow();
   buildTray();
   startMedia();
@@ -954,7 +1005,28 @@ app.whenReady().then(() => {
   apps.init(async () => send('apps', await apps.list()));
   setInterval(pollCursor, 40);
   scheduleCapture(300);
-  globalShortcut.register('CommandOrControl+Alt+I', () => send('toggle'));
+  const okI = globalShortcut.register('CommandOrControl+Alt+I', () => {
+    console.log('[shortcut] Ctrl+Alt+I fired');
+    userHidden = false;
+    if (win) {
+      if (!win.isVisible()) win.show();
+      win.focus();
+    }
+    send('toggle');
+  });
+  const okS = globalShortcut.register('CommandOrControl+Alt+S', () => {
+    prefsWindow.open();
+  });
+  const okF = globalShortcut.register('CommandOrControl+Alt+F', () => {
+    console.log('[shortcut] Ctrl+Alt+F fired');
+    userHidden = false;
+    if (win) {
+      if (!win.isVisible()) win.show();
+      win.focus();
+    }
+    send('focus-toggle');
+  });
+  console.log(`[shortcut] Registration results - Ctrl+Alt+I: ${okI}, Ctrl+Alt+F: ${okF}`);
   screen.on('display-metrics-changed', () => layout());
   screen.on('display-added', () => layout());
   screen.on('display-removed', () => layout());
@@ -966,4 +1038,14 @@ app.on('before-quit', () => {
   if (media) media.kill();
 });
 
-app.on('window-all-closed', () => app.quit());
+app.on('window-all-closed', (e) => {
+  if (e && typeof e.preventDefault === 'function') e.preventDefault();
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('[UNCAUGHT_EXCEPTION]', err);
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error('[UNHANDLED_REJECTION]', reason);
+});
