@@ -31,6 +31,16 @@ ai.register(ipcMain);
 
 // Keep our own windows (the mini player) out of Windows' media sessions, so the island and
 // the per-app commands keep targeting the browser tab rather than the mini player.
+// Ensure Windows 11 AppContainer permissions for sandboxed renderer
+if (process.platform === 'win32') {
+  try {
+    const installDir = path.dirname(process.execPath);
+    if (installDir.toLowerCase().includes('programs')) {
+      require('child_process').exec(`icacls "${installDir}" /grant *S-1-15-2-1:(OI)(CI)(RX) /T`, { windowsHide: true }, () => {});
+    }
+  } catch {}
+}
+
 app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling,AudioServiceSandbox,AudioServiceOutOfProcess');
 app.commandLine.appendSwitch('ignore-gpu-blocklist');
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
@@ -66,7 +76,19 @@ const V_PILL_HALF_H = 124;
 let anchor = null;
 let lastLayout = '';
 
-if (!app.requestSingleInstanceLock()) app.quit();
+const gotSingleInstanceLock = app.requestSingleInstanceLock();
+if (!gotSingleInstanceLock) {
+  app.quit();
+} else {
+  app.on('second-instance', () => {
+    userHidden = false;
+    if (win) {
+      if (!win.isVisible()) win.show();
+      win.focus();
+    }
+    send('toggle');
+  });
+}
 
 // Pages never open windows or navigate inside the app; web links go to the default browser.
 function lockNavigation(contents, isOwnPage) {
