@@ -487,7 +487,7 @@
       if (!type || type === 'none') return;
 
       try {
-        if (!audioCtx) {
+        if (!audioCtx || audioCtx.state === 'closed') {
           audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
         if (audioCtx.state === 'suspended') {
@@ -610,9 +610,13 @@
           activeStepIndex: 0
         };
       }
+      const cat = $('#nf-task-cat-select')?.value || 'work';
+      const period = currentPeriodTab === 'weekly' ? 'weekly' : 'daily';
       focusState.task.steps.push({
         id: 's-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
         title: title,
+        category: cat,
+        period,
         duration: 15,
         completed: false
       });
@@ -630,9 +634,35 @@
           btnDecompose.textContent = '⏳ جاري...';
           btnDecompose.disabled = true;
         }
-        await handleTaskInput(text);
+        try {
+          const deconstructed = await deconstructTask(text);
+          if (!focusState.task) {
+            focusState.task = { title: text, steps: [], activeStepIndex: 0 };
+          }
+          const cat = $('#nf-task-cat-select')?.value || 'work';
+          const period = currentPeriodTab === 'weekly' ? 'weekly' : 'daily';
+          if (deconstructed && Array.isArray(deconstructed.steps)) {
+            deconstructed.steps.forEach((step, idx) => {
+              focusState.task.steps.push({
+                id: 's-' + Date.now() + '-' + idx + '-' + Math.random().toString(36).slice(2, 5),
+                title: step.title,
+                category: cat,
+                period,
+                duration: step.duration || 10,
+                completed: false,
+                subSteps: step.subSteps || []
+              });
+            });
+            saveState();
+            updateUI();
+          }
+        } catch (err) {
+          console.error('[focus] Decompose error:', err);
+          addTaskDirectly(text);
+        }
         if (btnDecompose) {
-          btnDecompose.textContent = '✨ فكك';
+          const isAr = (window.state?.features?.appLang || 'ar') === 'ar';
+          btnDecompose.textContent = isAr ? '✨ فكك' : '✨ Break Down';
           btnDecompose.disabled = false;
         }
       } else {
@@ -750,13 +780,13 @@
       
       // Sounds
       const sndLbl = $('#nf-ui-sound-lbl'); if (sndLbl) sndLbl.textContent = isAr ? 'أصوات التركيز:' : 'Focus Sounds:';
-      const sndNone = $('#snd-none'); if (sndNone) sndNone.textContent = isAr ? '🔇 صامت' : '🔇 Mute';
-      const sndNature = $('#snd-nature'); if (sndNature) sndNature.textContent = isAr ? '🌿 طبيعة' : '🌿 Nature';
-      const sndFajr = $('#snd-fajr'); if (sndFajr) sndFajr.textContent = isAr ? '🌅 الفجر' : '🌅 Dawn';
-      const sndNight = $('#snd-night'); if (sndNight) sndNight.textContent = isAr ? '🌙 سكون الليل' : '🌙 Night Quiet';
-      const sndLib = $('#snd-library'); if (sndLib) sndLib.textContent = isAr ? '📚 مكتبة' : '📚 Library';
-      const sndRain = $('#snd-rain'); if (sndRain) sndRain.textContent = isAr ? '🌧️ مطر' : '🌧️ Rain';
-      const sndBrown = $('#snd-brown'); if (sndBrown) sndBrown.textContent = isAr ? '☕ بنية' : '☕ Brown Noise';
+      const sndNone = $('#snd-none'); if (sndNone) sndNone.textContent = isAr ? 'صامت' : 'Mute';
+      const sndNature = $('#snd-nature'); if (sndNature) sndNature.textContent = isAr ? 'طبيعة' : 'Nature';
+      const sndFajr = $('#snd-fajr'); if (sndFajr) sndFajr.textContent = isAr ? 'الفجر' : 'Dawn';
+      const sndNight = $('#snd-night'); if (sndNight) sndNight.textContent = isAr ? 'سكون الليل' : 'Night Quiet';
+      const sndLib = $('#snd-library'); if (sndLib) sndLib.textContent = isAr ? 'مكتبة' : 'Library';
+      const sndRain = $('#snd-rain'); if (sndRain) sndRain.textContent = isAr ? 'مطر' : 'Rain';
+      const sndBrown = $('#snd-brown'); if (sndBrown) sndBrown.textContent = isAr ? 'بنية' : 'Brown Noise';
 
       renderDashboardSteps();
       updateDashboardStats();

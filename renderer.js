@@ -678,8 +678,10 @@ let hasRealArt = false;
 bridge.onMedia((m) => {
   if (m.error) return;
   if (window.quranRadio?.state?.isRadioMode) {
-    // Keep Quran Radio in foreground
-    window.quranRadio.updateUI();
+    // Keep Quran Radio in foreground without rebuilding DOM on every 250ms helper tick
+    handleVolume(m);
+    handleBrightness(m);
+    render();
     return;
   }
   const lock = state.playLock;
@@ -740,6 +742,16 @@ function mediaPos() {
 let seekLockUntil = 0;
 const seek = makeSlider($('#m-bar'), {
   onInput: (v) => {
+    if (window.quranRadio?.state?.isRadioMode) {
+      if (window.quranRadio.state.isLiveStream) return;
+      const dur = window.quranRadio.primaryAudio?.duration || 0;
+      if (dur > 0) {
+        const pos = v * dur;
+        $('#m-pos').textContent = fmt(pos);
+        $('#m-dur').textContent = `-${fmt(Math.max(0, dur - pos))}`;
+      }
+      return;
+    }
     const m = state.media;
     if (!m.has || !(m.dur > 0)) return;
     const pos = v * m.dur;
@@ -747,6 +759,14 @@ const seek = makeSlider($('#m-bar'), {
     $('#m-dur').textContent = `-${fmt(m.dur - pos)}`;
   },
   onCommit: (v) => {
+    if (window.quranRadio?.state?.isRadioMode) {
+      if (window.quranRadio.state.isLiveStream) return;
+      const dur = window.quranRadio.primaryAudio?.duration || 0;
+      if (dur > 0 && window.quranRadio.primaryAudio) {
+        window.quranRadio.primaryAudio.currentTime = v * dur;
+      }
+      return;
+    }
     const m = state.media;
     if (!m.has || !(m.dur > 0)) return;
     const sec = v * m.dur;
@@ -771,7 +791,8 @@ $$('[data-cmd]').forEach((btn) =>
   btn.addEventListener('click', (e) => {
     const cmd = btn.dataset.cmd;
     if (window.quranRadio && window.quranRadio.state && window.quranRadio.state.isRadioMode) {
-      e.stopPropagation();
+      e.stopImmediatePropagation();
+      e.preventDefault();
       if (cmd === 'toggle') {
         window.quranRadio.togglePlayPause();
       } else if (cmd === 'prev') {
@@ -838,8 +859,10 @@ function setVolume(v) {
   sendVol(state.vol);
   if (window.quranRadio && window.quranRadio.primaryAudio) {
     try {
-      window.quranRadio.primaryAudio.volume = state.vol;
-      window.quranRadio.primaryAudio.muted = false;
+      window.quranRadio.state.volume = state.vol;
+      window.quranRadio.saveState?.();
+      window.quranRadio.primaryAudio.volume = state.vol > 0 ? Math.max(0.85, state.vol) : 0;
+      window.quranRadio.primaryAudio.muted = state.vol === 0;
     } catch (e) {}
   }
 }
@@ -1033,7 +1056,7 @@ function drawTimer() {
 let audioCtx = null;
 function playTones(notes, { peak = 0.25, attack = 0.02, decay = 0.35, type = 'sine' } = {}) {
   try {
-    audioCtx ||= new AudioContext();
+    if (!audioCtx || audioCtx.state === 'closed') audioCtx = new AudioContext();
     if (audioCtx.state === 'suspended') audioCtx.resume();
     const t0 = audioCtx.currentTime;
     for (const [d, f] of notes) {
@@ -1226,7 +1249,7 @@ window.addEventListener('keydown', (e) => {
       bridge.focusInput?.(false);
     } else if (state.expanded || state.hover) {
       e.preventDefault();
-      collapse();
+      state.pinned = false; state.hover = false; render();
       bridge.focusInput?.(false);
     }
   }

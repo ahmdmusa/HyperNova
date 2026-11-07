@@ -9,7 +9,7 @@ const { spawn } = require('child_process');
 // One data folder for the installed app ("Dynamic Nova") and dev runs ("dynamic-nova"), so
 // settings, apps and caches carry over, and the single-instance lock covers both. Must run
 // before any module below reads app.getPath('userData').
-app.setPath('userData', path.join(app.getPath('appData'), 'dynamic-nova'));
+app.setPath('userData', process.env.NOVA_TEST_USERDATA || path.join(app.getPath('appData'), 'dynamic-nova'));
 const log = require('./log');
 log.init();
 
@@ -31,7 +31,8 @@ ai.register(ipcMain);
 
 // Keep our own windows (the mini player) out of Windows' media sessions, so the island and
 // the per-app commands keep targeting the browser tab rather than the mini player.
-app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling');
+app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling,AudioServiceSandbox,AudioServiceOutOfProcess');
+app.commandLine.appendSwitch('ignore-gpu-blocklist');
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 app.commandLine.appendSwitch('log-level', '3'); // Suppress noisy internal Chromium WebRTC warnings
 
@@ -336,6 +337,7 @@ function createWindow() {
   lockNavigation(win.webContents, (url) => url.startsWith('file:'));
   win.loadFile(path.join(__dirname, 'index.html'));
   win.webContents.on('did-finish-load', () => {
+    try { win.webContents.setAudioMuted(false); } catch {}
     lastLayout = '';
     layout();
   });
@@ -827,9 +829,10 @@ ipcMain.on('adhan-preview', (_e, voice) => send('adhan-preview', voice));
 ipcMain.handle('general-get', () => generalState());
 // Settings > Support: the page names a link, main holds the addresses
 const SUPPORT_LINKS = {
-  kofi: 'https://ko-fi.com/binamer',
-  instapay: 'https://ipn.eg/S/binamerbm/instapay/38txJO',
-  github: 'https://github.com/NOVA-TECH-KIT/nova-island',
+  kofi: 'https://www.paypal.com/ncp/payment/4SWPEP8Q3YF78',
+  paypal: 'https://www.paypal.com/ncp/payment/4SWPEP8Q3YF78',
+  instapay: 'https://ipn.eg/S/ahmdmusa/instapay/2yqQQN',
+  github: 'https://github.com/ahmdmusa/HyperNova',
 };
 ipcMain.on('open-support', (_e, key) => {
   if (Object.hasOwn(SUPPORT_LINKS, key)) shell.openExternal(SUPPORT_LINKS[key]);

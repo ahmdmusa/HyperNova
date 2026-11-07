@@ -1,23 +1,31 @@
 {
-  "name": "nova-island",
+  "name": "hypernova",
   "version": "2.0.0",
   "description": "HyperNova - Next-Gen Ambient Dynamic Island for Desktop",
+  "homepage": "https://github.com/ahmdmusa/HyperNova",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ahmdmusa/HyperNova.git"
+  },
   "main": "nova.js",
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder --win nsis",
     "dist:portable": "electron-builder --win portable"
   },
-  "author": "Ahmed Mousa & Contributors (built upon foundational work by Amr)",
+  "author": {
+    "name": "Ahmed Musa",
+    "url": "https://github.com/ahmdmusa"
+  },
   "license": "GPL-3.0-only",
   "devDependencies": {
     "electron": "^44.7.2",
     "electron-builder": "^26.17.0"
   },
   "build": {
-    "appId": "com.dynamicnova.app",
+    "appId": "com.ahmdmusa.hypernova",
     "productName": "HyperNova",
-    "copyright": "Copyright © 2026 Nova Island by AmerTech",
+    "copyright": "Copyright © 2026 Ahmed Musa (ahmdmusa)",
     "directories": {
       "output": "dist",
       "buildResources": "build"
@@ -30,14 +38,16 @@
       "!dist/**",
       "!*.cmd",
       "!setup-log.txt",
+      "!verify_*.js",
+      "!test_*.js",
       "!**/*.map",
       "!helper/*.cs",
       "!helper/*.cmd"
     ],
     "publish": {
       "provider": "github",
-      "owner": "NOVA-TECH-KIT",
-      "repo": "nova-island"
+      "owner": "ahmdmusa",
+      "repo": "HyperNova"
     },
     "asarUnpack": [
       "helper/nova-helper.exe"
@@ -47,11 +57,11 @@
         "nsis"
       ],
       "icon": "build/icon.ico",
-      "executableName": "Nova Island"
+      "executableName": "HyperNova"
     },
     "nsis": {
       "oneClick": false,
-      "artifactName": "Nova-Island-Setup-${version}.${ext}",
+      "artifactName": "HyperNova-Setup-${version}.${ext}",
       "license": "LICENSE",
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
@@ -64,7 +74,7 @@
       "deleteAppDataOnUninstall": false
     },
     "portable": {
-      "artifactName": "Nova Island ${version} portable.exe"
+      "artifactName": "HyperNova-Portable-${version}.${ext}"
     }
   },
   "dependencies": {

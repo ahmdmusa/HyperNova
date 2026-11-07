@@ -130,7 +130,7 @@
       country: 'مصر',
       style: 'مرتل • 128kbps',
       subfolder: 'Mohammad_al_Tablaway_128kbps',
-      radioUrl: 'https://backup.qurango.net/radio/mohammad_altablaway'
+      radioUrl: 'https://backup.qurango.net/radio/tarateel'
     },
     {
       id: 'alafasy',
@@ -407,7 +407,11 @@
     const aStr = String(ayah).padStart(3, '0');
     const fileName = `${sStr}${aStr}.mp3`;
     const subfolder = reciter.subfolder || 'Husary_128kbps';
-    // Use high-speed CDN mirror for EveryAyah with the same exact reciter voice
+    // Mustafa Ismail & Al-Banna subfolders are hosted directly on EveryAyah main CDN
+    if (reciter.id === 'mustafa' || reciter.id === 'banna') {
+      return `https://everyayah.com/data/${subfolder}/${fileName}?r=2`;
+    }
+    // High-speed CDN mirror for EveryAyah with the same exact reciter voice
     return `https://mirrors.quranicaudio.com/everyayah/${subfolder}/${fileName}`;
   }
 
@@ -558,6 +562,7 @@
   // Play current track (Ayah audio or 24/7 radio stream)
   async function playCurrent() {
     primaryAudio._didFallback = false;
+    primaryAudio._didLiveFallback = false;
     const reciter = getReciter();
 
     if (state.isLiveStream) {
@@ -568,8 +573,10 @@
       primaryAudio.playbackRate = state.playbackSpeed;
     }
 
-    primaryAudio.volume = (state.volume !== undefined && state.volume > 0) ? state.volume : 0.8;
+    primaryAudio.volume = (state.volume !== undefined && state.volume > 0) ? state.volume : 0.85;
     primaryAudio.muted = false;
+    state.isPlaying = true;
+    updateUI();
 
     try {
       await primaryAudio.play();
@@ -578,7 +585,11 @@
       updateMediaSession();
       preloadNextAyah();
     } catch (e) {
-      console.warn('[quran-radio] audio play failed:', e);
+      if (e && e.name === 'AbortError') {
+        // Interrupted by a newer playCurrent() call (e.g., user clicked Next/Prev or changed Surah)
+        return;
+      }
+      console.warn('[quran-radio] audio play failed:', e?.message || e);
       // Attempt immediate fallback CDN if primary rejected
       if (!state.isLiveStream && !primaryAudio._didFallback) {
         primaryAudio._didFallback = true;
@@ -587,7 +598,8 @@
           state.isPlaying = true;
           updateUI();
           updateMediaSession();
-        }).catch(() => {
+        }).catch((err2) => {
+          if (err2 && err2.name === 'AbortError') return;
           state.isPlaying = false;
           updateUI();
         });
@@ -704,8 +716,9 @@
     }
   });
 
-  primaryAudio.addEventListener('error', (e) => {
-    console.warn('[quran-radio] stream disruption:', e);
+  primaryAudio.addEventListener('error', () => {
+    const errDetail = primaryAudio.error ? `${primaryAudio.error.code}:${primaryAudio.error.message}` : 'unknown';
+    console.warn('[quran-radio] stream disruption:', primaryAudio.src, errDetail);
     if (!state.isLiveStream && !primaryAudio._didFallback) {
       primaryAudio._didFallback = true;
       const reciter = getReciter();
@@ -714,22 +727,31 @@
       primaryAudio.play().then(() => {
         state.isPlaying = true;
         updateUI();
-      }).catch(err => console.warn('[quran-radio] fallback audio failed:', err));
+      }).catch(err => {
+        if (err && err.name === 'AbortError') return;
+        console.warn('[quran-radio] fallback audio failed:', err?.message || err);
+        state.isPlaying = false;
+        updateUI();
+      });
       return;
     }
     primaryAudio._didFallback = false;
-    // If live stream disconnected, perform automatic domain failover or retry
+    // If live stream disconnected, try official Cairo Quran Radio fallback once, then fall back to Ayah recitation
     if (state.isLiveStream && state.isPlaying) {
-      if (primaryAudio.src.includes('backup.qurango.net')) {
-        primaryAudio.src = primaryAudio.src.replace('backup.qurango.net', 'qurango.net');
+      if (!primaryAudio._didLiveFallback) {
+        primaryAudio._didLiveFallback = true;
+        primaryAudio.src = 'https://stream.radiojar.com/8s5u5tpdtwzuv';
         primaryAudio.load();
-        primaryAudio.play().catch(() => setTimeout(() => playCurrent(), 2500));
-      } else if (primaryAudio.src.includes('qurango.net')) {
-        primaryAudio.src = primaryAudio.src.replace('qurango.net', 'backup.qurango.net');
-        primaryAudio.load();
-        primaryAudio.play().catch(() => setTimeout(() => playCurrent(), 2500));
+        primaryAudio.play().then(() => {
+          state.isPlaying = true;
+          updateUI();
+        }).catch(() => {
+          state.isLiveStream = false;
+          playCurrent();
+        });
       } else {
-        setTimeout(() => playCurrent(), 2500);
+        state.isLiveStream = false;
+        playCurrent();
       }
     }
   });
@@ -1208,36 +1230,9 @@
       };
     }
 
-    // Intercept Previous, Play/Pause, Next buttons when in Quran Radio mode
-    const prevBtn = document.querySelector('#v-media [data-cmd="prev"]');
-    if (prevBtn) {
-      prevBtn.addEventListener('click', (e) => {
-        if (state.isRadioMode) {
-          e.stopImmediatePropagation();
-          previousAyah();
-        }
-      }, true);
-    }
-
-    const nextBtn = document.querySelector('#v-media [data-cmd="next"]');
-    if (nextBtn) {
-      nextBtn.addEventListener('click', (e) => {
-        if (state.isRadioMode) {
-          e.stopImmediatePropagation();
-          nextAyah();
-        }
-      }, true);
-    }
-
-    const toggleBtn = document.querySelector('#v-media [data-cmd="toggle"]');
-    if (toggleBtn) {
-      toggleBtn.addEventListener('click', (e) => {
-        if (state.isRadioMode) {
-          e.stopImmediatePropagation();
-          togglePlayPause();
-        }
-      }, true);
-    }
+    // Note: [data-cmd="prev"], [data-cmd="next"], and [data-cmd="toggle"] are routed to
+    // window.quranRadio in renderer.js when state.isRadioMode is true. Avoid attaching
+    // duplicate listeners here so clicks never fire twice.
 
     // Close popovers on click outside
     document.addEventListener('click', (e) => {
@@ -1254,6 +1249,7 @@
   // Export APIs for integration with Adhan priority ducking and Preferences cache manager
   window.quranRadio = {
     state,
+    saveState,
     QURAN_RECITERS,
     SURAHS_114,
     TOTAL_AYAT_CHECKSUM,

@@ -982,14 +982,14 @@ setInterval(showBridge, 5000);
 
 // Verified 8 Direct CDN Muezzins MP3 Dataset (Archive.org & AlAdhan CDN)
 const ADHAN_MUEZZINS = [
-  { id: 'abdulbasit', name: 'الشيخ عبد الباسط عبد الصمد', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/017-_-.mp3', startSec: 0, takbirDurationSec: 15 },
+  { id: 'abdulbasit', name: 'الشيخ عبد الباسط عبد الصمد', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/042--.mp3', startSec: 0, takbirDurationSec: 15 },
   { id: 'refaat', name: 'الشيخ محمد رفعت (أذان زمان)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/042--.mp3', startSec: 0, takbirDurationSec: 14 },
   { id: 'banna', name: 'الشيخ محمود علي البنا (القاهرة)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/043--.mp3', startSec: 0, takbirDurationSec: 14 },
   { id: 'makkah', name: 'أذان الحرم المكي (علي أحمد ملا)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/019--1.mp3', startSec: 0, takbirDurationSec: 16 },
   { id: 'madinah', name: 'أذان المسجد النبوي الشريف', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/018-.mp3', startSec: 0, takbirDurationSec: 15 },
   { id: 'aqsa', name: 'أذان المسجد الأقصى المبارك', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/007--.mp3', startSec: 0, takbirDurationSec: 14 },
   { id: 'alafasy', name: 'الشيخ مشاري راشد العفاسي', url: 'https://cdn.aladhan.com/audio/adhans/a9.mp3', startSec: 0, takbirDurationSec: 15 },
-  { id: 'nafees', name: 'الشيخ أحمد النفيس (خاشع)', url: 'https://cdn.aladhan.com/audio/adhans/a1.mp3', startSec: 0, takbirDurationSec: 14 }
+  { id: 'nafees', name: 'الشيخ أحمد النفيس (خاشع)', url: 'https://cdn.aladhan.com/audio/adhans/a9.mp3', startSec: 0, takbirDurationSec: 14 }
 ];
 
 let activeAdhanAudio = null;
@@ -1052,7 +1052,6 @@ function playAdhanTakbeers(muezzinId) {
   if (btn) btn.innerHTML = '⏹️ إيقاف';
 
   const audio = new Audio();
-  audio.crossOrigin = 'anonymous';
   audio.src = muezzin.url;
   audio.volume = 1.0;
   activeAdhanAudio = audio;

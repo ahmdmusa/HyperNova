@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src 'self' data:; img-src 'self' data: https: blob:; media-src 'self' https: data: blob:; connect-src 'self' https:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src 'self' data:; img-src 'self' data: https: blob:; media-src 'self' https: http: data: blob:; connect-src 'self' https: http:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'">
   <title>HyperNova</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="views/focus.css">
@@ -598,31 +598,31 @@
               <div class="nf-sound-chips">
                 <button type="button" class="nf-sound-chip active" data-sound="none">
                   <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
-                  <span>صامت</span>
+                  <span id="snd-none">صامت</span>
                 </button>
                 <button type="button" class="nf-sound-chip" data-sound="nature">
                   <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/></svg>
-                  <span>طبيعة</span>
+                  <span id="snd-nature">طبيعة</span>
                 </button>
                 <button type="button" class="nf-sound-chip" data-sound="fajr">
                   <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6M4.93 4.93l4.24 4.24M2 12h6M20 12h2M12 18v4M4.93 19.07l4.24-4.24"/></svg>
-                  <span>الفجر</span>
+                  <span id="snd-fajr">الفجر</span>
                 </button>
                 <button type="button" class="nf-sound-chip" data-sound="night">
                   <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-                  <span>سكون الليل</span>
+                  <span id="snd-night">سكون الليل</span>
                 </button>
                 <button type="button" class="nf-sound-chip" data-sound="library">
                   <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-                  <span>مكتبة</span>
+                  <span id="snd-library">مكتبة</span>
                 </button>
                 <button type="button" class="nf-sound-chip" data-sound="rain">
                   <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/><path d="m8 19-2 3M12 19l-2 3M16 19l-2 3"/></svg>
-                  <span>مطر</span>
+                  <span id="snd-rain">مطر</span>
                 </button>
                 <button type="button" class="nf-sound-chip" data-sound="brown">
                   <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg>
-                  <span>بُنية</span>
+                  <span id="snd-brown">بُنية</span>
                 </button>
               </div>
             </div>
