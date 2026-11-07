@@ -21,7 +21,31 @@
 > **HyperNova Island** هو مشروع مفتوح المصدر (Open Source) من تطوير ونشر **أحمد موسى ([Ahmed Musa](https://github.com/ahmdmusa))**، مصمم لتقديم تجربة الجزيرة التفاعلية (Dynamic Island) الأرقى والأكثر شمولاً لأجهزة سطح المكتب بنظام ويندوز.  
 > 
 > 🤝 **شكر وتقدير للمصدر المفتوح (Acknowledgement)**:  
-> مشروع مفتوح المصدر (Open Source) — شكر وتقدير للمهندس **عمرو (Amr)** على البذرة الأولى الملهمة للمشروع.
+> مشروع مفتوح المصدر (Open Source) — شكر وتقدير للمهندس **عمرو (Amr)** على البذرة الأولى للمشروع.
+
+<br/>
+
+<img src="screenshots/01-quran-radio.png" alt="HyperNova Dynamic Island Quran Radio" width="760" style="border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);" />
+
+</div>
+
+---
+
+## 📸 لقطات من التطبيق (Screenshots & Showcase)
+
+<div align="center">
+
+| 🕌 راديو وتلاوة القرآن الكريم | 🕋 مواقيت الصلاة وبطاقة الإلهام |
+|:---:|:---:|
+| <img src="screenshots/01-quran-radio.png" width="460" /> | <img src="screenshots/02-prayer-hero-card.png" width="460" /> |
+
+| 🎯 نظام التركيز العصبي (NeuroFocus) | ⚙️ الإعدادات وحول المشروع (About) |
+|:---:|:---:|
+| <img src="screenshots/03-neurofocus.png" width="460" /> | <img src="screenshots/04-settings-about.png" width="460" /> |
+
+| 🎨 الإعدادات العامة والألوان |
+|:---:|
+| <img src="screenshots/05-settings-general.png" width="600" /> |
 
 </div>
 

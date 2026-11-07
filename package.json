@@ -35,6 +35,7 @@
       "build/icon.png",
       "build/icon.ico",
       "!promo/**",
+      "!screenshots/**",
       "!dist/**",
       "!*.cmd",
       "!setup-log.txt",
