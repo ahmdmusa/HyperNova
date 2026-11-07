@@ -411,37 +411,39 @@
     return `https://mirrors.quranicaudio.com/everyayah/${subfolder}/${fileName}`;
   }
 
-  // Live SVG Artwork Generator for Quran Radio
+  // Live SVG Artwork Generator for Quran Radio (Sacred Geometric Mandala matching Reference)
   function generateQuranArtworkSvg(titleText, subtitleText) {
     const svg = `
       <svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
         <defs>
-          <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#064e3b" />
-            <stop offset="50%" stop-color="#022c22" />
-            <stop offset="100%" stop-color="#051f18" />
-          </linearGradient>
-          <radialGradient id="gold-radial" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.3" />
-            <stop offset="100%" stop-color="#fbbf24" stop-opacity="0" />
+          <radialGradient id="bg" cx="35%" cy="25%" r="85%">
+            <stop offset="0%" stop-color="#3a2f21" />
+            <stop offset="45%" stop-color="#17191c" />
+            <stop offset="100%" stop-color="#0b0d10" />
           </radialGradient>
         </defs>
         <rect width="300" height="300" rx="36" fill="url(#bg)" />
-        <circle cx="150" cy="150" r="120" fill="url(#gold-radial)" />
-        
-        <!-- Sacred Arabesque 8-Point Star Geometry -->
-        <g stroke="#10b981" stroke-width="1.8" fill="none" opacity="0.65" transform="translate(150, 150)">
-          <rect x="-65" y="-65" width="130" height="130" rx="6" />
-          <rect x="-65" y="-65" width="130" height="130" rx="6" transform="rotate(45)" />
-          <circle r="65" stroke="#fbbf24" stroke-width="1.4" opacity="0.75" />
-          <circle r="46" stroke="#34d399" stroke-width="1.2" stroke-dasharray="3,3" />
-          <circle r="26" stroke="#fbbf24" stroke-width="1.2" />
-          <polygon points="0,-40 38,-12 24,32 -24,32 -38,-12" stroke="#10b981" stroke-width="1.2" />
+        <g transform="translate(150, 140)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <!-- Outer 8-point rosettes -->
+          <g stroke="#10b981" stroke-width="1.3" opacity="0.45">
+            <rect x="-72" y="-72" width="144" height="144" rx="8" />
+            <rect x="-72" y="-72" width="144" height="144" rx="8" transform="rotate(45)" />
+            <rect x="-72" y="-72" width="144" height="144" rx="8" transform="rotate(22.5)" />
+            <rect x="-72" y="-72" width="144" height="144" rx="8" transform="rotate(67.5)" />
+          </g>
+          <!-- Middle golden geometric stars -->
+          <g stroke="#d97706" stroke-width="1.4" opacity="0.65">
+            <rect x="-46" y="-46" width="92" height="92" rx="4" />
+            <rect x="-46" y="-46" width="92" height="92" rx="4" transform="rotate(45)" />
+            <circle r="54" stroke-dasharray="3,4" />
+          </g>
+          <!-- Inner star mandala -->
+          <g stroke="#fbbf24" stroke-width="1.4" opacity="0.8">
+            <rect x="-24" y="-24" width="48" height="48" rx="2" />
+            <rect x="-24" y="-24" width="48" height="48" rx="2" transform="rotate(45)" />
+            <circle r="12" stroke="#10b981" stroke-width="1.5" />
+          </g>
         </g>
-        
-        <!-- Central Bismillah Calligraphy -->
-        <circle cx="150" cy="150" r="16" fill="#fbbf24" opacity="0.18" />
-        <text x="150" y="158" font-family="'Scheherazade New', 'Amiri', 'Traditional Arabic', serif" font-size="26" fill="#fbbf24" text-anchor="middle" font-weight="bold">﷽</text>
       </svg>
     `;
     return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
@@ -759,10 +761,10 @@
     vMedia.classList.add('quran-mode');
     vMedia.classList.remove('none');
 
-    // Update Top Status Pill
+    // Keep Top Status Pill clean ('جاهز للعمل' with single green dot)
     const statusPill = document.getElementById('x-app-name');
     if (statusPill) {
-      statusPill.innerHTML = '<span class="qr-pulse-dot"></span> quran.radio';
+      statusPill.textContent = 'جاهز للعمل';
     }
 
     // Update Equalizer Color to Emerald
@@ -782,7 +784,7 @@
     if (artImg) artImg.src = artworkSrc;
     if (artGlow) artGlow.src = artworkSrc;
 
-    // Overlay Badge on Artwork
+    // Overlay Badge on Artwork (Matching Reference: Gold 'سورة الفاتحة' + Emerald '1/7')
     let badge = document.getElementById('qr-art-badge');
     if (!badge && artImg && artImg.parentElement) {
       badge = document.createElement('div');
@@ -795,50 +797,32 @@
         badge.innerHTML = '<span class="qr-live-dot"></span> بث مباشر';
         badge.classList.add('live');
       } else {
-        badge.textContent = `${surahObj.name} · ${state.ayah}/${surahObj.ayahCount}`;
+        badge.innerHTML = `<span class="qr-art-surah">سورة ${surahObj.name}</span><span class="qr-art-count" dir="ltr">${state.ayah}/${surahObj.ayahCount}</span>`;
         badge.classList.remove('live');
       }
     }
 
-    // 2. Title Line & Dedicated Ayah Uthmani Calligraphy Display
+    // 2. Clean Apple Music-Style Title & Reciter Subtitle (Zero Verse Text Box Overlap)
     const titleEl = document.getElementById('m-title');
-    let verseBox = document.getElementById('qr-verse-display');
-    if (!verseBox) {
-      verseBox = document.createElement('div');
-      verseBox.id = 'qr-verse-display';
-      verseBox.className = 'qr-verse-display';
-      const mText = document.querySelector('#v-media .m-text');
-      if (mText && titleEl) {
-        mText.insertBefore(verseBox, titleEl.nextSibling);
-      }
-    }
+    const existingVerseBox = document.getElementById('qr-verse-display');
+    if (existingVerseBox) existingVerseBox.remove();
 
     if (state.isLiveStream) {
       if (titleEl) titleEl.textContent = `إذاعة ${reciter.name} — بث مباشر 24 ساعة`;
-      if (verseBox) verseBox.style.display = 'none';
     } else {
       if (titleEl) titleEl.textContent = `سورة ${surahObj.name} — الآية (${state.ayah} من ${surahObj.ayahCount})`;
-      if (verseBox) {
-        verseBox.style.display = 'block';
-        const instantText = OFFLINE_BUILTIN_AYAT[`${state.surah}:${state.ayah}`] || localCache[`${state.surah}:${state.ayah}`];
-        if (instantText) {
-          verseBox.textContent = instantText;
-        } else {
-          verseBox.textContent = 'جاري استحضار الآية الكريمة...';
-          fetchAyahText(state.surah, state.ayah).then((txt) => {
-            if (verseBox && state.isRadioMode && !state.isLiveStream) {
-              verseBox.textContent = txt;
-            }
-          });
-        }
-      }
     }
 
-    // Hide standard media subtitle completely
+    // Show clean reciter subtitle below title
     const defaultMediaArtist = document.getElementById('m-artist');
-    if (defaultMediaArtist) defaultMediaArtist.style.display = 'none';
+    if (defaultMediaArtist) {
+      defaultMediaArtist.style.display = 'block';
+      defaultMediaArtist.textContent = state.isLiveStream
+        ? `البث المباشر لإذاعة القرآن الكريم · ${reciter.country}`
+        : `القارئ الشيخ ${reciter.name} (${reciter.style})`;
+    }
 
-    // 3. Compact Inline Dropdown Pills Bar (100% SVG Icons)
+    // 3. Compact Inline Dropdown Pills Bar (Matching Reference Colors & Layout)
     let pillsBar = document.getElementById('qr-pills-bar');
     if (!pillsBar) {
       pillsBar = document.createElement('div');
@@ -849,30 +833,29 @@
     }
     pillsBar.style.display = 'flex';
 
-    // Populate Pills with Vector Icons
+    // Populate Pills matching reference screenshot
     const isFav = state.favorites.includes(state.surah);
+    const styleShort = reciter.style.includes('مجود') ? 'مجود' : 'مرتل';
     pillsBar.innerHTML = `
-      <button type="button" id="qr-pill-reciter" class="qr-pill-btn" title="تغيير القارئ (10 قراء)" aria-label="اختيار القارئ">
-        ${SVG_ICONS.microphone}
-        <span>${reciter.shortName}</span>
+      <button type="button" id="qr-pill-reciter" class="qr-pill-btn qr-pill-gold" title="تغيير القارئ (10 قراء)" aria-label="اختيار القارئ">
+        <span>${reciter.shortName} (${styleShort})</span>
         ${SVG_ICONS.chevronDown}
       </button>
-      <button type="button" id="qr-pill-surah" class="qr-pill-btn" title="اختيار السورة من 114 سورة" aria-label="اختيار السورة">
-        ${SVG_ICONS.book}
-        <span>${surahObj.id}. ${surahObj.name}</span>
+      <button type="button" id="qr-pill-surah" class="qr-pill-btn qr-pill-emerald" title="اختيار السورة من 114 سورة" aria-label="اختيار السورة">
+        <span>${toArabicDigits(surahObj.id)}. سورة ${surahObj.name}</span>
         ${SVG_ICONS.chevronDown}
-      </button>
-      <button type="button" id="qr-btn-fav" class="qr-fav-btn ${isFav ? 'active' : ''}" title="${isFav ? 'إزالة من المفضلة' : 'إضافة للمفضلة'}" aria-label="المفضلة">
-        ${SVG_ICONS.star}
       </button>
       ${!state.isLiveStream ? `
       <div class="qr-ayah-select-wrapper">
         <select id="qr-select-ayah" class="qr-ayah-select" title="الانتقال لآية محددة" aria-label="اختيار الآية">
           ${Array.from({ length: surahObj.ayahCount }, (_, i) => i + 1)
-            .map(a => `<option value="${a}" ${a === state.ayah ? 'selected' : ''}>الآية: ${a}/${surahObj.ayahCount}</option>`)
+            .map(a => `<option value="${a}" ${a === state.ayah ? 'selected' : ''}>الآية: ${toArabicDigits(a)}/${toArabicDigits(surahObj.ayahCount)}</option>`)
             .join('')}
         </select>
       </div>` : ''}
+      <button type="button" id="qr-btn-fav" class="qr-fav-btn ${isFav ? 'active' : ''}" title="${isFav ? 'إزالة من المفضلة' : 'إضافة للمفضلة'}" aria-label="المفضلة">
+        ${SVG_ICONS.star}
+      </button>
     `;
 
     // Bind Pills events
@@ -903,17 +886,30 @@
       playCurrent();
     });
 
-    // 4. Update Bottom Transport Extra Controls (100% Vector SVG)
+    // 4. Update Bottom Transport Extra Controls (100% Vector SVG + Repeat Badge)
     updateExtraControls();
 
+    // 5. Sync Volume Slider & Percentage (75% / 80%) and Duration (-0:00)
+    const volPctVal = Math.round(((state.volume !== undefined ? state.volume : 0.75)) * 100);
+    const volPctEl = document.getElementById('vol-pct');
+    if (volPctEl) volPctEl.textContent = `${volPctVal}%`;
+    const volFill = document.querySelector('#vol-slider .fill');
+    if (volFill) volFill.style.width = `${volPctVal}%`;
+    const durEl = document.getElementById('m-dur');
+    if (durEl && (durEl.textContent === '0:00' || !durEl.textContent)) {
+      durEl.textContent = '-0:00';
+    }
+
     // Play/Pause button icon sync
+    vMedia.classList.toggle('playing', !!state.isPlaying);
+    vMedia.classList.toggle('paused', !state.isPlaying);
     const playBtn = document.querySelector('#v-media [data-cmd="toggle"]');
     if (playBtn) {
-      playBtn.classList.toggle('playing', state.isPlaying);
+      playBtn.classList.toggle('playing', !!state.isPlaying);
       const iPlay = playBtn.querySelector('.i-play');
       const iPause = playBtn.querySelector('.i-pause');
-      if (iPlay) iPlay.style.display = state.isPlaying ? 'none' : 'block';
-      if (iPause) iPause.style.display = state.isPlaying ? 'block' : 'none';
+      if (iPlay) iPlay.style.removeProperty('display');
+      if (iPause) iPause.style.removeProperty('display');
     }
   }
 
@@ -939,9 +935,10 @@
       <!-- Divider line matching user reference -->
       <span class="qr-transport-divider"></span>
       
-      <!-- 3-State Repeat Button with Dynamic Animated SVGs -->
+      <!-- 3-State Repeat Button with Dynamic Animated SVGs + Corner Badge (S / 1 / A) -->
       <button type="button" id="qr-btn-repeat" class="ctl mini-icon-btn qr-repeat-ctl" title="نمط التكرار: ${getRepeatTooltip()}" aria-label="نمط التكرار">
         ${state.repeatMode === '1' ? SVG_ICONS.repeatAyah : state.repeatMode === 'A' ? SVG_ICONS.repeatAuto : SVG_ICONS.repeatSurah}
+        <span class="qr-rep-badge">${state.repeatMode || 'S'}</span>
       </button>
       
       <!-- 24/7 Live Stream Toggle Button -->

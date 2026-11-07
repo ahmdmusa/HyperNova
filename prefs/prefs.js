@@ -1106,9 +1106,7 @@ if (btnPreviewAdhan) {
   btnPreviewAdhan.addEventListener('click', () => {
     const v = adhanVoiceSelect ? adhanVoiceSelect.value : 'abdulbasit';
     playAdhanTakbeers(v);
-    if (api.previewAdhan) api.previewAdhan(v);
   });
-}
 }
 
 // Cache Storage Size & Clear Cache Action

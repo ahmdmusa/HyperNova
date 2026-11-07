@@ -1352,7 +1352,7 @@
           syncDeepBanner(e.detail.deepFocus);
         }
         if (e.detail?.appLang) {
-          applyFocusLang(e.detail.appLang);
+          if (typeof applyFocusLang === 'function') applyFocusLang(e.detail.appLang); else if (typeof window.applyFocusLang === 'function') window.applyFocusLang(e.detail.appLang);
         }
       });
     }

@@ -1,30 +1,39 @@
 
-  // Two Takbeers Audio Engine (الله أكبر، الله أكبر)
-  // Plays pure serene two opening Takbeers using harmonic audio synthesis
-  window.playTwoTakbeers = function(voice) {
+  // Verified 8 Direct CDN Muezzins MP3 Dataset (Archive.org & AlAdhan CDN)
+  const ADHAN_MUEZZINS = [
+    { id: 'abdulbasit', name: 'الشيخ عبد الباسط عبد الصمد', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/017-_-.mp3', startSec: 0, takbirDurationSec: 15 },
+    { id: 'refaat', name: 'الشيخ محمد رفعت (أذان زمان)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/042--.mp3', startSec: 0, takbirDurationSec: 14 },
+    { id: 'banna', name: 'الشيخ محمود علي البنا (القاهرة)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/043--.mp3', startSec: 0, takbirDurationSec: 14 },
+    { id: 'makkah', name: 'أذان الحرم المكي (علي أحمد ملا)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/019--1.mp3', startSec: 0, takbirDurationSec: 16 },
+    { id: 'madinah', name: 'أذان المسجد النبوي الشريف', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/018-.mp3', startSec: 0, takbirDurationSec: 15 },
+    { id: 'aqsa', name: 'أذان المسجد الأقصى المبارك', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/007--.mp3', startSec: 0, takbirDurationSec: 14 },
+    { id: 'alafasy', name: 'الشيخ مشاري راشد العفاسي', url: 'https://cdn.aladhan.com/audio/adhans/a9.mp3', startSec: 0, takbirDurationSec: 15 },
+    { id: 'nafees', name: 'الشيخ أحمد النفيس (خاشع)', url: 'https://cdn.aladhan.com/audio/adhans/a1.mp3', startSec: 0, takbirDurationSec: 14 }
+  ];
+  window.ADHAN_MUEZZINS = ADHAN_MUEZZINS;
+
+  // Offline Fallback Synthesizer for Two Takbeers
+  function playTwoTakbeersSynth(voice) {
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (!AudioCtx) return;
       const ctx = window._audioCtx || (window._audioCtx = new AudioCtx());
       if (ctx.state === 'suspended') ctx.resume();
 
-      // Takbeer 1: "Allahu Akbar" (Maqam Bayati / Rast cadence)
-      // Notes: G3 (196Hz) -> C4 (261.6Hz) -> D4 (293.6Hz) -> C4 (261.6Hz)
       const t0 = ctx.currentTime + 0.05;
       const notes1 = [
-        { f: 220, dur: 0.6, gain: 0.22 }, // Al-
-        { f: 293.6, dur: 0.8, gain: 0.26 }, // la-
-        { f: 330, dur: 0.5, gain: 0.24 },   // hu
-        { f: 293.6, dur: 0.5, gain: 0.22 }, // Ak-
-        { f: 261.6, dur: 1.1, gain: 0.25 }, // bar
+        { f: 220, dur: 0.6, gain: 0.22 },
+        { f: 293.6, dur: 0.8, gain: 0.26 },
+        { f: 330, dur: 0.5, gain: 0.24 },
+        { f: 293.6, dur: 0.5, gain: 0.22 },
+        { f: 261.6, dur: 1.1, gain: 0.25 },
       ];
-      // Takbeer 2: "Allahu Akbar" with ascending reverent resolution
       const notes2 = [
-        { f: 220, dur: 0.6, gain: 0.22 }, // Al-
-        { f: 330, dur: 0.9, gain: 0.28 }, // la-
-        { f: 392, dur: 0.5, gain: 0.25 }, // hu
-        { f: 330, dur: 0.6, gain: 0.23 }, // Ak-
-        { f: 293.6, dur: 1.4, gain: 0.26 }, // bar (peaceful fade)
+        { f: 220, dur: 0.6, gain: 0.22 },
+        { f: 330, dur: 0.9, gain: 0.28 },
+        { f: 392, dur: 0.5, gain: 0.25 },
+        { f: 330, dur: 0.6, gain: 0.23 },
+        { f: 293.6, dur: 1.4, gain: 0.26 },
       ];
 
       function scheduleNotes(list, startTime) {
@@ -32,13 +41,11 @@
         list.forEach(n => {
           const osc = ctx.createOscillator();
           const g = ctx.createGain();
-          osc.type = voice === 'rifat' ? 'triangle' : voice === 'mustafa' ? 'sine' : 'sine';
+          osc.type = (voice === 'refaat' || voice === 'rifat') ? 'triangle' : 'sine';
           osc.frequency.setValueAtTime(n.f, cur);
-          
           g.gain.setValueAtTime(0.001, cur);
           g.gain.exponentialRampToValueAtTime(n.gain, cur + 0.08);
           g.gain.exponentialRampToValueAtTime(0.001, cur + n.dur);
-
           osc.connect(g);
           g.connect(ctx.destination);
           osc.start(cur);
@@ -53,22 +60,86 @@
     } catch (e) {
       console.warn('Audio synthesis takbeer error:', e);
     }
+  }
+
+  let activeIslandAdhanAudio = null;
+  window.playTwoTakbeers = function(voice) {
+    try {
+      if (activeIslandAdhanAudio) {
+        activeIslandAdhanAudio.pause();
+        activeIslandAdhanAudio = null;
+      }
+      const muezzin = ADHAN_MUEZZINS.find(m => m.id === voice) || ADHAN_MUEZZINS[0];
+      const audio = new Audio();
+      audio.crossOrigin = 'anonymous';
+      audio.src = muezzin.url;
+      audio.volume = 1.0;
+      activeIslandAdhanAudio = audio;
+
+      const targetDuration = muezzin.takbirDurationSec || 15;
+      const fadeStart = Math.max(0, targetDuration - 2.5);
+
+      audio.addEventListener('loadedmetadata', () => {
+        if (muezzin.startSec) audio.currentTime = muezzin.startSec;
+      });
+      audio.addEventListener('timeupdate', () => {
+        const cur = audio.currentTime - (muezzin.startSec || 0);
+        if (cur >= fadeStart && cur < targetDuration) {
+          const remainingRatio = Math.max(0, (targetDuration - cur) / (targetDuration - fadeStart));
+          audio.volume = Math.max(0, Math.min(1, remainingRatio));
+        } else if (cur >= targetDuration) {
+          audio.pause();
+          activeIslandAdhanAudio = null;
+        }
+      });
+      audio.addEventListener('error', () => {
+        activeIslandAdhanAudio = null;
+        playTwoTakbeersSynth(voice);
+      });
+      audio.play().catch(() => {
+        activeIslandAdhanAudio = null;
+        playTwoTakbeersSynth(voice);
+      });
+    } catch (e) {
+      playTwoTakbeersSynth(voice);
+    }
   };
 
   // IPC listener for Adhan preview from Settings
+  let lastPrayerTick = Date.now();
+  let quranWasPlayingBeforeAdhan = false;
+
+  function handleAdhanAudioWithDucking(voice) {
+    const muezzin = ADHAN_MUEZZINS.find(m => m.id === voice) || ADHAN_MUEZZINS[0];
+    const durMs = ((muezzin.takbirDurationSec || 15) + 1.5) * 1000;
+
+    if (window.quranRadio && window.quranRadio.state && window.quranRadio.state.isPlaying) {
+      quranWasPlayingBeforeAdhan = true;
+      window.quranRadio.pauseAudio();
+    } else {
+      quranWasPlayingBeforeAdhan = false;
+    }
+
+    if (typeof window.playTwoTakbeers === 'function') {
+      window.playTwoTakbeers(voice);
+    }
+
+    if (quranWasPlayingBeforeAdhan && window.state?.features?.adhanAutoResume !== false) {
+      setTimeout(() => {
+        if (window.quranRadio && window.quranRadio.state && window.quranRadio.state.isRadioMode) {
+          window.quranRadio.playCurrent();
+        }
+        quranWasPlayingBeforeAdhan = false;
+      }, durMs);
+    }
+  }
+  window.handleAdhanAudioWithDucking = handleAdhanAudioWithDucking;
+
   if (window.nova?.onAdhanPreview) {
     window.nova.onAdhanPreview((voice) => {
-      handleAdhanAudioWithDucking(voice || window.state?.features?.adhanVoice || 'abdulbasit');
+      const mObj = ADHAN_MUEZZINS.find(m => m.id === voice) || ADHAN_MUEZZINS[0];
       if (typeof window.showToast === 'function') {
-        const MUADHIN_NAMES = {
-          abdulbasit: 'الشيخ عبد الباسط عبد الصمد',
-          rifat: 'الشيخ محمد رفعت',
-          mustafa: 'الشيخ مصطفى إسماعيل',
-          makkah: 'الحرم المكي الشريف',
-          quds: 'المسجد الأقصى (القدس)'
-        };
-        const mName = MUADHIN_NAMES[voice] || 'عبد الباسط عبد الصمد';
-        window.showToast('prayer', '🕌 الله أكبر، الله أكبر', `أذان: ${mName} (تكبيرتان فقط)`, 0, 4500);
+        window.showToast('prayer', '🕌 الله أكبر، الله أكبر', `أذان: ${mObj.name} (تكبيرتان فقط)`, 0, 4500);
       }
     });
   }
@@ -88,18 +159,50 @@
   let data = null;
   const fired = new Set(); // reminders already shown this run
 
-  // the bell and the Settings window share one switch (prayerAlerts)
+  const MUEZZIN_SHORT = {
+    abdulbasit: 'عبد الباسط',
+    refaat: 'محمد رفعت',
+    banna: 'محمود البنا',
+    makkah: 'الحرم المكي',
+    madinah: 'المسجد النبوي',
+    aqsa: 'الأقصى',
+    alafasy: 'العفاسي',
+    nafees: 'أحمد النفيس'
+  };
+
+  // the bell and the Settings window share one switch (prayerAlerts) + shows active Muezzin
   let alertsOn = true;
-  const showBell = () => bell.classList.toggle('on', alertsOn);
+  let currentMuezzinId = 'abdulbasit';
+  const showBell = () => {
+    if (!bell) return;
+    bell.classList.toggle('on', alertsOn);
+    const lbl = document.getElementById('pr-muezzin-lbl');
+    if (lbl) lbl.textContent = MUEZZIN_SHORT[currentMuezzinId] || 'عبد الباسط';
+  };
   showBell();
   window.addEventListener('island:features', (e) => {
     alertsOn = e.detail.prayerAlerts !== false;
+    if (e.detail.adhanVoice) currentMuezzinId = e.detail.adhanVoice;
     showBell();
   });
   bell.addEventListener('click', () => {
-    alertsOn = !alertsOn;
+    if (activeIslandAdhanAudio) {
+      activeIslandAdhanAudio.pause();
+      activeIslandAdhanAudio = null;
+      return;
+    }
+    const voice = window.state?.features?.adhanVoice || currentMuezzinId || 'abdulbasit';
+    if (typeof window.handleAdhanAudioWithDucking === 'function') {
+      window.handleAdhanAudioWithDucking(voice);
+    }
+  });
+  bell.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    const ids = Object.keys(MUEZZIN_SHORT);
+    const nextIdx = (ids.indexOf(currentMuezzinId) + 1) % ids.length;
+    currentMuezzinId = ids[nextIdx];
     showBell();
-    bridge.setFeatures({ prayerAlerts: alertsOn });
+    bridge.setFeatures({ adhanVoice: currentMuezzinId });
   });
 
   const pad = (n) => String(n).padStart(2, '0');
@@ -167,12 +270,27 @@
     fajr: '04:45', sunrise: '06:12', dhuhr: '11:40', asr: '14:42', maghrib: '17:05', isha: '18:25'
   };
 
+  const METHOD_AR = {
+    'Egyptian General Authority of Survey': 'هيئة المساحة المصرية',
+    'Umm Al-Qura University, Makkah': 'أم القرى - مكة المكرمة',
+    'Muslim World League': 'رابطة العالم الإسلامي',
+    'University of Islamic Sciences, Karachi': 'جامعة العلوم الإسلامية بكراتشي',
+    'Islamic Society of North America (ISNA)': 'الجمعية الإسلامية لأمريكا الشمالية',
+    'Gulf Region': 'منطقة الخليج العربي',
+    'Kuwait': 'وزارة الأوقاف الكويتية',
+    'Qatar': 'وزارة الأوقاف القطرية'
+  };
+
+  function clockShort(d) {
+    return clock(d).replace(/\s*(AM|PM|ص|م)$/i, '').trim();
+  }
+
   function renderList(d, next, now) {
     if (!listEl) return;
     listEl.innerHTML = '';
     const times = d?.today?.times || FALLBACK_TIMES;
     const dateStr = d?.today?.date || ymd(now);
-    const order = isRamadan(d) && times.imsak ? ['imsak', ...ORDER] : ORDER;
+    const order = ORDER; // Always 6 horizontal columns matching reference UI
     
     for (const k of order) {
       const timeStr = times[k] || FALLBACK_TIMES[k] || '12:00';
@@ -183,8 +301,11 @@
       const pill = document.createElement('div');
       pill.className = `slim-prayer-pill ${isNext ? 'active-prayer' : ''} ${isPast ? 'past' : ''}`;
       pill.innerHTML = `
-        <span class="font-bold ${isNext ? 'text-emerald-200' : 'text-zinc-200'} text-[11px]">${NAMES[k] || k}</span>
-        <span class="font-mono ${isNext ? 'text-emerald-300 font-bold' : 'text-zinc-300'} text-[11px]" dir="ltr">${clock(t)}</span>
+        <span class="pr-slim-name-wrap">
+          ${isNext ? '<i class="pr-active-dot"></i>' : ''}
+          <span class="pr-slim-name">${NAMES[k] || k}</span>
+        </span>
+        <span class="pr-slim-time" dir="ltr">${clockShort(t)}</span>
       `;
       listEl.append(pill);
     }
@@ -198,32 +319,6 @@
   
   // Tracking for Sleep/Resume Detection & Missed Prayer Window
   let lastPrayerTick = Date.now();
-  let quranWasPlayingBeforeAdhan = false;
-
-  function handleAdhanAudioWithDucking(voice) {
-    // 1. Duck or Pause Quran Radio if active
-    if (window.quranRadio && window.quranRadio.state && window.quranRadio.state.isPlaying) {
-      quranWasPlayingBeforeAdhan = true;
-      window.quranRadio.pauseAudio();
-    } else {
-      quranWasPlayingBeforeAdhan = false;
-    }
-
-    // 2. Play Two Takbeers (offline Web Audio synthesis)
-    if (typeof window.playTwoTakbeers === 'function') {
-      window.playTwoTakbeers(voice);
-    }
-
-    // 3. Auto-resume Quran Radio 2 seconds after Takbeers complete (~5.5s + 2s = 7.5s)
-    if (quranWasPlayingBeforeAdhan && window.state?.features?.adhanAutoResume !== false) {
-      setTimeout(() => {
-        if (window.quranRadio && window.quranRadio.state && window.quranRadio.state.isRadioMode) {
-          window.quranRadio.playCurrent();
-        }
-        quranWasPlayingBeforeAdhan = false;
-      }, 7500);
-    }
-  }
 
   // Check for wake from sleep and missed prayer within 60 minutes
   function checkWakeupPrayerCatchup(d, now) {
@@ -358,7 +453,10 @@
     const elPrCity = $('#pr-city');
     if (elPrCity) elPrCity.textContent = data?.city || 'القاهرة';
     const elPrMethod = $('#pr-method');
-    if (elPrMethod) elPrMethod.textContent = d?.today?.method || '';
+    if (elPrMethod) {
+      const rawMethod = (d?.today?.method || 'هيئة المساحة المصرية').trim();
+      elPrMethod.textContent = METHOD_AR[rawMethod] || rawMethod;
+    }
 
     // the list only changes when a prayer passes
     const key = `${d.today.date}-${next?.key}`;

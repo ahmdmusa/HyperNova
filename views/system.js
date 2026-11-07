@@ -65,6 +65,7 @@
 
   const clipList = $('#clip-list');
   function renderClips(clips) {
+    clips = Array.isArray(clips) ? clips : [];
     clipList.innerHTML = '';
     const isAr = (window.state?.features?.appLang || 'ar') === 'ar';
     if (!clips.length) {
