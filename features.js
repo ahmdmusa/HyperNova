@@ -83,6 +83,7 @@ const DEFAULTS = {
   microSteps: true,
   aiModel: 'flash',
   islandTheme: 'dark',
+  islandSize: 'm',
   glassOpacity: 90,
   skipTaskbar: true,
 };
@@ -109,6 +110,8 @@ function pick(obj) {
       if (typeof v === 'string') out[k] = v;
     } else if (k === 'aiModel') {
       if (v === 'flash' || v === 'pro') out[k] = v;
+    } else if (k === 'islandSize') {
+      if (v === 's' || v === 'm' || v === 'l') out[k] = v;
     } else if (k === 'islandTheme') {
       if (v === 'dark' || v === 'light' || v === 'black') out[k] = v;
     } else if (k === 'glassOpacity') {

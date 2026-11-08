@@ -135,6 +135,44 @@
       <section id="island" class="page">
         <h1 data-i18n="island_title">الجزيرة</h1>
         <div class="group">
+          <h2 data-i18n="island_size_title">حجم الجزيرة التفاعلية</h2>
+          <div class="island-size-grid">
+            <label class="size-card">
+              <input type="radio" name="islandSize" value="s">
+              <div class="size-card-box">
+                <div class="size-card-top">
+                  <span class="size-badge">S</span>
+                  <b data-i18n="size_s">صغير (Compact)</b>
+                </div>
+                <div class="size-dims">520 × 260 px</div>
+                <small data-i18n="size_s_desc">خفيف ومضغوط للمساحات الصغيرة</small>
+              </div>
+            </label>
+            <label class="size-card">
+              <input type="radio" name="islandSize" value="m">
+              <div class="size-card-box">
+                <div class="size-card-top">
+                  <span class="size-badge default">M</span>
+                  <b data-i18n="size_m">متوسط (افتراضي)</b>
+                </div>
+                <div class="size-dims">640 × 335 px</div>
+                <small data-i18n="size_m_desc">التجربة المتوازنة المثالية لسطح المكتب</small>
+              </div>
+            </label>
+            <label class="size-card">
+              <input type="radio" name="islandSize" value="l">
+              <div class="size-card-box">
+                <div class="size-card-top">
+                  <span class="size-badge">L</span>
+                  <b data-i18n="size_l">كبير (Expanded)</b>
+                </div>
+                <div class="size-dims">780 × 420 px</div>
+                <small data-i18n="size_l_desc">مساحة واسعة بعمودين وقوائم كاملة</small>
+              </div>
+            </label>
+          </div>
+        </div>
+        <div class="group">
           <h2 data-i18n="tabs_title">تبويبات الجزيرة</h2>
           <div class="chips">
             <label class="chip"><input type="checkbox" data-feature="tabMedia" data-tab><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><b data-i18n="tab_music">الصوتيات</b></label>
@@ -501,7 +539,7 @@
                   <span class="about-publisher-sub">Developed &amp; Published by <b>Ahmed Musa (@ahmdmusa)</b></span>
                 </div>
               </div>
-              <span class="about-ver-badge">v2.0.0 · Open Source</span>
+              <span class="about-ver-badge">v2.1.0 · Open Source</span>
             </div>
 
             <div class="about-credit-box">

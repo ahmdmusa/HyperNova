@@ -26,6 +26,13 @@ const I18N = {
     nav_about: 'حول المشروع (About)',
     about_tech_specs: 'المواصفات التقنية والمصادر',
     nav_island: 'الجزيرة',
+    island_size_title: 'حجم الجزيرة التفاعلية',
+    size_s: 'صغير (Compact)',
+    size_s_desc: 'خفيف ومضغوط للمساحات الصغيرة',
+    size_m: 'متوسط (افتراضي)',
+    size_m_desc: 'التجربة المتوازنة المثالية لسطح المكتب',
+    size_l: 'كبير (Expanded)',
+    size_l_desc: 'مساحة واسعة بعمودين وقوائم كاملة',
     nav_companion: 'الرفيق الذكي',
     nav_faith: 'الصلاة والأذكار',
     nav_alerts: 'التنبيهات والخصوصية',
@@ -236,6 +243,13 @@ const I18N = {
     nav_about: 'About HyperNova',
     about_tech_specs: 'Technical Specs & Credits',
     nav_island: 'Island',
+    island_size_title: 'Dynamic Island Size',
+    size_s: 'Compact (Small)',
+    size_s_desc: 'Lightweight & minimal for compact setups',
+    size_m: 'Balanced (Default)',
+    size_m_desc: 'The perfect balanced desktop experience',
+    size_l: 'Expanded (Large)',
+    size_l_desc: 'Spacious dual-column layout with full details',
     nav_companion: 'Companion',
     nav_faith: 'Prayer & Dhikr',
     nav_alerts: 'Alerts & Privacy',
@@ -587,6 +601,10 @@ $('#rm-preview')?.addEventListener('click', () => api.previewReminder());
 // ---- feature switches ----
 function showFeatures(f) {
   features = f || {};
+  const currentIslandSize = features.islandSize || 'm';
+  $$('input[name="islandSize"]').forEach((r) => {
+    r.checked = (r.value === currentIslandSize);
+  });
   $$('[data-feature]').forEach((el) => {
     if (el.tagName === 'SELECT') {
       if (features[el.dataset.feature]) el.value = features[el.dataset.feature];
@@ -734,6 +752,16 @@ if (glassSlider) {
     saved('saved');
   });
 }
+
+// Island Size selection
+$$('input[name="islandSize"]').forEach((r) => {
+  r.addEventListener('change', () => {
+    if (r.checked) {
+      api.setFeatures({ islandSize: r.value });
+      saved(currentLang === 'ar' ? 'تم تحديث حجم الجزيرة' : 'Island Size Updated');
+    }
+  });
+});
 
 // Taskbar toggle
 const taskbarToggle = $('#pref-taskbar-toggle');

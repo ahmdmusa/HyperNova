@@ -4801,3 +4801,485 @@ svg[fill="none"],
   font-size: 10.5px !important;
   font-weight: 700 !important;
 }
+
+/* ==========================================================================
+   HyperNova v2.1.0 - Redesigned Focus, Island Sizing & Cupertino Light Mode
+   ========================================================================== */
+
+/* 1. Dynamic Island Sizes (Compact / Medium / Large) */
+body.size-s #island.expanded {
+  --w: 520px;
+  --h: 260px;
+  --r: 24px;
+}
+body.size-s #island.idle {
+  --w: 220px;
+  --h: 30px;
+}
+body.size-s #island.compact {
+  --w: 280px;
+  --h: 30px;
+}
+body.size-s .dua-arabic-text,
+body.size-s #pr-daily-text {
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+}
+body.size-s .pr-slim-bar {
+  padding: 4px 8px !important;
+  gap: 4px !important;
+}
+body.size-s .slim-prayer-pill {
+  padding: 2px 5px !important;
+}
+body.size-s .nf-todo-list-scroll {
+  max-height: 125px !important;
+}
+body.size-s .art-wrap {
+  width: 66px !important;
+  height: 66px !important;
+}
+
+body.size-m #island.expanded,
+#island.expanded {
+  --w: 640px;
+  --h: 335px;
+  --r: 32px;
+}
+body.size-m #island.idle,
+#island.idle {
+  --w: 236px;
+  --h: 32px;
+}
+body.size-m #island.compact,
+#island.compact {
+  --w: 300px;
+  --h: 32px;
+}
+body.size-m .nf-todo-list-scroll {
+  max-height: 180px !important;
+}
+
+body.size-l #island.expanded {
+  --w: 780px;
+  --h: 420px;
+  --r: 36px;
+}
+body.size-l #island.idle {
+  --w: 260px;
+  --h: 36px;
+}
+body.size-l #island.compact {
+  --w: 330px;
+  --h: 36px;
+}
+body.size-l .dua-arabic-text,
+body.size-l #pr-daily-text {
+  font-size: 24px !important;
+  line-height: 1.7 !important;
+  -webkit-line-clamp: 3 !important;
+}
+body.size-l .pr-slim-bar {
+  padding: 9px 14px !important;
+  gap: 8px !important;
+}
+body.size-l .slim-prayer-pill {
+  padding: 6px 10px !important;
+}
+body.size-l .nf-todo-list-scroll {
+  max-height: 265px !important;
+}
+body.size-l .art-wrap {
+  width: 104px !important;
+  height: 104px !important;
+}
+
+/* 2. Redesigned Focus Elements */
+.nf-top-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  flex-shrink: 0 !important;
+  padding: 0 2px !important;
+}
+.nf-top-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+.nf-sound-picker-wrap {
+  position: relative !important;
+}
+.nf-sound-picker-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  background: rgba(255, 255, 255, 0.07) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 999px !important;
+  padding: 3px 10px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: #34d399 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  white-space: nowrap !important;
+}
+.nf-sound-picker-btn:hover {
+  background: rgba(16, 185, 129, 0.16) !important;
+  border-color: rgba(52, 211, 153, 0.4) !important;
+}
+.nf-sound-menu {
+  position: absolute !important;
+  top: calc(100% + 6px) !important;
+  left: 0 !important;
+  z-index: 1000 !important;
+  background: rgba(20, 24, 33, 0.96) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6) !important;
+  padding: 4px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  min-width: 130px !important;
+}
+.nf-sound-menu[hidden] {
+  display: none !important;
+}
+.nf-sound-option {
+  display: flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  padding: 5px 9px !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  border: none !important;
+  color: var(--text-2) !important;
+  font-size: 11.5px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  text-align: right !important;
+  transition: all 0.15s ease !important;
+  width: 100% !important;
+  white-space: nowrap !important;
+}
+.nf-sound-option:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #fff !important;
+}
+.nf-sound-option.active {
+  background: rgba(16, 185, 129, 0.2) !important;
+  color: #34d399 !important;
+  font-weight: 700 !important;
+}
+.nf-cat-select-wrap {
+  flex: none !important;
+}
+.nf-cat-inline-select {
+  height: 30px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 8px !important;
+  color: var(--text-1) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  padding: 0 6px !important;
+  cursor: pointer !important;
+  outline: none !important;
+}
+.nf-cat-inline-select option {
+  background: #181d28 !important;
+  color: #fff !important;
+}
+.nf-unified-filter-bar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  width: 100% !important;
+  padding: 0 1px !important;
+}
+.nf-cat-filter-wrap {
+  flex: none !important;
+}
+.nf-cat-filter-dropdown {
+  height: 24px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 6px !important;
+  color: var(--text-2) !important;
+  font-size: 10.5px !important;
+  font-weight: 600 !important;
+  padding: 0 6px !important;
+  cursor: pointer !important;
+  outline: none !important;
+}
+.nf-cat-filter-dropdown option {
+  background: #181d28 !important;
+  color: #fff !important;
+}
+
+/* Deep Focus Toggle Switch Improvements */
+.nf-compact-deep-switch {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 20px !important;
+  padding: 3px 10px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+.nf-compact-deep-switch:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+.nf-compact-deep-switch.active {
+  background: rgba(239, 68, 68, 0.2) !important;
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.35) !important;
+}
+.nf-compact-deep-switch .nf-deep-txt {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: var(--text-2) !important;
+}
+.nf-compact-deep-switch.active .nf-deep-txt {
+  color: #fca5a5 !important;
+  font-weight: 700 !important;
+}
+.nf-compact-deep-switch .nf-mini-toggle-pill {
+  width: 24px !important;
+  height: 13px !important;
+  border-radius: 99px !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+  position: relative !important;
+  transition: background 0.2s !important;
+}
+.nf-compact-deep-switch .nf-mini-toggle-pill .nf-knob {
+  width: 9px !important;
+  height: 9px !important;
+  border-radius: 50% !important;
+  background: #fff !important;
+  position: absolute !important;
+  top: 2px !important;
+  left: 2px !important;
+  transition: transform 0.2s cubic-bezier(0.3, 1.3, 0.42, 1) !important;
+}
+.nf-compact-deep-switch.active .nf-mini-toggle-pill {
+  background: #ef4444 !important;
+}
+.nf-compact-deep-switch.active .nf-mini-toggle-pill .nf-knob {
+  transform: translateX(11px) !important;
+}
+
+/* 3. Comprehensive Cupertino Daylight Frosted Glass (Light Theme Overrides) */
+html[data-theme="light"] .nf-sound-picker-btn {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  color: #047857 !important;
+}
+html[data-theme="light"] .nf-sound-picker-btn:hover {
+  background: rgba(16, 185, 129, 0.15) !important;
+}
+html[data-theme="light"] .nf-sound-menu {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12) !important;
+}
+html[data-theme="light"] .nf-sound-option {
+  color: #374151 !important;
+}
+html[data-theme="light"] .nf-sound-option:hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: #111827 !important;
+}
+html[data-theme="light"] .nf-sound-option.active {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #047857 !important;
+}
+html[data-theme="light"] .nf-compact-deep-switch {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+html[data-theme="light"] .nf-compact-deep-switch .nf-deep-txt {
+  color: #4b5563 !important;
+}
+html[data-theme="light"] .nf-compact-deep-switch.active {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border-color: #ef4444 !important;
+}
+html[data-theme="light"] .nf-compact-deep-switch.active .nf-deep-txt {
+  color: #dc2626 !important;
+}
+html[data-theme="light"] .nf-cat-inline-select,
+html[data-theme="light"] .nf-cat-filter-dropdown {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  color: #111827 !important;
+}
+html[data-theme="light"] .nf-cat-inline-select option,
+html[data-theme="light"] .nf-cat-filter-dropdown option {
+  background: #ffffff !important;
+  color: #111827 !important;
+}
+
+/* Light Theme - Tab Bar (.seg) */
+html[data-theme="light"] .seg,
+body.theme-light .seg {
+  background: rgba(0, 0, 0, 0.06) !important;
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.06) !important;
+}
+html[data-theme="light"] .seg-thumb,
+body.theme-light .seg-thumb {
+  background: #ffffff !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12), 0 0 1px rgba(0, 0, 0, 0.1) !important;
+}
+html[data-theme="light"] .tab,
+body.theme-light .tab {
+  color: #6b7280 !important;
+}
+html[data-theme="light"] .tab.active,
+body.theme-light .tab.active {
+  color: #111827 !important;
+  font-weight: 600 !important;
+}
+
+/* Light Theme - Prayer Slim Bar */
+html[data-theme="light"] .pr-slim-bar {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05) !important;
+}
+html[data-theme="light"] .pr-loc-group,
+html[data-theme="light"] .pr-city-txt {
+  color: #111827 !important;
+}
+html[data-theme="light"] .pr-method-txt {
+  color: #6b7280 !important;
+}
+html[data-theme="light"] .pr-countdown-badge {
+  background: rgba(16, 185, 129, 0.1) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+  box-shadow: none !important;
+}
+html[data-theme="light"] .pr-next-txt {
+  color: #065f46 !important;
+}
+html[data-theme="light"] .pr-next-strong {
+  color: #047857 !important;
+}
+html[data-theme="light"] .slim-prayer-pill {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+html[data-theme="light"] .slim-prayer-pill .pr-slim-name {
+  color: #374151 !important;
+}
+html[data-theme="light"] .slim-prayer-pill .pr-slim-time {
+  color: #6b7280 !important;
+}
+html[data-theme="light"] .slim-prayer-pill.active-prayer {
+  background: rgba(16, 185, 129, 0.18) !important;
+  border: 1px solid rgba(16, 185, 129, 0.5) !important;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.15) !important;
+}
+html[data-theme="light"] .slim-prayer-pill.active-prayer .pr-slim-name {
+  color: #065f46 !important;
+}
+html[data-theme="light"] .slim-prayer-pill.active-prayer .pr-slim-time {
+  color: #047857 !important;
+}
+html[data-theme="light"] .pr-bell-btn {
+  background: rgba(16, 185, 129, 0.12) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+  color: #059669 !important;
+}
+
+/* Light Theme - Dua Hero Card & Text (Crucial fix for invisible text) */
+html[data-theme="light"] .dua-hero-card {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06) !important;
+}
+html[data-theme="light"] .dua-top-bar {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+html[data-theme="light"] .segmented-bar {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+html[data-theme="light"] .seg-btn {
+  color: #6b7280 !important;
+}
+html[data-theme="light"] .seg-btn-active {
+  background: #ffffff !important;
+  color: #059669 !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+html[data-theme="light"] .pr-topic-badge {
+  background: rgba(16, 185, 129, 0.12) !important;
+  color: #047857 !important;
+  border-color: rgba(16, 185, 129, 0.25) !important;
+}
+html[data-theme="light"] .dua-font-btn,
+html[data-theme="light"] .dua-stepper,
+html[data-theme="light"] .dua-copy-btn {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  color: #4b5563 !important;
+}
+html[data-theme="light"] .dua-font-btn {
+  color: #d97706 !important;
+}
+html[data-theme="light"] .dua-step-count {
+  color: #374151 !important;
+}
+html[data-theme="light"] .dua-arabic-text,
+html[data-theme="light"] #pr-daily-text {
+  color: #111827 !important;
+  text-shadow: none !important;
+}
+html[data-theme="light"] .dua-footer-bar {
+  border-top: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+html[data-theme="light"] .dua-ref-text {
+  color: #6b7280 !important;
+}
+html[data-theme="light"] .dua-tasbih-btn {
+  background: rgba(16, 185, 129, 0.12) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+  color: #047857 !important;
+}
+
+/* Light Theme - Quran Radio Dropdown Pills & Controls */
+html[data-theme="light"] .qr-pill-btn {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  color: #1f2937 !important;
+}
+html[data-theme="light"] .qr-pill-gold {
+  color: #b45309 !important;
+  background: rgba(245, 158, 11, 0.1) !important;
+  border-color: rgba(245, 158, 11, 0.25) !important;
+}
+html[data-theme="light"] .qr-pill-emerald {
+  color: #047857 !important;
+  background: rgba(16, 185, 129, 0.1) !important;
+  border-color: rgba(16, 185, 129, 0.25) !important;
+}
+html[data-theme="light"] .qr-fav-btn {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  color: #9ca3af !important;
+}
+html[data-theme="light"] .qr-fav-btn.active {
+  background: rgba(251, 191, 36, 0.18) !important;
+  color: #d97706 !important;
+  border-color: #f59e0b !important;
+}

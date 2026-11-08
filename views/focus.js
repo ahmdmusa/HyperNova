@@ -583,16 +583,46 @@
       }
     }
 
-    // Bind Soundscape chips
-    const audioChips = document.querySelectorAll('.nf-sound-chip');
-    audioChips.forEach(btn => {
+    // Bind Sound Picker dropdown & options
+    const soundPickerBtn = $('#nf-sound-picker-btn');
+    const soundMenu = $('#nf-sound-menu');
+    const activeSoundNameEl = $('#nf-active-sound-name');
+
+    if (soundPickerBtn && soundMenu) {
+      soundPickerBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        soundMenu.hidden = !soundMenu.hidden;
+      });
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.nf-sound-picker-wrap')) {
+          soundMenu.hidden = true;
+        }
+      });
+    }
+
+    const soundOptions = document.querySelectorAll('.nf-sound-option');
+    soundOptions.forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        audioChips.forEach(b => b.classList.remove('active'));
+        soundOptions.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        if (soundMenu) soundMenu.hidden = true;
+        const span = btn.querySelector('span');
+        if (activeSoundNameEl && span) {
+          activeSoundNameEl.textContent = span.textContent;
+        }
         playFocusAudio(btn.dataset.sound);
       });
     });
+
+    // Bind Category Filter Dropdown
+    const catFilterSelect = $('#nf-cat-filter-select');
+    if (catFilterSelect) {
+      catFilterSelect.addEventListener('change', (e) => {
+        currentCategoryFilter = e.target.value || 'all';
+        renderDashboardSteps();
+      });
+    }
 
     // 2. The 2-Minute Unstick Rule Button handled in initUI
 
@@ -729,23 +759,16 @@
       }
       
       const uiTitle = $('#nf-ui-title');
-      if (uiTitle) uiTitle.textContent = isAr ? 'ركّز · Focus' : 'Focus';
+      if (uiTitle) uiTitle.textContent = isAr ? 'ركّز' : 'Focus';
       
       const streakEl = $('#nf-dash-streak');
-      if (streakEl) streakEl.textContent = isAr ? '🔥 سلسلة 3 أيام' : '🔥 3 Days Streak';
+      if (streakEl) streakEl.textContent = isAr ? '🔥 3 أيام' : '🔥 3 Days';
       
       const deepTxt = $('#nf-ui-deep-txt');
-      if (deepTxt) deepTxt.textContent = isAr ? 'القوة القاهرة' : 'Deep Focus';
+      if (deepTxt) deepTxt.textContent = 'Deep Focus';
       
       const deepSwitch = $('#nf-dash-deep-toggle');
       if (deepSwitch) deepSwitch.title = isAr ? 'تفعيل وضع القوة القاهرة لحظر المشتتات' : 'Toggle Deep Focus mode';
-      
-      // Chips
-      const chipAll = $('#nf-chip-all'); if (chipAll) chipAll.textContent = isAr ? '📌 الكل' : '📌 All';
-      const chipWork = $('#nf-chip-work'); if (chipWork) chipWork.textContent = isAr ? '💼 عمل' : '💼 Work';
-      const chipPersonal = $('#nf-chip-personal'); if (chipPersonal) chipPersonal.textContent = isAr ? '👤 شخصي' : '👤 Personal';
-      const chipUrgent = $('#nf-chip-urgent'); if (chipUrgent) chipUrgent.textContent = isAr ? '⚡ عاجل' : '⚡ Urgent';
-      const chipProj = $('#nf-chip-project'); if (chipProj) chipProj.textContent = isAr ? '🎯 مشاريع' : '🎯 Projects';
       
       // Select
       const select = $('#nf-task-cat-select');
@@ -754,6 +777,16 @@
         select.options[1].text = isAr ? '👤 شخصي' : '👤 Personal';
         select.options[2].text = isAr ? '⚡ عاجل' : '⚡ Urgent';
         select.options[3].text = isAr ? '🎯 مشاريع' : '🎯 Projects';
+      }
+
+      // Category filter dropdown
+      const filterSelect = $('#nf-cat-filter-select');
+      if (filterSelect && filterSelect.options.length >= 5) {
+        filterSelect.options[0].text = isAr ? '📌 الفئة: الكل' : '📌 Filter: All';
+        filterSelect.options[1].text = isAr ? '💼 عمل' : '💼 Work';
+        filterSelect.options[2].text = isAr ? '👤 شخصي' : '👤 Personal';
+        filterSelect.options[3].text = isAr ? '⚡ عاجل' : '⚡ Urgent';
+        filterSelect.options[4].text = isAr ? '🎯 مشاريع' : '🎯 Projects';
       }
       
       // Input
@@ -779,7 +812,6 @@
       const tabDone = $('#nf-tab-done'); if (tabDone) tabDone.textContent = isAr ? 'المكتملة' : 'Completed';
       
       // Sounds
-      const sndLbl = $('#nf-ui-sound-lbl'); if (sndLbl) sndLbl.textContent = isAr ? 'أصوات التركيز:' : 'Focus Sounds:';
       const sndNone = $('#snd-none'); if (sndNone) sndNone.textContent = isAr ? 'صامت' : 'Mute';
       const sndNature = $('#snd-nature'); if (sndNature) sndNature.textContent = isAr ? 'طبيعة' : 'Nature';
       const sndFajr = $('#snd-fajr'); if (sndFajr) sndFajr.textContent = isAr ? 'الفجر' : 'Dawn';
@@ -787,6 +819,13 @@
       const sndLib = $('#snd-library'); if (sndLib) sndLib.textContent = isAr ? 'مكتبة' : 'Library';
       const sndRain = $('#snd-rain'); if (sndRain) sndRain.textContent = isAr ? 'مطر' : 'Rain';
       const sndBrown = $('#snd-brown'); if (sndBrown) sndBrown.textContent = isAr ? 'بنية' : 'Brown Noise';
+
+      // Sync active sound display text
+      const activeOption = document.querySelector('.nf-sound-option.active span');
+      const activeDisplay = $('#nf-active-sound-name');
+      if (activeDisplay && activeOption) {
+        activeDisplay.textContent = activeOption.textContent;
+      }
 
       renderDashboardSteps();
       updateDashboardStats();

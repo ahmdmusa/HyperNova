@@ -46,8 +46,8 @@ app.commandLine.appendSwitch('ignore-gpu-blocklist');
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 app.commandLine.appendSwitch('log-level', '3'); // Suppress noisy internal Chromium WebRTC warnings
 
-const WIN_W = 720;
-const WIN_H = 380;
+const WIN_W = 860;
+const WIN_H = 490;
 let focusModeActive = true;
 const HOVER_INTENT_MS = 280;
 
@@ -1055,6 +1055,7 @@ app.whenReady().then(() => {
   screen.on('display-metrics-changed', () => layout());
   screen.on('display-added', () => layout());
   screen.on('display-removed', () => layout());
+
 });
 
 app.on('before-quit', () => {

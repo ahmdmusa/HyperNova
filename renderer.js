@@ -262,8 +262,13 @@ island.addEventListener('click', (e) => {
 // Main sends the pill's anchor (top-center) in window coordinates. Each mode is centered
 // on it, then pushed back inside the window, so near the bottom or the sides the island
 // opens upward / inward instead of off screen. Sizes mirror style.css.
+const SIZE_DIMS = {
+  s: { expanded: [520, 260], idle: [220, 30], compact: [280, 30] },
+  m: { expanded: [640, 335], idle: [236, 32], compact: [300, 32] },
+  l: { expanded: [780, 420], idle: [260, 36], compact: [330, 36] }
+};
 const DIMS = {
-  idle: [236, 32], compact: [300, 32], toast: [340, 34], peek: [400, 78], focus: [620, 76], expanded: [580, 260],
+  idle: [236, 32], compact: [300, 32], toast: [340, 34], peek: [400, 78], focus: [620, 76], expanded: [640, 335],
 };
 const COMPACT_WIDE = 380; // compact with a title (media / download)
 const VDIMS = { ...DIMS, idle: [44, 244], compact: [44, 136], toast: [44, 168] };
@@ -1211,6 +1216,30 @@ function applyFeatures(f) {
   document.body.classList.toggle('theme-light', currentTheme === 'light');
   document.body.classList.toggle('theme-dark', currentTheme === 'dark');
   document.body.classList.toggle('theme-black', currentTheme === 'black');
+  const currentSize = state.features.islandSize || 'm';
+  const sizeConfig = SIZE_DIMS[currentSize] || SIZE_DIMS.m;
+  DIMS.expanded = sizeConfig.expanded;
+  DIMS.idle = sizeConfig.idle;
+  DIMS.compact = sizeConfig.compact;
+  document.body.classList.toggle('size-s', currentSize === 's');
+  document.body.classList.toggle('size-m', currentSize === 'm');
+  document.body.classList.toggle('size-l', currentSize === 'l');
+  document.documentElement.setAttribute('data-size', currentSize);
+
+  // Internationalized tab names & status
+  const TAB_LABELS = {
+    ar: { media: 'الصوتيات', apps: 'التطبيقات', shelf: 'الرف', prayer: 'الصلاة', timer: 'المؤقت', focus: 'التركيز', system: 'النظام' },
+    en: { media: 'Music', apps: 'Apps', shelf: 'Shelf', prayer: 'Prayer', timer: 'Timer', focus: 'Focus', system: 'System' }
+  };
+  const labels = TAB_LABELS[appLang] || TAB_LABELS.ar;
+  $$('.seg .tab[data-tab]').forEach((tab) => {
+    const span = tab.querySelector('span');
+    const tabKey = tab.dataset.tab;
+    if (span && labels[tabKey]) span.textContent = labels[tabKey];
+  });
+  if (!$('#x-app-name').closest('#island').classList.contains('playing')) {
+    $('#x-app-name').textContent = appLang === 'ar' ? 'جاهز للعمل' : 'Ready';
+  }
   document.documentElement.lang = appLang;
   document.documentElement.dir = appLang === 'ar' ? 'rtl' : 'ltr';
   $$('[data-feat]').forEach((el) => el.classList.toggle('off', !feat(el.dataset.feat)));

@@ -592,92 +592,77 @@
         <section id="v-focus" class="view" role="tabpanel" dir="rtl" lang="ar">
           <div class="nf-container flex flex-col gap-2">
             
-            <!-- 1. Ambient Soundscapes Bar at the TOP per user request ("الاصوات تبقي فوق") -->
-            <div class="nf-sound-card">
-              <span class="nf-sound-lbl" id="nf-ui-sound-lbl">أصوات التركيز:</span>
-              <div class="nf-sound-chips">
-                <button type="button" class="nf-sound-chip active" data-sound="none">
-                  <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
-                  <span id="snd-none">صامت</span>
-                </button>
-                <button type="button" class="nf-sound-chip" data-sound="nature">
-                  <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/></svg>
-                  <span id="snd-nature">طبيعة</span>
-                </button>
-                <button type="button" class="nf-sound-chip" data-sound="fajr">
-                  <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6M4.93 4.93l4.24 4.24M2 12h6M20 12h2M12 18v4M4.93 19.07l4.24-4.24"/></svg>
-                  <span id="snd-fajr">الفجر</span>
-                </button>
-                <button type="button" class="nf-sound-chip" data-sound="night">
-                  <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-                  <span id="snd-night">سكون الليل</span>
-                </button>
-                <button type="button" class="nf-sound-chip" data-sound="library">
-                  <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-                  <span id="snd-library">مكتبة</span>
-                </button>
-                <button type="button" class="nf-sound-chip" data-sound="rain">
-                  <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/><path d="m8 19-2 3M12 19l-2 3M16 19l-2 3"/></svg>
-                  <span id="snd-rain">مطر</span>
-                </button>
-                <button type="button" class="nf-sound-chip" data-sound="brown">
-                  <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg>
-                  <span id="snd-brown">بُنية</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- 2. Header Bar with Compact Deep Focus in the Corner with Subtitle -->
-            <div class="nf-header-bar">
+            <!-- Row 1: Header + Ambient Sound Picker + Deep Focus Toggle -->
+            <div class="nf-top-row">
               <div class="nf-title-group">
-                <b class="nf-main-title" id="nf-ui-title">ركّز · Focus</b>
+                <b class="nf-main-title" id="nf-ui-title">ركّز</b>
                 <span class="nf-streak-badge" id="nf-dash-streak">🔥 3 أيام</span>
                 <span class="nf-stats-mini" id="nf-dash-completed-steps">✓ 0 منجزة</span>
               </div>
               
-              <!-- Compact Deep Focus Toggle in corner with subtitle per user request -->
-              <div class="nf-deep-corner-wrap">
+              <div class="nf-top-actions">
+                <!-- Sound Picker Dropdown Button -->
+                <div class="nf-sound-picker-wrap">
+                  <button type="button" id="nf-sound-picker-btn" class="nf-sound-picker-btn" title="اختيار صوت التركيز المحيطي" aria-label="أصوات التركيز">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+                    <span id="nf-active-sound-name">صامت</span>
+                    <svg class="nf-chevron-svg" viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <!-- Floating Dropdown Menu -->
+                  <div id="nf-sound-menu" class="nf-sound-menu" hidden>
+                    <button type="button" class="nf-sound-option active" data-sound="none">
+                      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+                      <span id="snd-none">صامت</span>
+                    </button>
+                    <button type="button" class="nf-sound-option" data-sound="rain">
+                      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/><path d="m8 19-2 3M12 19l-2 3M16 19l-2 3"/></svg>
+                      <span id="snd-rain">مطر</span>
+                    </button>
+                    <button type="button" class="nf-sound-option" data-sound="nature">
+                      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/></svg>
+                      <span id="snd-nature">طبيعة</span>
+                    </button>
+                    <button type="button" class="nf-sound-option" data-sound="library">
+                      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                      <span id="snd-library">مكتبة</span>
+                    </button>
+                    <button type="button" class="nf-sound-option" data-sound="night">
+                      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                      <span id="snd-night">سكون الليل</span>
+                    </button>
+                    <button type="button" class="nf-sound-option" data-sound="fajr">
+                      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6M4.93 4.93l4.24 4.24M2 12h6M20 12h2M12 18v4M4.93 19.07l4.24-4.24"/></svg>
+                      <span id="snd-fajr">الفجر</span>
+                    </button>
+                    <button type="button" class="nf-sound-option" data-sound="brown">
+                      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg>
+                      <span id="snd-brown">بُنية</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Deep Focus Toggle Switch -->
                 <div id="nf-dash-deep-toggle" class="nf-compact-deep-switch" role="switch" aria-checked="false" title="تفعيل وضع القوة القاهرة لحظر المشتتات">
                   <span class="nf-deep-icon"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
                   <span class="nf-deep-txt" id="nf-ui-deep-txt">Deep Focus</span>
                   <span class="nf-mini-toggle-pill"><i class="nf-knob"></i></span>
                 </div>
-                <small class="nf-deep-sub-caption">حجب المشتتات والتركيز الكامل</small>
               </div>
             </div>
 
-            <!-- 3. Categories Filter Bar -->
-            <div class="nf-cat-filter-bar">
-              <button type="button" class="nf-cat-chip active" data-cat="all">
-                <svg class="nf-chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-                <span>الكل</span>
-              </button>
-              <button type="button" class="nf-cat-chip" data-cat="work">
-                <svg class="nf-chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-                <span>عمل</span>
-              </button>
-              <button type="button" class="nf-cat-chip" data-cat="personal">
-                <svg class="nf-chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                <span>شخصي</span>
-              </button>
-              <button type="button" class="nf-cat-chip" data-cat="urgent">
-                <svg class="nf-chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                <span>عاجل</span>
-              </button>
-              <button type="button" class="nf-cat-chip" data-cat="project">
-                <svg class="nf-chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-                <span>مشاريع</span>
-              </button>
-            </div>
-
-            <!-- 4. Smart Todo Row + Large Organized Scrollable List -->
+            <!-- Row 2: Unified Card: Task Input Row + Filter Bar + Scrollable Steps -->
             <div class="nf-input-card">
               <div class="nf-task-input-row">
+                <div class="nf-cat-select-wrap">
+                  <select id="nf-task-cat-select" class="nf-cat-inline-select" title="فئة المهمة" aria-label="فئة المهمة">
+                    <option value="work">💼 عمل</option>
+                    <option value="personal">👤 شخصي</option>
+                    <option value="urgent">⚡ عاجل</option>
+                    <option value="project">🎯 مشاريع</option>
+                  </select>
+                </div>
                 <input type="text" id="nf-dash-task-input" class="nf-todo-input" placeholder="اكتب مهمتك أو مشروعك هنا..." spellcheck="false" autocomplete="off" />
                 <div class="nf-btn-actions-group">
-                  <button type="button" id="nf-btn-add-task" class="nf-btn-add" title="إضافة مهمة" aria-label="إضافة مهمة">
-                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                  </button>
                   <button type="button" id="nf-btn-decompose" class="nf-btn-decomp" title="تفكيك المشروع لخطوات ذكية بالذكاء الاصطناعي" aria-label="تفكيك بالذكاء الاصطناعي">
                     <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3Z"/></svg>
                     <span>فكك</span>
@@ -686,16 +671,32 @@
                     <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
                     <span>2د</span>
                   </button>
+                  <button type="button" id="nf-btn-add-task" class="nf-btn-add" title="إضافة مهمة" aria-label="إضافة مهمة">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  </button>
                 </div>
               </div>
-              <!-- Period Tabs Bar (Daily / Weekly / Completed) -->
-              <div class="nf-period-tabs-bar">
-                <button type="button" class="nf-period-tab active" data-period="daily" id="nf-tab-daily">مهام اليوم</button>
-                <button type="button" class="nf-period-tab" data-period="weekly" id="nf-tab-weekly">مهام الأسبوع</button>
-                <button type="button" class="nf-period-tab" data-period="done" id="nf-tab-done">المكتملة</button>
+
+              <!-- Row 3: Unified Filter Bar -->
+              <div class="nf-unified-filter-bar">
+                <div class="nf-period-tabs-bar">
+                  <button type="button" class="nf-period-tab active" data-period="daily" id="nf-tab-daily">مهام اليوم</button>
+                  <button type="button" class="nf-period-tab" data-period="weekly" id="nf-tab-weekly">مهام الأسبوع</button>
+                  <button type="button" class="nf-period-tab" data-period="done" id="nf-tab-done">المكتملة</button>
+                </div>
+                <div class="nf-cat-filter-wrap">
+                  <select id="nf-cat-filter-select" class="nf-cat-filter-dropdown" title="تصفية حسب الفئة" aria-label="تصفية الفئة">
+                    <option value="all" id="nf-opt-all">📌 الفئة: الكل</option>
+                    <option value="work" id="nf-opt-work">💼 عمل</option>
+                    <option value="personal" id="nf-opt-personal">👤 شخصي</option>
+                    <option value="urgent" id="nf-opt-urgent">⚡ عاجل</option>
+                    <option value="project" id="nf-opt-project">🎯 مشاريع</option>
+                  </select>
+                </div>
               </div>
-              <!-- Interactive Scrollable Large Todo List with Easy Mouse Scroll -->
-              <div id="nf-dash-steps-list" class="nf-todo-list-scroll" style="min-height: 120px; max-height: 145px; overflow-y: auto;"></div>
+
+              <!-- Organized Scrollable Todo List -->
+              <div id="nf-dash-steps-list" class="nf-todo-list-scroll"></div>
             </div>
 
           </div>

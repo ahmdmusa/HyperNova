@@ -1047,3 +1047,69 @@ body.theme-light .btn-github {
   background: #1d1d1f !important;
   color: #ffffff !important;
 }
+
+/* Island Sizing Selector Cards */
+.island-size-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 10px;
+}
+.size-card {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+}
+.size-card input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.size-card-box {
+  flex: 1;
+  background: var(--panel);
+  border: 1px solid var(--stroke);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+.size-card:hover .size-card-box {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+.size-card input:checked + .size-card-box {
+  background: rgba(111, 140, 255, 0.14);
+  border-color: var(--accent);
+  box-shadow: 0 0 16px rgba(111, 140, 255, 0.25);
+}
+.size-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.size-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-2);
+}
+.size-badge.default {
+  background: rgba(48, 209, 88, 0.15);
+  color: #34d399;
+}
+.size-dims {
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+}
+.size-card-box small {
+  font-size: 11px;
+  color: var(--text-3);
+  line-height: 1.4;
+}

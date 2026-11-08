@@ -19,7 +19,7 @@ function open() {
       if (win.isMinimized()) win.restore();
       win.show();
       win.focus();
-      return;
+      return win;
     }
   }
 
@@ -105,6 +105,7 @@ function open() {
   win.on('closed', () => {
     win = null;
   });
+  return win;
 }
 
 function getWindow() {
