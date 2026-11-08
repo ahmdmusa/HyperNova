@@ -25,6 +25,12 @@ const I18N = {
     nav_general: 'الإعدادات العامة',
     nav_about: 'حول المشروع (About)',
     about_tech_specs: 'المواصفات التقنية والمصادر',
+    about_publisher: 'تطوير ونشر المهندس أحمد موسى (@ahmdmusa)',
+    about_ack_title: 'إسناد وتاريخ المصدر المفتوح (Acknowledgement)',
+    about_ack_desc: 'بدأ هذا المشروع كفكرة أولية وتفريعة (Fork) من مشروع <a href="https://github.com/NOVA-TECH-KIT/nova-island" target="_blank" class="about-ack-link">Nova Island</a> المفتوح المصدر، وتمت إعادة هندسته وتوسعته وتطويره بالكامل ليصبح <b>HyperNova</b>.',
+    about_btn_download: 'تحميل مباشر (Installer)',
+    about_btn_github: 'مستودع GitHub',
+    about_btn_coffee: 'Buy Me a Coffee',
     nav_island: 'الجزيرة',
     island_size_title: 'حجم الجزيرة التفاعلية',
     size_s: 'صغير (Compact)',
@@ -242,6 +248,12 @@ const I18N = {
     nav_general: 'General',
     nav_about: 'About HyperNova',
     about_tech_specs: 'Technical Specs & Credits',
+    about_publisher: 'Developed & Published by Ahmed Musa (@ahmdmusa)',
+    about_ack_title: 'Open Source Acknowledgement & Upstream',
+    about_ack_desc: 'Originally conceived as an initial concept and open-source fork of <a href="https://github.com/NOVA-TECH-KIT/nova-island" target="_blank" class="about-ack-link">Nova Island</a>, and subsequently redesigned, engineered, and expanded as <b>HyperNova</b>.',
+    about_btn_download: 'Direct Download (.exe)',
+    about_btn_github: 'GitHub Repository',
+    about_btn_coffee: 'Buy Me a Coffee',
     nav_island: 'Island',
     island_size_title: 'Dynamic Island Size',
     size_s: 'Compact (Small)',
@@ -709,6 +721,11 @@ function applyLanguage(lang) {
       el.placeholder = t[key];
     }
   });
+
+  const ackDesc = $('#about-ack-desc');
+  if (ackDesc && t.about_ack_desc) {
+    ackDesc.innerHTML = t.about_ack_desc;
+  }
 
   // Re-render steppers with localized unit strings
   showSteppers();

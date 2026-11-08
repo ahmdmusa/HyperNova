@@ -1,6 +1,6 @@
 {
   "name": "hypernova",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "HyperNova - Next-Gen Ambient Dynamic Island for Desktop",
   "homepage": "https://github.com/ahmdmusa/HyperNova",
   "repository": {
@@ -23,6 +23,7 @@
     "electron-builder": "^26.17.0"
   },
   "build": {
+    "electronDist": "node_modules/electron/dist",
     "appId": "com.ahmdmusa.hypernova",
     "productName": "HyperNova",
     "copyright": "Copyright © 2026 Ahmed Musa (ahmdmusa)",
