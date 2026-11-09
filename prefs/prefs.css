@@ -133,14 +133,9 @@ html[dir="ltr"] .about-ack-card,
 }
 .about-actions-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 10px !important;
   margin-top: 14px;
-}
-@media (max-width: 640px) {
-  .about-actions-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
 }
 .btn-coffee, .btn-github, .btn-instapay, .btn-download {
   height: 40px !important;

@@ -776,6 +776,11 @@
       if (extraTransport) extraTransport.style.display = 'none';
       const verseBox = document.getElementById('qr-verse-display');
       if (verseBox) verseBox.style.display = 'none';
+      const statusPill = document.getElementById('x-app-name');
+      if (statusPill && !statusPill.textContent.trim()) {
+        const isAr = document.documentElement.lang === 'ar' || document.documentElement.dir === 'rtl';
+        statusPill.textContent = isAr ? 'جاهز للعمل' : 'Ready';
+      }
       return;
     }
 
@@ -783,10 +788,10 @@
     vMedia.classList.add('quran-mode');
     vMedia.classList.remove('none');
 
-    // Keep Top Status Pill clean ('جاهز للعمل' with single green dot)
+    // Keep Top Status Pill dedicated to Quran Radio
     const statusPill = document.getElementById('x-app-name');
     if (statusPill) {
-      statusPill.textContent = 'جاهز للعمل';
+      statusPill.textContent = 'إذاعة القرآن الكريم';
     }
 
     // Update Equalizer Color to Emerald
@@ -858,9 +863,10 @@
     // Populate Pills matching reference screenshot
     const isFav = state.favorites.includes(state.surah);
     const styleShort = reciter.style.includes('مجود') ? 'مجود' : 'مرتل';
+    const reciterDisplayName = reciter.shortName.includes('(') ? reciter.shortName : `${reciter.shortName} (${styleShort})`;
     pillsBar.innerHTML = `
       <button type="button" id="qr-pill-reciter" class="qr-pill-btn qr-pill-gold" title="تغيير القارئ (10 قراء)" aria-label="اختيار القارئ">
-        <span>${reciter.shortName} (${styleShort})</span>
+        <span>${reciterDisplayName}</span>
         ${SVG_ICONS.chevronDown}
       </button>
       <button type="button" id="qr-pill-surah" class="qr-pill-btn qr-pill-emerald" title="اختيار السورة من 114 سورة" aria-label="اختيار السورة">

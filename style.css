@@ -119,14 +119,15 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
   box-shadow: 0 6px 18px -6px rgba(0, 0, 0, .45);
   transition: border-radius var(--dur-morph) var(--spring), box-shadow .4s var(--ease-out), transform .25s var(--spring);
 }
-#island.expanded .clip, #island.peek .clip {
+#island.expanded .clip, #island.peek .clip, #island.focus .clip, #island.reminder .clip {
+  background: #0f1118 !important;
   box-shadow: 0 2px 4px rgba(0, 0, 0, .2), 0 24px 60px -12px rgba(0, 0, 0, .6), 0 0 0 .5px rgba(0, 0, 0, .4);
 }
 #island.dropping .sheen { box-shadow: inset 0 0 0 2px rgba(var(--accent-rgb), .9); }
 
 #bd { position: absolute; left: 0; top: 0; z-index: 0; pointer-events: none; }
 .tint { position: absolute; inset: 0; z-index: 1; background: var(--glass-tint); transition: background .4s var(--ease-out); }
-#island.expanded .tint, #island.peek .tint { background: var(--glass-tint-strong); }
+#island.expanded .tint, #island.peek .tint, #island.focus .tint, #island.reminder .tint { background: rgba(15, 17, 24, 0.98) !important; }
 
 .glow {
   position: absolute; inset: 0; z-index: 2; opacity: 0;
@@ -2423,21 +2424,35 @@ body.theme-light #island {
   color: #1d1d1f !important;
 }
 
-/* Clip & Tint layers (Eliminate black underlay) */
+/* Clip & Tint layers (Eliminate black underlay & solid opaque surface preventing desktop window bleed-through) */
 html[data-theme="light"] .clip,
 body.theme-light .clip {
-  background: transparent !important;
+  background: #f7f7f9 !important;
   box-shadow: 0 16px 44px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.08) !important;
 }
 html[data-theme="light"] .tint,
 body.theme-light .tint {
-  background: rgba(255, 255, 255, 0.55) !important;
+  background: rgba(247, 247, 249, 0.98) !important;
+}
+html[data-theme="light"] #island.expanded .clip,
+html[data-theme="light"] #island.peek .clip,
+html[data-theme="light"] #island.focus .clip,
+html[data-theme="light"] #island.reminder .clip,
+body.theme-light #island.expanded .clip,
+body.theme-light #island.peek .clip,
+body.theme-light #island.focus .clip,
+body.theme-light #island.reminder .clip {
+  background: #f7f7f9 !important;
 }
 html[data-theme="light"] #island.expanded .tint,
 html[data-theme="light"] #island.peek .tint,
+html[data-theme="light"] #island.focus .tint,
+html[data-theme="light"] #island.reminder .tint,
 body.theme-light #island.expanded .tint,
-body.theme-light #island.peek .tint {
-  background: rgba(255, 255, 255, 0.72) !important;
+body.theme-light #island.peek .tint,
+body.theme-light #island.focus .tint,
+body.theme-light #island.reminder .tint {
+  background: rgba(247, 247, 249, 0.98) !important;
 }
 html[data-theme="light"] .sheen,
 body.theme-light .sheen {

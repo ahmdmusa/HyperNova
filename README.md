@@ -6,7 +6,7 @@
 
 <br/>
 
-[![Latest Release](https://img.shields.io/badge/Release-v2.1.1-0ea5e9?style=for-the-badge&logo=github)](https://github.com/ahmdmusa/HyperNova/releases/latest)
+[![Latest Release](https://img.shields.io/badge/Release-v2.1.2-0ea5e9?style=for-the-badge&logo=github)](https://github.com/ahmdmusa/HyperNova/releases/latest)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011%20(x64)-0078D4?style=for-the-badge&logo=windows)](https://github.com/ahmdmusa/HyperNova)
 [![License](https://img.shields.io/badge/License-GPL--3.0-10b981?style=for-the-badge)](LICENSE)
 [![Design](https://img.shields.io/badge/Design-Apple%20HIG%20%2B%20Cupertino%20Glass-1d1d1f?style=for-the-badge&logo=apple)](https://developer.apple.com/design/)
@@ -14,7 +14,7 @@
 
 <br/>
 
-[![Direct Download](https://img.shields.io/badge/Direct%20Download-HyperNova--Setup--2.1.1.exe-10b981?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/ahmdmusa/HyperNova/releases/download/v2.1.1/HyperNova-Setup-2.1.1.exe)
+[![Direct Download](https://img.shields.io/badge/Direct%20Download-HyperNova--Setup--2.1.2.exe-10b981?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/ahmdmusa/HyperNova/releases/download/v2.1.2/HyperNova-Setup-2.1.2.exe)
 [![Buy Me a Coffee](https://img.shields.io/badge/Support-Buy%20Me%20A%20Coffee%20(PayPal)-f59e0b?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.com/ncp/payment/4SWPEP8Q3YF78)
 [![InstaPay Egypt](https://img.shields.io/badge/Support-InstaPay%20(ahmdmusa)-7c3aed?style=for-the-badge)](https://ipn.eg/S/ahmdmusa/instapay/2yqQQN)
 
@@ -48,10 +48,10 @@ HyperNova has since been comprehensively re-engineered, redesigned, and expanded
 
 | Package | Version | Platform | Direct Link |
 |:---|:---:|:---:|:---|
-| **HyperNova Setup Installer (.exe)** | `v2.1.1` | Windows 10 / 11 (x64) | [**Download HyperNova-Setup-2.1.1.exe**](https://github.com/ahmdmusa/HyperNova/releases/download/v2.1.1/HyperNova-Setup-2.1.1.exe) |
+| **HyperNova Setup Installer (.exe)** | `v2.1.2` | Windows 10 / 11 (x64) | [**Download HyperNova-Setup-2.1.2.exe**](https://github.com/ahmdmusa/HyperNova/releases/download/v2.1.2/HyperNova-Setup-2.1.2.exe) |
 | **All Releases & Release Notes** | Latest | Any | [**GitHub Releases Page**](https://github.com/ahmdmusa/HyperNova/releases) |
 
-1. Download **`HyperNova-Setup-2.1.1.exe`** from the direct link above.
+1. Download **`HyperNova-Setup-2.1.2.exe`** from the direct link above.
 2. Run the installer and complete the setup wizard.
 3. Launch HyperNova. Use the global shortcut `Ctrl + Alt + I` to toggle the island capsule at any time.
 
