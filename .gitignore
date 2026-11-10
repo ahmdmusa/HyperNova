@@ -2,6 +2,8 @@
 node_modules/
 dist/
 build-cache/
+src-tauri/
+ui/
 *.asar
 *.asar.unpacked/
 *.log

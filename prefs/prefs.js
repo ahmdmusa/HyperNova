@@ -214,11 +214,21 @@ const I18N = {
     nova_focus_sub: 'رسوم تفاعلية متحركة للرفيق نوفا بعصابة الرأس عند بدء الجلسة',
     focus_sound_lbl: 'التنبيهات الصوتية للجلسات',
     focus_sound_sub: 'نغمات صوتية هادئة عند بدء وانتهاء جولة العمل',
-    deep_group: 'القوة القاهرة للتركيز العميق (Deep Focus)',
+    deep_group: 'القوة القاهرة ودرع التركيز العميق (Focus Shield)',
     deep_toggle_lbl: 'تفعيل وضع القوة القاهرة',
     deep_toggle_sub: 'إخفاء أيقونات سطح المكتب تلقائياً، وتصغير النوافذ وحظر المشتتات أثناء الجلسة',
-    deep_blocked_lbl: 'المنصات والمواقع المشتتة المحظورة تلقائياً',
-    deep_blocked_sub: 'يتم تصغير نوافذها وحظرها فوراً عند محاولة فتحها',
+    shield_mode_lbl: 'نمط حماية درع التركيز (Shield Policy)',
+    shield_mode_desc: 'اختر سياسة التعامل مع النوافذ والتطبيقات أثناء الجلسة',
+    shield_mode_black: 'حظر المشتتات (Blacklist)',
+    shield_mode_white: 'سماح العمل فقط (Whitelist)',
+    shield_add_btn: '+ إضافة للقائمة',
+    shield_pick_btn: '⚡ التقاط من النشطة',
+    shield_running_title: 'التطبيقات المفتوحة حالياً',
+    shield_chips_title: 'التطبيقات والمواقع المندرجة تحت الحماية',
+    shield_chips_subtitle: 'انقر على (×) لإزالة أي عنصر من القائمة فوراً',
+    shield_empty: 'القائمة فارغة حالياً',
+    shield_added: 'تمت إضافة العنصر لدرع التركيز',
+    shield_removed: 'تمت إزالة العنصر من درع التركيز',
     ai_group: 'محرك تفكيك المهام بالذكاء الاصطناعي (AI Decomposition)',
     ai_status_lbl: 'حالة محرك الذكاء الاصطناعي',
     ai_status_sub: 'جاهز لتحليل المهام وتوليد الخطوات الذرية',
@@ -444,11 +454,21 @@ const I18N = {
     nova_focus_sub: 'Play headband animation on companion at session start',
     focus_sound_lbl: 'Session Audio Chimes',
     focus_sound_sub: 'Pleasant sound cues when session starts or ends',
-    deep_group: 'Deep Focus Mode (Force Majeure)',
+    deep_group: 'Deep Focus Mode & Focus Shield',
     deep_toggle_lbl: 'Enable Deep Focus Mode',
     deep_toggle_sub: 'Auto-hides desktop icons, minimizes distraction windows and blocks sites',
-    deep_blocked_lbl: 'Auto-Blocked Distraction Platforms',
-    deep_blocked_sub: 'Instantly minimized and blocked during work sessions',
+    shield_mode_lbl: 'Focus Shield Policy',
+    shield_mode_desc: 'Choose window policy during deep focus sessions',
+    shield_mode_black: 'Block Distractions (Blacklist)',
+    shield_mode_white: 'Work Tools Only (Whitelist)',
+    shield_add_btn: '+ Add to List',
+    shield_pick_btn: '⚡ Pick Running App',
+    shield_running_title: 'Currently Running Apps',
+    shield_chips_title: 'Protected Platforms & Apps',
+    shield_chips_subtitle: 'Click (×) to remove any item from the list',
+    shield_empty: 'No items currently in this list',
+    shield_added: 'Item added to Focus Shield',
+    shield_removed: 'Item removed from Focus Shield',
     ai_group: 'AI Task Decomposition (Gemini)',
     ai_status_lbl: 'AI Engine Status',
     ai_status_sub: 'Ready to break complex tasks into atomic micro-steps',
@@ -843,13 +863,165 @@ function applyThemeColor(c) {
     const nfStateRaw = localStorage.getItem('neurofocus_state');
     const nfState = nfStateRaw ? JSON.parse(nfStateRaw) : {};
     deepSw.checked = !!nfState.deepFocus;
+    if (api.getDeepFocus) {
+      api.getDeepFocus().then((val) => {
+        if (typeof val === 'boolean') deepSw.checked = val;
+      });
+    }
     deepSw.addEventListener('change', () => {
       nfState.deepFocus = deepSw.checked;
       localStorage.setItem('neurofocus_state', JSON.stringify(nfState));
       api.setFeatures({ deepFocus: deepSw.checked });
+      if (api.setDeepFocus) api.setDeepFocus(deepSw.checked);
       saved('deep_updated');
     });
   }
+
+  // ---- Focus Shield Interactive Management ----
+  async function initFocusShield() {
+    if (!api.focusShield) return;
+    let shieldCfg = await api.focusShield.get();
+    let currentMode = shieldCfg.mode || 'blacklist';
+
+    const seg = $('#shield-mode-seg');
+    const input = $('#shield-input');
+    const addBtn = $('#shield-add-btn');
+    const pickBtn = $('#shield-pick-btn');
+    const pickerDropdown = $('#shield-picker-dropdown');
+    const pickerClose = $('#shield-picker-close');
+    const runningList = $('#shield-running-list');
+    const chipsContainer = $('#shield-chips-container');
+    const chipsCount = $('#shield-chips-count');
+
+    function renderShield() {
+      if (!chipsContainer) return;
+      chipsContainer.innerHTML = '';
+      const list = currentMode === 'whitelist' ? (shieldCfg.whitelist || []) : (shieldCfg.blacklist || []);
+      const isBlacklist = currentMode === 'blacklist';
+
+      if (chipsCount) {
+        chipsCount.textContent = currentLang === 'ar' ? `${list.length} عناصر` : `${list.length} items`;
+      }
+
+      if (!list.length) {
+        const emptyDiv = document.createElement('div');
+        emptyDiv.className = 'shield-empty-msg';
+        emptyDiv.style.color = 'var(--text-2)';
+        emptyDiv.style.fontSize = '12px';
+        emptyDiv.style.padding = '8px 0';
+        emptyDiv.textContent = currentLang === 'ar' ? 'القائمة فارغة حالياً' : 'No items in list';
+        chipsContainer.appendChild(emptyDiv);
+        return;
+      }
+
+      list.forEach((item, index) => {
+        const chip = document.createElement('span');
+        chip.className = `chip ${isBlacklist ? 'blocked' : 'allowed'}`;
+        chip.innerHTML = `
+          <span class="dot"></span>
+          <span class="chip-text">${item}</span>
+          <button type="button" class="chip-del" title="${currentLang === 'ar' ? 'حذف' : 'Remove'}">×</button>
+        `;
+        chip.querySelector('.chip-del').addEventListener('click', async (e) => {
+          e.stopPropagation();
+          list.splice(index, 1);
+          if (isBlacklist) shieldCfg.blacklist = list;
+          else shieldCfg.whitelist = list;
+          await api.focusShield.set(shieldCfg);
+          renderShield();
+          saved('shield_removed');
+        });
+        chipsContainer.appendChild(chip);
+      });
+    }
+
+    if (seg) {
+      const btns = seg.querySelectorAll('button');
+      btns.forEach((btn) => {
+        btn.classList.toggle('sel', btn.dataset.mode === currentMode);
+        btn.addEventListener('click', async () => {
+          btns.forEach((b) => b.classList.remove('sel'));
+          btn.classList.add('sel');
+          currentMode = btn.dataset.mode;
+          shieldCfg.mode = currentMode;
+          await api.focusShield.set(shieldCfg);
+          renderShield();
+          saved('deep_updated');
+        });
+      });
+    }
+
+    async function addItem(val) {
+      const text = (val || '').trim().toLowerCase();
+      if (!text) return;
+      const list = currentMode === 'whitelist' ? (shieldCfg.whitelist || []) : (shieldCfg.blacklist || []);
+      if (!list.includes(text)) {
+        list.push(text);
+        if (currentMode === 'whitelist') shieldCfg.whitelist = list;
+        else shieldCfg.blacklist = list;
+        await api.focusShield.set(shieldCfg);
+        renderShield();
+        saved('shield_added');
+      }
+      if (input) input.value = '';
+    }
+
+    if (addBtn && input) {
+      addBtn.addEventListener('click', () => addItem(input.value));
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') addItem(input.value);
+      });
+    }
+
+    if (pickBtn && pickerDropdown && runningList) {
+      pickBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const isOpen = !pickerDropdown.hidden;
+        if (isOpen) {
+          pickerDropdown.hidden = true;
+          return;
+        }
+        pickerDropdown.hidden = false;
+        runningList.innerHTML = `<div style="padding:10px; font-size:12px; color:var(--text-2); text-align:center;">${currentLang === 'ar' ? 'جارٍ قراءة التطبيقات النشطة…' : 'Reading running apps…'}</div>`;
+        const apps = await api.focusShield.getRunningApps();
+        runningList.innerHTML = '';
+        if (!apps || !apps.length) {
+          runningList.innerHTML = `<div style="padding:10px; font-size:12px; color:var(--text-2); text-align:center;">${currentLang === 'ar' ? 'لا توجد تطبيقات نشطة مكتشفة' : 'No running apps detected'}</div>`;
+          return;
+        }
+        apps.forEach((app) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'shield-running-item';
+          btn.innerHTML = `
+            <span class="app-name-b">${app.name}</span>
+            <span class="app-title-s">${app.title || app.name}</span>
+          `;
+          btn.addEventListener('click', async () => {
+            await addItem(app.name);
+            pickerDropdown.hidden = true;
+          });
+          runningList.appendChild(btn);
+        });
+      });
+
+      if (pickerClose) {
+        pickerClose.addEventListener('click', (e) => {
+          e.stopPropagation();
+          pickerDropdown.hidden = true;
+        });
+      }
+
+      document.addEventListener('click', (e) => {
+        if (!pickerDropdown.hidden && !e.target.closest('.shield-picker-wrap')) {
+          pickerDropdown.hidden = true;
+        }
+      });
+    }
+
+    renderShield();
+  }
+  initFocusShield().catch((err) => console.error('[prefs] FocusShield init failed:', err));
 } catch (e) {
   console.error('[prefs] Focus settings error:', e);
 }

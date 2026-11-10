@@ -89,6 +89,10 @@ contextBridge.exposeInMainWorld('nova', {
     clearClips: () => ipcRenderer.send('clip-clear'),
   },
 
+  focusShield: {
+    get: () => ipcRenderer.invoke('focus-shield-get'),
+  },
+
   ai: {
     breakdown: (goal) => ipcRenderer.invoke('ai-breakdown', goal),
     getConfig: () => ipcRenderer.invoke('ai-get-config'),

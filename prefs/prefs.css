@@ -726,6 +726,177 @@ input { font: inherit; color: inherit; }
   background: #ef4444;
   box-shadow: 0 0 6px #ef4444;
 }
+.chip.allowed {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.25);
+  color: #6ee7b7;
+}
+.chip.allowed .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+}
+.chip .chip-del {
+  background: transparent;
+  border: none;
+  color: inherit;
+  opacity: 0.6;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0 2px;
+  margin-inline-start: 4px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: opacity 0.12s, transform 0.1s;
+}
+.chip .chip-del:hover {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+/* Shield Controls & Picker Bar */
+.shield-mode-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.shield-input-bar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 16px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.shield-input-wrap {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+  min-width: 260px;
+}
+.shield-text-input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 6px 12px;
+  color: #fff;
+  font-size: 12.5px;
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+.shield-text-input:focus {
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.09);
+}
+.shield-picker-wrap {
+  position: relative;
+}
+.btn-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(111, 140, 255, 0.12);
+  border: 1px solid rgba(111, 140, 255, 0.28);
+  color: #93b4ff;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.btn-picker:hover {
+  background: rgba(111, 140, 255, 0.22);
+  color: #fff;
+}
+.btn-picker .s-ico {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+.shield-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  inset-inline-end: 0;
+  width: 320px;
+  max-height: 280px;
+  background: rgba(22, 22, 32, 0.96);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+  z-index: 100;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.shield-dropdown[hidden] {
+  display: none;
+}
+.shield-dropdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.btn-close-sm {
+  background: transparent;
+  border: none;
+  color: var(--text-2);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.btn-close-sm:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+.shield-running-items {
+  overflow-y: auto;
+  max-height: 230px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.shield-running-item {
+  display: flex;
+  flex-direction: column;
+  padding: 7px 10px;
+  border-radius: 7px;
+  background: transparent;
+  border: none;
+  text-align: start;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.12s;
+  font-size: 12px;
+}
+.shield-running-item:hover {
+  background: rgba(111, 140, 255, 0.15);
+}
+.shield-running-item .app-name-b {
+  font-weight: 600;
+  color: #fff;
+}
+.shield-running-item .app-title-s {
+  font-size: 11px;
+  color: var(--text-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .badge-status {
   display: inline-flex;
   align-items: center;

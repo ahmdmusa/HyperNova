@@ -41,10 +41,13 @@ if (process.platform === 'win32') {
   } catch {}
 }
 
-app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling,AudioServiceSandbox,AudioServiceOutOfProcess');
+app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling,AudioServiceSandbox,AudioServiceOutOfProcess,CalculateNativeWinOcclusion,SpareRendererForSitePerProcess');
 app.commandLine.appendSwitch('ignore-gpu-blocklist');
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 app.commandLine.appendSwitch('log-level', '3'); // Suppress noisy internal Chromium WebRTC warnings
+app.commandLine.appendSwitch('js-flags', '--max-old-space-size=128 --expose-gc');
+app.commandLine.appendSwitch('renderer-process-limit', '1');
+app.commandLine.appendSwitch('disable-site-isolation-trials');
 
 const WIN_W = 860;
 const WIN_H = 490;
@@ -412,23 +415,49 @@ function startMedia() {
         if (typeof data.clip === 'number') onClipboardSeq(data.clip, !!data.clipPriv);
         if ('omni' in data) onOmni(data.omni);
         if (deepFocusActive && (data.fgTitle || data.omni || data.fgProc)) {
-          const proc = (data.fgProc || '').toLowerCase();
+          const rawProc = (data.fgProc || '').replace(/\.exe$/i, '').trim();
+          const proc = rawProc.toLowerCase();
           const title = (data.fgTitle || '').toLowerCase();
           const omniUrl = (data.omni && typeof data.omni === 'object' && data.omni.url ? data.omni.url : '').toLowerCase();
-          const checkText = proc + ' ' + title + ' ' + omniUrl;
-          const distractions = [
-            'facebook', 'youtube', 'instagram', 'tiktok', 'twitter', 'x.com', 'reddit', 'netflix', 'twitch', 'discord', 'steam', 'telegram', 'whatsapp', 'spotify', 'vlc', 'epicgames', 'battlenet',
-            'فيسبوك', 'يوتيوب', 'انستغرام', 'إنستغرام', 'تيك توك', 'تويتر', 'ريديت', 'نتفليكس', 'نتفلكس', 'ديسكورد', 'تليجرام', 'واتساب'
-          ];
-          for (const d of distractions) {
-            if (checkText.includes(d)) {
+          const checkText = `${proc} ${title} ${omniUrl}`;
+
+          // System exemptions: never minimize desktop shell or HyperNova itself
+          const isSystem = /^(explorer|hypernova|taskmgr|dwm|searchhost|startmenuexperiencehost|shellexperiencehost|shellhost|lockapp|applicationframehost)$/i.test(proc);
+
+          if (!isSystem && (proc || title)) {
+            let shouldMinimize = false;
+            let blockedReason = '';
+
+            if (focusShieldConfig.mode === 'whitelist') {
+              const allowedList = focusShieldConfig.whitelist || [];
+              const isAllowed = allowedList.some((w) => {
+                const target = (w || '').trim().toLowerCase();
+                return target && (proc === target || proc.includes(target) || title.includes(target));
+              });
+              if (!isAllowed) {
+                shouldMinimize = true;
+                blockedReason = data.fgProc || data.fgTitle || 'Unapproved App';
+              }
+            } else {
+              // Blacklist mode (default)
+              const blockedList = focusShieldConfig.blacklist || [];
+              for (const item of blockedList) {
+                const target = (item || '').trim().toLowerCase();
+                if (target && checkText.includes(target)) {
+                  shouldMinimize = true;
+                  blockedReason = item;
+                  break;
+                }
+              }
+            }
+
+            if (shouldMinimize) {
               mediaWrite('minimize-fg');
               const now = Date.now();
-              if (now - lastDistractionToast > 4000) {
+              if (now - lastDistractionToast > 3500) {
                 lastDistractionToast = now;
-                send('distraction-detected', data.fgProc || data.fgTitle || d);
+                send('distraction-detected', blockedReason);
               }
-              break;
             }
           }
         }
@@ -618,6 +647,10 @@ function setActive(on) {
     // Only drop focusable if no input is currently active
     if (!focusInputActive && win.isFocusable()) {
       win.setFocusable(false);
+    }
+    // Trim memory when island collapses to idle
+    if (global.gc) {
+      try { global.gc(); } catch {}
     }
   }
   send('hover', on);
@@ -820,10 +853,68 @@ ipcMain.on('island-ready', () => log.info('island ready'));
 ipcMain.on('update-install', () => updater.install());
 ipcMain.handle('features-get', () => features.get());
 
-// --- Deep Focus (Force Majeure) Native C# Blocker ---
+// --- Deep Focus (Force Majeure) & Focus Shield (Whitelist / Blacklist) ---
 const deepFocus = require('./deep-focus');
 let deepFocusActive = false;
 let lastDistractionToast = 0;
+
+const defaultFocusShield = {
+  mode: 'blacklist',
+  blacklist: [
+    'facebook', 'youtube', 'instagram', 'tiktok', 'twitter', 'x.com', 'reddit', 'netflix', 'twitch', 'discord', 'steam', 'telegram', 'whatsapp', 'spotify', 'vlc', 'epicgames', 'battlenet'
+  ],
+  whitelist: [
+    'code', 'devenv', 'cursor', 'terminal', 'wt', 'cmd', 'powershell', 'word', 'excel', 'powerpnt', 'notion', 'obsidian', 'slack'
+  ]
+};
+let focusShieldConfig = Object.assign(
+  {},
+  defaultFocusShield,
+  settings.load('focus-shield.json', {})
+);
+
+function getRunningApps() {
+  return new Promise((resolve) => {
+    if (process.platform !== 'win32') return resolve([]);
+    const { execFile } = require('child_process');
+    execFile('tasklist.exe', ['/v', '/fo', 'csv'], { windowsHide: true }, (err, stdout) => {
+      if (err || !stdout) return resolve([]);
+      try {
+        const lines = stdout.split(/\r?\n/).filter(Boolean);
+        const apps = new Map();
+        const skipProc = /^(explorer|hypernova|tasklist|conhost|cmd|powershell|dwm|svchost|csrss|winlogon|sihost|fontdrvhost|lsass|services|smss|system|idle|atieclxx|nvdisplay|rtkauduservice64|searchhost|startmenuexperiencehost|shellexperiencehost|shellhost|textinputhost|crossdeviceservice|crossdeviceresume|messagingplugin|lockapp|lenovo|powertoys)$/i;
+        const skipTitle = /^(n\/a|olemainthreadwndname|desktopwindowxaml|default ime|msctfime|olechannelwnd|\.net-broadcasteventwnd|traymessagewindow|hardwaremonitorwindow|dwm notification window|smartdc|uxdservice|task host window|crossdeviceresumewindow|notification center|quick settings|windows default lock screen|windows input experience)$/i;
+
+        for (let i = 1; i < lines.length; i++) {
+          const m = lines[i].match(/"([^"]*)"/g);
+          if (!m || m.length < 9) continue;
+          const cols = m.map((s) => s.slice(1, -1));
+          const procName = cols[0].replace(/\.exe$/i, '').trim();
+          const title = cols[8].trim();
+          if (!procName || skipProc.test(procName)) continue;
+          if (!title || skipTitle.test(title)) continue;
+          if (!apps.has(procName.toLowerCase())) {
+            apps.set(procName.toLowerCase(), {
+              name: procName,
+              title: title,
+            });
+          }
+        }
+        resolve([...apps.values()]);
+      } catch {
+        resolve([]);
+      }
+    });
+  });
+}
+
+ipcMain.handle('focus-shield-get', () => focusShieldConfig);
+ipcMain.handle('focus-shield-set', (_e, cfg) => {
+  focusShieldConfig = Object.assign(focusShieldConfig, cfg);
+  settings.save('focus-shield.json', focusShieldConfig);
+  return focusShieldConfig;
+});
+ipcMain.handle('running-apps-get', () => getRunningApps());
 
 ipcMain.handle('set-deep-focus', (_e, enabled) => {
   deepFocusActive = !!enabled;

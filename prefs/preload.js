@@ -24,6 +24,13 @@ contextBridge.exposeInMainWorld('prefs', {
   setCalendar: (url) => ipcRenderer.invoke('cal-set', url),
   onCalendar: on('calendar'),
   openSupport: (key) => ipcRenderer.send('open-support', key),
+  setDeepFocus: (enabled) => ipcRenderer.invoke('set-deep-focus', enabled),
+  getDeepFocus: () => ipcRenderer.invoke('get-deep-focus'),
+  focusShield: {
+    get: () => ipcRenderer.invoke('focus-shield-get'),
+    set: (cfg) => ipcRenderer.invoke('focus-shield-set', cfg),
+    getRunningApps: () => ipcRenderer.invoke('running-apps-get'),
+  },
   ai: {
     getConfig: () => ipcRenderer.invoke('ai-get-config'),
     saveConfig: (cfg) => ipcRenderer.invoke('ai-save-config', cfg),

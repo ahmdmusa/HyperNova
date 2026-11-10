@@ -16,16 +16,24 @@
   let editing = false;
   let drag = null;
 
-  const iconHtml = (a) => (a.icon ? `<img src="${a.icon}" alt="" draggable="false">` : esc((a.name || '?').trim()[0] || '?'));
+  const isAr = () => (window.state?.features?.appLang || 'ar') === 'ar';
+
+  const iconHtml = (a) => {
+    const letter = esc((a.name || '?').trim()[0] || '?');
+    if (!a.icon) return letter;
+    return `<img src="${a.icon}" alt="" draggable="false" onerror="this.onerror=null;this.parentElement.classList.add('letter');this.parentElement.textContent='${letter}';">`;
+  };
 
   function updateBar() {
-    editBtn.textContent = editing ? 'Done' : 'Edit';
+    const ar = isAr();
+    editBtn.textContent = editing ? (ar ? 'تم' : 'Done') : (ar ? 'تعديل' : 'Edit');
     editBtn.classList.toggle('on', editing);
     editBtn.disabled = !pinned.length && !editing;
     addBtn.disabled = pinned.length >= MAX_PINNED;
+    addBtn.textContent = ar ? 'إضافة +' : 'Add +';
     hint.textContent = editing
-      ? 'Drag to reorder · × to remove'
-      : `${pinned.length}/${MAX_PINNED} · Click to open`;
+      ? (ar ? 'اسحب للترتيب · × للحذف' : 'Drag to reorder · × to remove')
+      : (ar ? `${pinned.length}/${MAX_PINNED} · انقر للفتح` : `${pinned.length}/${MAX_PINNED} · Click to open`);
   }
 
   function setEditing(on) {
@@ -36,14 +44,15 @@
 
   function renderGrid() {
     grid.innerHTML = '';
+    const ar = isAr();
     if (!pinned.length) {
-      grid.innerHTML = '<div class="apps-empty">No apps yet. Use Add to pin your favourites.</div>';
+      grid.innerHTML = `<div class="apps-empty">${ar ? 'لا توجد تطبيقات بعد. انقر على إضافة لتثبيت تطبيقاتك.' : 'No apps yet. Use Add to pin your favourites.'}</div>`;
     }
     for (const a of pinned) {
       const b = document.createElement('button');
       b.className = 'app' + (a.isPinned ? ' is-pinned' : '');
       b.dataset.id = a.id;
-      b.title = a.name + (a.weeklyCount ? ` (${a.weeklyCount} مرات هذا الأسبوع)` : '');
+      b.title = a.name + (a.weeklyCount ? ` (${a.weeklyCount} ${ar ? 'مرات هذا الأسبوع' : 'times this week'})` : '');
       const pinTag = a.isPinned ? '<span class="app-pin-ico" title="مثبت">📌</span>' : '';
       b.innerHTML =
         `<span class="app-ico ${a.icon ? '' : 'letter'}">${iconHtml(a)}${pinTag}</span>` +
@@ -191,6 +200,13 @@
     if (e.detail.mode !== 'expanded') {
       closePicker();
       setEditing(false);
+    }
+  });
+
+  window.addEventListener('island:features', (e) => {
+    if (e.detail?.appLang) {
+      updateBar();
+      renderGrid();
     }
   });
 

@@ -478,9 +478,9 @@
           </div>
         </div>
 
-        <!-- DEEP FOCUS FORCE MAJEURE -->
+        <!-- DEEP FOCUS FORCE MAJEURE & FOCUS SHIELD -->
         <div class="group">
-          <h2 data-i18n="deep_group">القوة القاهرة للتركيز العميق (Deep Focus)</h2>
+          <h2 data-i18n="deep_group">القوة القاهرة ودرع التركيز العميق (Focus Shield)</h2>
           <div class="card">
             <div class="row">
               <div class="txt">
@@ -489,22 +489,52 @@
               </div>
               <input type="checkbox" class="sw" id="pref-deep-focus-toggle">
             </div>
-            <div class="row sub">
+
+            <!-- Shield Mode Selection -->
+            <div class="shield-mode-row">
               <div class="txt">
-                <b data-i18n="deep_blocked_lbl">المنصات والمواقع المشتتة المحظورة تلقائياً</b>
-                <small data-i18n="deep_blocked_sub">يتم تصغير نوافذها وحظرها فوراً عند محاولة فتحها</small>
-                <div class="chips-grid">
-                  <span class="chip blocked"><span class="dot"></span>Facebook</span>
-                  <span class="chip blocked"><span class="dot"></span>YouTube</span>
-                  <span class="chip blocked"><span class="dot"></span>Instagram</span>
-                  <span class="chip blocked"><span class="dot"></span>TikTok</span>
-                  <span class="chip blocked"><span class="dot"></span>X / Twitter</span>
-                  <span class="chip blocked"><span class="dot"></span>Reddit</span>
-                  <span class="chip blocked"><span class="dot"></span>Netflix</span>
-                  <span class="chip blocked"><span class="dot"></span>Twitch</span>
-                  <span class="chip blocked"><span class="dot"></span>Discord</span>
-                  <span class="chip blocked"><span class="dot"></span>Steam</span>
-                  <span class="chip blocked"><span class="dot"></span>Telegram</span>
+                <b data-i18n="shield_mode_lbl">نمط حماية درع التركيز (Shield Policy)</b>
+                <small id="shield-mode-desc" data-i18n="shield_mode_desc">اختر سياسة التعامل مع النوافذ والتطبيقات أثناء الجلسة</small>
+              </div>
+              <div class="seg" id="shield-mode-seg">
+                <button type="button" class="sel" data-mode="blacklist" data-i18n="shield_mode_black">حظر المشتتات</button>
+                <button type="button" data-mode="whitelist" data-i18n="shield_mode_white">سماح العمل فقط</button>
+              </div>
+            </div>
+
+            <!-- Shield Input & Running Apps Picker -->
+            <div class="shield-input-bar">
+              <div class="shield-input-wrap">
+                <input type="text" id="shield-input" placeholder="اسم تطبيق أو موقع (مثل: discord, netflix)" class="shield-text-input">
+                <button type="button" id="shield-add-btn" class="btn" data-i18n="shield_add_btn">+ إضافة للقائمة</button>
+              </div>
+              <div class="shield-picker-wrap">
+                <button type="button" id="shield-pick-btn" class="btn-picker" data-i18n="shield_pick_btn">
+                  <svg viewBox="0 0 24 24" class="s-ico"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                  <span>التقاط من النشطة</span>
+                </button>
+                <div id="shield-picker-dropdown" class="shield-dropdown" hidden>
+                  <div class="shield-dropdown-header">
+                    <span data-i18n="shield_running_title">التطبيقات المفتوحة حالياً</span>
+                    <button type="button" id="shield-picker-close" class="btn-close-sm">✕</button>
+                  </div>
+                  <div id="shield-running-list" class="shield-running-items">
+                    <!-- Populated dynamically via api.focusShield.getRunningApps() -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dynamic Chips Grid -->
+            <div class="row sub" style="display:block;">
+              <div class="txt" style="width:100%;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <b id="shield-chips-header" data-i18n="shield_chips_title">التطبيقات والمواقع المندرجة تحت الحماية</b>
+                  <small id="shield-chips-count" class="badge-status active">0 عناصر</small>
+                </div>
+                <small id="shield-chips-subtitle" data-i18n="shield_chips_subtitle">انقر على (×) لإزالة أي عنصر من القائمة فوراً</small>
+                <div id="shield-chips-container" class="chips-grid">
+                  <!-- Populated dynamically -->
                 </div>
               </div>
             </div>

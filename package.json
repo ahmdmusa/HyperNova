@@ -1,6 +1,6 @@
 {
   "name": "hypernova",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "description": "HyperNova - Next-Gen Ambient Dynamic Island for Desktop",
   "homepage": "https://github.com/ahmdmusa/HyperNova",
   "repository": {
@@ -38,6 +38,8 @@
       "!promo/**",
       "!screenshots/**",
       "!dist/**",
+      "!src-tauri/**",
+      "!ui/**",
       "!*.cmd",
       "!setup-log.txt",
       "!verify_*.js",

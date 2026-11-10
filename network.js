@@ -28,11 +28,14 @@ function linkKind() {
 
 async function probe() {
   try {
-    const r = await fetch(PROBE, { signal: AbortSignal.timeout(4000), cache: 'no-store' });
-    return r.ok && (await r.text()).startsWith('Microsoft Connect Test');
-  } catch {
-    return false;
-  }
+    const r = await fetch(PROBE, { signal: AbortSignal.timeout(3500), cache: 'no-store' });
+    if (r.ok && (await r.text()).startsWith('Microsoft Connect Test')) return true;
+  } catch {}
+  try {
+    const r2 = await fetch('http://detectportal.firefox.com/success.txt', { signal: AbortSignal.timeout(3000), cache: 'no-store' });
+    if (r2.ok && (await r2.text()).includes('success')) return true;
+  } catch {}
+  return false;
 }
 
 async function poll() {
