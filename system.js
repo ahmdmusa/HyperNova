@@ -1,5 +1,6 @@
-// System status: CPU / RAM, clipboard history (memory only), weather.
+// System status: CPU / RAM, network throughput, clipboard history (memory only), weather.
 const os = require('os');
+const { execFile } = require('child_process');
 const { clipboard } = require('electron');
 const features = require('./features');
 const settings = require('./settings');
@@ -7,7 +8,7 @@ const smartclip = require('./smartclip');
 
 let send = () => {};
 
-// ---- CPU / RAM ----
+// ---- CPU / RAM / Network Throughput ----
 function cpuTimes() {
   let idle = 0, total = 0;
   for (const c of os.cpus()) {
@@ -17,14 +18,56 @@ function cpuTimes() {
   return { idle, total };
 }
 let lastCpu = cpuTimes();
-function tickStats() {
+let lastNetstat = null;
+let netThroughput = { rxBps: 0, txBps: 0, rxStr: '0 Kbps', txStr: '0 Kbps', pct: 0 };
+
+function sampleNetstat() {
+  return new Promise((resolve) => {
+    execFile('netstat.exe', ['-e'], { windowsHide: true, timeout: 1500 }, (_err, out) => {
+      const m = (out || '').match(/Bytes\s+(\d+)\s+(\d+)/);
+      resolve(m ? { rx: parseInt(m[1], 10), tx: parseInt(m[2], 10), t: Date.now() } : null);
+    });
+  });
+}
+
+function fmtBits(bps) {
+  const bits = bps * 8;
+  if (!bits || bits < 1000) return '0 Kbps';
+  const kbps = bits / 1000;
+  if (kbps < 1000) return `${kbps.toFixed(0)} Kbps`;
+  const mbps = kbps / 1000;
+  return `${mbps.toFixed(1)} Mbps`;
+}
+
+async function tickStats() {
   const now = cpuTimes();
   const dTotal = now.total - lastCpu.total;
   const cpu = dTotal > 0 ? 1 - (now.idle - lastCpu.idle) / dTotal : 0;
   lastCpu = now;
   const total = os.totalmem();
   const used = total - os.freemem();
-  send('stats', { cpu, ram: used / total, ramUsed: used, ramTotal: total });
+
+  try {
+    const ns = await sampleNetstat();
+    if (ns && lastNetstat) {
+      const dt = Math.max(0.5, (ns.t - lastNetstat.t) / 1000);
+      const rxBps = Math.max(0, (ns.rx - lastNetstat.rx) / dt);
+      const txBps = Math.max(0, (ns.tx - lastNetstat.tx) / dt);
+      const totalBps = (rxBps + txBps) * 8;
+      // Visual scale reference: 50 Mbps max for 100% bar fill
+      const pct = Math.min(1, Math.max(0, totalBps / (50 * 1e6)));
+      netThroughput = {
+        rxBps,
+        txBps,
+        rxStr: fmtBits(rxBps),
+        txStr: fmtBits(txBps),
+        pct: pct > 0.02 ? pct : (totalBps > 0 ? 0.04 : 0)
+      };
+    }
+    if (ns) lastNetstat = ns;
+  } catch {}
+
+  send('stats', { cpu, ram: used / total, ramUsed: used, ramTotal: total, net: netThroughput });
 }
 
 // ---- clipboard (kept in memory only; may contain sensitive text) ----

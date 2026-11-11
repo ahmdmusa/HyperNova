@@ -1,18 +1,33 @@
-// Network companion: is there a link (Wi-Fi / cable), and does it actually reach the internet.
-// The link comes from the adapters' names only: reading the Wi-Fi network name (netsh) counts as
-// a location request on Windows 11, so it is never read. The internet check is Windows' own
+// Network companion: is there a link (Wi-Fi / cable), SSID, and does it reach the internet.
+// Wi-Fi interface details (SSID, Signal) are read via netsh. The internet check is Windows' own
 // connectivity probe, tried only every 15 s (every 5 s while offline, to notice the return fast).
 const os = require('os');
+const { execFile } = require('child_process');
 
 const PROBE = 'http://www.msftconnecttest.com/connecttest.txt';
-const LINK_MS = 5000;
+const LINK_MS = 3000;
 const WIFI_NAME = /wi-?fi|wlan|wireless/i;
 
 let send = () => {};
 let enabled = true;
 let timer = null;
-let state = { link: 'none', internet: null, since: Date.now() };
+let state = { link: 'none', ssid: '', signal: 0, desc: '', internet: null, since: Date.now() };
 let lastProbe = 0;
+
+function wifi() {
+  return new Promise((resolve) => {
+    execFile('netsh.exe', ['wlan', 'show', 'interfaces'], { windowsHide: true, timeout: 3500 }, (_e, out) => {
+      const text = String(out || '');
+      const field = (name) => (text.match(new RegExp(`^\\s*${name}\\s*:\\s*(.+)$`, 'mi')) || [])[1]?.trim() || '';
+      const connected = /^\s*State\s*:\s*connected/mi.test(text);
+      resolve(connected ? {
+        ssid: field('SSID'),
+        signal: parseInt(field('Signal'), 10) || 0,
+        desc: field('Description'),
+      } : null);
+    });
+  });
+}
 
 // 'wifi' / 'ethernet' / 'none': any adapter with a real IPv4 address is up (Wi-Fi wins)
 function linkKind() {
@@ -41,18 +56,28 @@ async function probe() {
 async function poll() {
   clearTimeout(timer);
   if (!enabled) return;
-  const link = linkKind();
+  const w = await wifi();
+  const link = w ? 'wifi' : linkKind();
   let internet = state.internet;
   const offline = internet === false || link === 'none';
   if (link === 'none') internet = false;
-  else if (Date.now() - lastProbe > (offline ? 5000 : 15000) || link !== state.link) {
+  else if (Date.now() - lastProbe > (offline ? 5000 : 15000) || link !== state.link || (w && w.ssid !== state.ssid)) {
     lastProbe = Date.now();
     internet = await probe();
   }
-  const changed = link !== state.link || internet !== state.internet;
+  const next = {
+    link,
+    ssid: w?.ssid || '',
+    signal: w?.signal || 0,
+    desc: w?.desc || '',
+    internet
+  };
+  const changed = next.link !== state.link || next.ssid !== state.ssid || next.internet !== state.internet;
   const prev = state;
-  state = { link, internet, since: changed ? Date.now() : state.since };
-  if (changed) send('network', { ...state, prev });
+  state = { ...next, since: changed ? Date.now() : state.since };
+  if (changed || Math.abs(next.signal - (prev.signal || 0)) >= 10) {
+    send('network', { ...state, prev: changed ? prev : null });
+  }
   timer = setTimeout(poll, LINK_MS);
 }
 

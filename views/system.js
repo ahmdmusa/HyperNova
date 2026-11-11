@@ -66,6 +66,16 @@
     meter($('#cpu-bar'), $('#cpu-val'), s.cpu);
     meter($('#ram-bar'), $('#ram-val'), s.ram);
     $('#ram-val').title = `${(s.ramUsed / 2 ** 30).toFixed(1)} / ${(s.ramTotal / 2 ** 30).toFixed(1)} GB`;
+    if (s.net) {
+      const netBar = $('#net-bar');
+      if (netBar) {
+        netBar.style.width = `${Math.round((s.net.pct || 0) * 100)}%`;
+      }
+      const rxEl = $('#net-rx');
+      const txEl = $('#net-tx');
+      if (rxEl) rxEl.textContent = `↓ ${s.net.rxStr || '0 Kbps'}`;
+      if (txEl) txEl.textContent = `↑ ${s.net.txStr || '0 Kbps'}`;
+    }
   });
 
   const clipList = $('#clip-list');

@@ -890,8 +890,28 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
 .l-toast.net-on #t-value { color: var(--green); }
 .l-toast.net-off #t-label { color: #ff8a80; }
 #island.toast.net-down .glow { opacity: 1; background: radial-gradient(120% 140% at 0% 50%, rgba(255, 69, 58, .3), transparent 65%); }
-.net-row #net-val { font-weight: 600; }
+.net-row #net-val { font-weight: 600; font-size: 11.5px; max-width: 92px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right; }
 .net-row.off #net-val { color: #ff8a80; }
+#net-bar { background: #5ac8fa; }
+.net-row.off #net-bar { background: var(--red); width: 0 !important; }
+.net-speed-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--text-3);
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+.net-speed-row span {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+#net-rx { color: var(--green); font-weight: 500; }
+#net-tx { color: #5ac8fa; font-weight: 500; }
+.net-row.off .net-speed-row span { color: var(--text-3) !important; opacity: 0.5; }
 
 /* ============ companion cards (welcome back, morning, breaks) ============ */
 .rm-text.ui {

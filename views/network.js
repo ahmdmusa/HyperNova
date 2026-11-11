@@ -6,7 +6,9 @@
   const isAr = () => (window.state?.features?.appLang || 'ar') === 'ar';
   const label = (n) => {
     const ar = isAr();
-    if (n.link === 'wifi') return ar ? 'واي فاي' : 'Wi-Fi';
+    if (n.link === 'wifi') {
+      return n.ssid || (ar ? 'واي فاي' : 'Wi-Fi');
+    }
     if (n.link === 'ethernet') return ar ? 'إيثرنت' : 'Ethernet';
     return ar ? 'غير متصل' : 'Offline';
   };
@@ -28,6 +30,21 @@
     val.textContent = n.link !== 'none' && n.internet === false
       ? `${label(n)} · ${ar ? 'لا يوجد إنترنت' : 'no internet'}`
       : label(n);
+    if (n.link === 'wifi') {
+      val.title = `Wi-Fi: ${n.ssid || 'Connected'}${n.signal ? ` (${n.signal}%)` : ''}${n.desc ? `\nAdapter: ${n.desc}` : ''}`;
+    } else if (n.link === 'ethernet') {
+      val.title = ar ? 'اتصال سلكي (إيثرنت)' : 'Ethernet connection';
+    } else {
+      val.title = ar ? 'غير متصل بالإنترنت' : 'Offline';
+    }
+    if (off) {
+      const netBar = $('#net-bar');
+      if (netBar) netBar.style.width = '0%';
+      const rxEl = $('#net-rx');
+      const txEl = $('#net-tx');
+      if (rxEl) rxEl.textContent = '↓ 0 Kbps';
+      if (txEl) txEl.textContent = '↑ 0 Kbps';
+    }
   }
 
   let lastNet = null;
@@ -49,8 +66,10 @@
       showToast('net-on', ar ? 'عادت الشبكة للعمل' : 'Back online', gone ? ago(gone) : label(n), 0, 3500);
       note('📶', `${ar ? 'عادت الشبكة' : 'Back online'} ${gone ? ago(gone) : ''}`.trim());
       downAt = 0;
+    } else if (n.link === 'wifi' && n.ssid && p.ssid && n.ssid !== p.ssid) {
+      showToast('net-on', ar ? `متصل بـ ${n.ssid}` : `Connected to ${n.ssid}`, n.signal ? `${n.signal}%` : '', 0, 3000);
     } else if (n.link === 'wifi' && p.link !== 'wifi' && n.internet) {
-      showToast('net-on', ar ? 'تم الاتصال بالواي فاي' : 'Connected to Wi-Fi', '', 0, 3000);
+      showToast('net-on', n.ssid ? (ar ? `متصل بـ ${n.ssid}` : `Connected to ${n.ssid}`) : (ar ? 'تم الاتصال بالواي فاي' : 'Connected to Wi-Fi'), '', 0, 3000);
     }
   }
 
