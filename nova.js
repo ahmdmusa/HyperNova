@@ -731,6 +731,11 @@ ipcMain.on('shelf-drag', (e, p) => shelf.startDrag(e.sender, p));
 // --- system ---
 ipcMain.handle('system-snapshot', () => system.snapshot());
 ipcMain.on('clip-copy', (_e, i) => system.copyClip(i));
+ipcMain.on('copy-text', (_e, text) => {
+  if (typeof text === 'string') {
+    clipboard.writeText(text);
+  }
+});
 ipcMain.on('clip-clear', () => system.clearClips());
 ipcMain.handle('prayer-snapshot', () => prayer.snapshot());
 

@@ -524,9 +524,16 @@
   setInterval(tick, 1000);
 
   // Setup Expanded Interactive Daily Inspiration Hero Card
+  let isDailyInited = false;
   function initDailyIslamicCorner() {
     const tabs = document.querySelectorAll('.pr-daily-tab');
     if (!tabs.length) return;
+
+    if (isDailyInited) {
+      renderActiveItem();
+      return;
+    }
+    isDailyInited = true;
 
     const INSPIRATION_DATA = {
       dua: [
@@ -570,80 +577,116 @@
       if (badgeEl) badgeEl.textContent = item.badge;
       if (textEl) {
         textEl.textContent = item.text;
-        const isSmall = document.body.classList.contains('size-s');
-        const isLarge = document.body.classList.contains('size-l');
-        if (isSmall) {
-          textEl.style.fontSize = isLargeFont ? '17px' : '14.5px';
-        } else if (isLarge) {
-          textEl.style.fontSize = isLargeFont ? '24px' : '20px';
-        } else {
-          textEl.style.fontSize = isLargeFont ? '20px' : '17px';
-        }
+        textEl.classList.toggle('font-large', isLargeFont);
       }
       if (refEl) refEl.textContent = item.ref;
       if (counterEl) counterEl.textContent = `${curIdx + 1}/${list.length}`;
     }
 
-    // Switch on both CLICK and MOUSEOVER (hover-to-switch as requested!)
+    // Switch categories on click only
     tabs.forEach(tab => {
-      const activate = () => {
+      tab.addEventListener('click', (e) => {
+        e.stopPropagation();
         tabs.forEach(t => t.classList.remove('seg-btn-active'));
         tab.classList.add('seg-btn-active');
         curCat = tab.dataset.daily || 'dua';
         curIdx = 0;
+        window.audioHaptics?.playWoodTap();
         renderActiveItem();
-      };
-      tab.addEventListener('click', activate);
-      tab.addEventListener('mouseover', activate);
+      });
     });
 
-    // Font size toggle button
+    // Font size toggle button (Aa)
     const btnFont = document.getElementById('btnFontSizeToggle');
     if (btnFont) {
-      btnFont.addEventListener('click', () => {
+      btnFont.addEventListener('click', (e) => {
+        e.stopPropagation();
         isLargeFont = !isLargeFont;
         btnFont.classList.toggle('active', isLargeFont);
+        const card = document.querySelector('.dua-hero-card');
+        if (card) card.classList.toggle('font-large', isLargeFont);
+        const textEl = document.getElementById('pr-daily-text');
+        if (textEl) textEl.classList.toggle('font-large', isLargeFont);
         const isAr = (window.state?.features?.appLang || 'ar') === 'ar';
         btnFont.title = isLargeFont
           ? (isAr ? 'تصغير الخط' : 'Smaller text')
           : (isAr ? 'تكبير الخط' : 'Larger text');
+        window.audioHaptics?.playWoodTap();
         renderActiveItem();
       });
     }
 
-    // Steppers prev / next
-    document.getElementById('btnPrevInsp')?.addEventListener('click', () => {
-      curIdx--;
-      window.audioHaptics?.playWoodTap();
-      renderActiveItem();
-    });
-    document.getElementById('btnNextInsp')?.addEventListener('click', () => {
-      curIdx++;
-      window.audioHaptics?.playWoodTap();
-      const list = INSPIRATION_DATA[curCat] || INSPIRATION_DATA.dua;
-      if (curIdx + 1 >= list.length) {
-        window.setNovaMood?.('celebrate', 2500);
-        window.audioHaptics?.playCrystalChime(0.18);
-      }
-      renderActiveItem();
-    });
+    // Stepper Previous (<)
+    const btnPrev = document.getElementById('btnPrevInsp');
+    if (btnPrev) {
+      btnPrev.addEventListener('click', (e) => {
+        e.stopPropagation();
+        curIdx--;
+        window.audioHaptics?.playWoodTap();
+        renderActiveItem();
+      });
+    }
+
+    // Stepper Next (>)
+    const btnNext = document.getElementById('btnNextInsp');
+    if (btnNext) {
+      btnNext.addEventListener('click', (e) => {
+        e.stopPropagation();
+        curIdx++;
+        window.audioHaptics?.playWoodTap();
+        const list = INSPIRATION_DATA[curCat] || INSPIRATION_DATA.dua;
+        if (curIdx >= list.length - 1) {
+          window.setNovaMood?.('celebrate', 2500);
+          window.audioHaptics?.playCrystalChime(0.18);
+        }
+        renderActiveItem();
+      });
+    }
 
     // Copy button
     const btnCopy = document.getElementById('btnCopyInsp');
     if (btnCopy) {
-      btnCopy.addEventListener('click', async () => {
+      btnCopy.addEventListener('click', async (e) => {
+        e.stopPropagation();
         window.audioHaptics?.playWoodTap();
         const textEl = document.getElementById('pr-daily-text');
         const refEl = document.getElementById('pr-daily-ref');
-        const copyContent = `${textEl?.textContent || ''}
-${refEl?.textContent || ''}`;
-        try {
-          await navigator.clipboard.writeText(copyContent);
-          btnCopy.innerHTML = '<svg class="w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
-          setTimeout(() => {
-            btnCopy.innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>';
-          }, 1800);
-        } catch (e) {}
+        const badgeEl = document.getElementById('pr-daily-badge');
+        const copyContent = `${badgeEl ? badgeEl.textContent + '\n' : ''}${textEl?.textContent || ''}\n${refEl?.textContent || ''}`.trim();
+        
+        let copied = false;
+        if (typeof window.nova?.copyText === 'function') {
+          window.nova.copyText(copyContent);
+          copied = true;
+        }
+        if (!copied && navigator.clipboard?.writeText) {
+          try {
+            await navigator.clipboard.writeText(copyContent);
+            copied = true;
+          } catch {}
+        }
+        if (!copied) {
+          try {
+            const ta = document.createElement('textarea');
+            ta.value = copyContent;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            copied = true;
+          } catch {}
+        }
+
+        btnCopy.innerHTML = '<svg class="s" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5" style="width:13px;height:13px;"><polyline points="20 6 9 17 4 12"/></svg>';
+        const isAr = (window.state?.features?.appLang || 'ar') === 'ar';
+        if (typeof showToast === 'function') {
+          showToast('copied', isAr ? '✓ تم النسخ إلى الحافظة' : '✓ Copied to clipboard', copyContent.slice(0, 50) + '…', 0, 2500);
+        }
+        setTimeout(() => {
+          btnCopy.innerHTML = '<svg class="s" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:12px;height:12px;"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>';
+        }, 1800);
       });
     }
 
@@ -651,11 +694,14 @@ ${refEl?.textContent || ''}`;
     const btnTasbih = document.getElementById('btnTasbihCount');
     const tasbihNum = document.getElementById('tasbihNum');
     if (btnTasbih && tasbihNum) {
-      btnTasbih.addEventListener('click', () => {
+      btnTasbih.addEventListener('click', (e) => {
+        e.stopPropagation();
+        window.audioHaptics?.playWoodTap();
         tasbihCount = (tasbihCount + 1) % 4; // Cycles 0, 1, 2, 3
         tasbihNum.textContent = String(tasbihCount);
         if (tasbihCount === 3) {
           btnTasbih.classList.add('bg-emerald-500/30', 'text-emerald-200');
+          window.audioHaptics?.playCrystalChime(0.18);
         } else {
           btnTasbih.classList.remove('bg-emerald-500/30', 'text-emerald-200');
         }
@@ -667,7 +713,11 @@ ${refEl?.textContent || ''}`;
   }
 
   // Initialize once DOM is ready or after tick
-  setTimeout(initDailyIslamicCorner, 100);
+  document.addEventListener('DOMContentLoaded', initDailyIslamicCorner);
+  window.addEventListener('island:tab', (e) => {
+    if (e.detail?.tab === 'prayer') initDailyIslamicCorner();
+  });
+  setTimeout(initDailyIslamicCorner, 50);
 
   tick();
 })();

@@ -43,6 +43,7 @@ contextBridge.exposeInMainWorld('nova', {
   installUpdate: () => ipcRenderer.send('update-install'),
   calendar: () => ipcRenderer.invoke('cal-get'),
   openMeeting: (link) => ipcRenderer.send('open-meeting', link),
+  copyText: (t) => ipcRenderer.send('copy-text', t),
   downloads: {
     snapshot: () => ipcRenderer.invoke('dl-snapshot'),
     control: (id, action) => ipcRenderer.send('dl-control', id, action),
