@@ -802,17 +802,20 @@ $$('.color-dot').forEach((d) => {
   });
 });
 
-// Glass blur slider
+// Glass blur & opacity slider: Real-time live responsiveness
 const glassSlider = $('#pref-glass-slider');
 if (glassSlider) {
+  const updateGlass = (val) => {
+    const num = parseInt(val, 10);
+    if ($('#pref-glass-val')) $('#pref-glass-val').textContent = `${num}%`;
+    api.setFeatures({ glassOpacity: num });
+  };
   glassSlider.addEventListener('input', (e) => {
-    const val = e.target.value;
-    if ($('#pref-glass-val')) $('#pref-glass-val').textContent = `${val}%`;
+    updateGlass(e.target.value);
   });
   glassSlider.addEventListener('change', (e) => {
-    const val = parseInt(e.target.value, 10);
-    api.setFeatures({ glassOpacity: val });
-    saved('saved');
+    updateGlass(e.target.value);
+    saved(currentLang === 'ar' ? 'تم ضبط مستوى الشفافية والزجاج' : 'Glass opacity saved');
   });
 }
 

@@ -162,6 +162,27 @@
     setTimeout(blinkLoop, 2800 + Math.random() * 3800);
   })();
 
+  // Natural idle saccades: organic subtle micro-glances
+  (function saccadeLoop() {
+    if (islandEl.classList.contains('eyes') && currentMood === 'idle' && !near) {
+      if (Math.random() < 0.65) {
+        const glanceX = (Math.random() - 0.5) * 6;
+        const glanceY = (Math.random() - 0.5) * 3;
+        springX.setTarget(glanceX);
+        springY.setTarget(glanceY);
+        runPhysicsLoop();
+        setTimeout(() => {
+          if (currentMood === 'idle' && !near) {
+            springX.setTarget(0);
+            springY.setTarget(0);
+            runPhysicsLoop();
+          }
+        }, 900 + Math.random() * 1100);
+      }
+    }
+    setTimeout(saccadeLoop, 3200 + Math.random() * 3000);
+  })();
+
   // Petting interaction: cursor back-and-forth swipe detection
   let lastPetX = 0;
   let petDirectionChanges = 0;

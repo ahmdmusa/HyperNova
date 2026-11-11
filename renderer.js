@@ -1308,10 +1308,15 @@ function applyFeatures(f) {
     document.documentElement.style.setProperty('--theme-accent', state.features.themeColor);
     document.documentElement.style.setProperty('--yellow', state.features.themeColor);
   }
-  if (state.features.glassOpacity) {
-    const op = Number(state.features.glassOpacity) / 100;
-    document.documentElement.style.setProperty('--glass-opacity', op.toFixed(2));
-    document.documentElement.style.setProperty('--glass-blur', `${Math.round(op * 28)}px`);
+  if (state.features.glassOpacity != null) {
+    const rawVal = Number(state.features.glassOpacity);
+    const op = Math.max(0.2, Math.min(1.0, rawVal / 100));
+    const islandAlpha = (0.05 + op * 0.87).toFixed(2);
+    const cardAlpha = (0.02 + op * 0.10).toFixed(2);
+    const glassBlur = Math.round(14 + op * 36);
+    document.documentElement.style.setProperty('--glass-opacity', islandAlpha);
+    document.documentElement.style.setProperty('--card', `rgba(255, 255, 255, ${cardAlpha})`);
+    document.documentElement.style.setProperty('--glass-blur', `${glassBlur}px`);
   }
   const currentTheme = state.features.islandTheme || 'dark';
   document.documentElement.setAttribute('data-theme', currentTheme);
