@@ -56,7 +56,7 @@
     const now = new Date();
     const locale = ar ? 'ar-EG' : 'en-US';
     const date = now.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' });
-    const hijri = $('#pr-hijri')?.textContent || '';
+    const hijri = ($('#pr-hijri') || $('#x-hijri'))?.textContent || '';
 
     lines.push(line('📆', `<b>${esc(date)}</b>${hijri ? ` · ${bdiAr(esc(hijri))}` : ''}`));
 

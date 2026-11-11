@@ -76,7 +76,7 @@ async function tickStats() {
 const MAX_CLIPS = 8;
 let clips = [];
 let lastClip = '';
-clipboard.readText().then((t) => { lastClip = t || ''; }).catch(() => {});
+try { lastClip = clipboard.readText() || ''; } catch {}
 async function clipboardChanged(isPrivate) {
   if (isPrivate) return;
   let text = '';

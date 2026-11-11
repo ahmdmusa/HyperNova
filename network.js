@@ -53,11 +53,23 @@ async function probe() {
   return false;
 }
 
+let lastWifi = null;
+let lastWifiTime = 0;
+async function getWifi(force = false) {
+  if (!force && lastWifi && (Date.now() - lastWifiTime < 15000)) {
+    return lastWifi;
+  }
+  lastWifi = await wifi();
+  lastWifiTime = Date.now();
+  return lastWifi;
+}
+
 async function poll() {
   clearTimeout(timer);
   if (!enabled) return;
-  const w = await wifi();
-  const link = w ? 'wifi' : linkKind();
+  const kind = linkKind();
+  const w = kind === 'wifi' ? await getWifi(kind !== state.link) : null;
+  const link = w ? 'wifi' : kind;
   let internet = state.internet;
   const offline = internet === false || link === 'none';
   if (link === 'none') internet = false;
