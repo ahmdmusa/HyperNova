@@ -30,7 +30,9 @@
       : label(n);
   }
 
+  let lastNet = null;
   function update(n) {
+    lastNet = n;
     row(n);
     const p = n.prev;
     // the first reading after start is not news
@@ -53,5 +55,14 @@
   }
 
   bridge.onNetwork(update);
-  bridge.network().then((n) => n && row(n));
+  bridge.network().then((n) => {
+    if (n) {
+      lastNet = n;
+      row(n);
+    }
+  });
+
+  window.addEventListener('island:features', (e) => {
+    if (e.detail?.appLang && lastNet) row(lastNet);
+  });
 })();

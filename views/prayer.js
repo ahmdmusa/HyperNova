@@ -442,7 +442,7 @@
       const elIPrLbl = $('#i-pr-lbl');
       if (elIPrLbl) elIPrLbl.textContent = isAr ? 'بعد' : 'in';
       const elVPrName = $('#v-pr-name');
-      if (elVPrName) elVPrName.textContent = NAMES[next.key];
+      if (elVPrName) elVPrName.textContent = isAr ? NAMES[next.key] : (EN_NAMES[next.key] || next.key);
       const elVPrLeft = $('#v-pr-left');
       if (elVPrLeft) elVPrLeft.textContent = shortLeft(ms);
     }
@@ -581,8 +581,11 @@
     if (btnFont) {
       btnFont.addEventListener('click', () => {
         isLargeFont = !isLargeFont;
-        btnFont.textContent = isLargeFont ? 'خط عادي A-' : 'خط كبير A+';
-        btnFont.classList.toggle('text-emerald-300', isLargeFont);
+        btnFont.classList.toggle('active', isLargeFont);
+        const isAr = (window.state?.features?.appLang || 'ar') === 'ar';
+        btnFont.title = isLargeFont
+          ? (isAr ? 'تصغير الخط' : 'Smaller text')
+          : (isAr ? 'تكبير الخط' : 'Larger text');
         renderActiveItem();
       });
     }

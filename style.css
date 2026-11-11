@@ -5298,3 +5298,131 @@ html[data-theme="light"] .qr-fav-btn.active {
   color: #d97706 !important;
   border-color: #f59e0b !important;
 }
+
+/* Light Theme - Artwork Glow Smear Fix */
+html[data-theme="light"] .m-art-glow,
+body.theme-light .m-art-glow,
+html[data-theme="light"] #v-media.quran-mode #m-art-glow,
+body.theme-light #v-media.quran-mode #m-art-glow {
+  opacity: 0.12 !important;
+  filter: blur(14px) !important;
+}
+
+/* Dua Font Size Button (Safari Reader Aa Style) */
+.dua-font-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 24px !important;
+  min-width: 28px !important;
+  padding: 0 7px !important;
+  border-radius: 6px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  color: var(--text-2) !important;
+  cursor: pointer !important;
+  transition: all 0.18s ease !important;
+  user-select: none !important;
+}
+.dua-font-btn:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #fff !important;
+}
+.dua-font-btn.active {
+  background: rgba(16, 185, 129, 0.22) !important;
+  border-color: rgba(16, 185, 129, 0.45) !important;
+  color: #34d399 !important;
+}
+html[data-theme="light"] .dua-font-btn,
+body.theme-light .dua-font-btn {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  color: #374151 !important;
+}
+html[data-theme="light"] .dua-font-btn.active,
+body.theme-light .dua-font-btn.active {
+  background: rgba(16, 185, 129, 0.15) !important;
+  border-color: rgba(16, 185, 129, 0.35) !important;
+  color: #059669 !important;
+}
+
+/* Unified Filter Bar Period Tabs & Category Polish */
+.nf-unified-filter-bar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  width: 100% !important;
+  padding: 2px 2px !important;
+}
+.nf-period-tabs-bar {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  border: none !important;
+  padding: 0 !important;
+}
+.nf-period-tab {
+  height: 24px !important;
+  padding: 0 8px !important;
+  border-radius: 6px !important;
+  font-size: 10.5px !important;
+  font-weight: 600 !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  color: var(--text-2) !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  white-space: nowrap !important;
+}
+.nf-period-tab:hover {
+  background: rgba(255, 255, 255, 0.09) !important;
+  color: #fff !important;
+}
+.nf-period-tab.active {
+  background: rgba(var(--accent-rgb, 56, 189, 248), 0.2) !important;
+  border-color: rgba(var(--accent-rgb, 56, 189, 248), 0.4) !important;
+  color: rgb(var(--accent-rgb, 56, 189, 248)) !important;
+  opacity: 1 !important;
+}
+html[data-theme="light"] .nf-period-tab,
+body.theme-light .nf-period-tab {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #555 !important;
+}
+html[data-theme="light"] .nf-period-tab:hover,
+body.theme-light .nf-period-tab:hover {
+  background: rgba(0, 0, 0, 0.08) !important;
+  color: #111 !important;
+}
+html[data-theme="light"] .nf-period-tab.active,
+body.theme-light .nf-period-tab.active {
+  background: rgba(0, 113, 227, 0.12) !important;
+  border-color: rgba(0, 113, 227, 0.3) !important;
+  color: #0071E3 !important;
+}
+
+/* App Grid Fallback Icons */
+.app-ico .app-svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--text-1);
+}
+.app-ico.letter {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: var(--text-1) !important;
+}
+html[data-theme="light"] .app-ico.letter,
+body.theme-light .app-ico.letter {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.02)) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .app-ico .app-svg,
+body.theme-light .app-ico .app-svg {
+  stroke: #1d1d1f !important;
+}

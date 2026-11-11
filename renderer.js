@@ -680,10 +680,54 @@ function isMediaInFront(m) {
 
 let lastTrack = null;
 let hasRealArt = false;
+
+function cleanMediaText(s) {
+  if (!s) return '';
+  return s.replace(/[\uFFFD?]{2,}/g, '').trim() || s;
+}
+
+function isQuranActive() {
+  if (window.quranRadio?.state) return !!window.quranRadio.state.isRadioMode;
+  try {
+    const s = JSON.parse(localStorage.getItem('hypernova_quran_radio_v2') || '{}');
+    return !!s.isRadioMode;
+  } catch {
+    return false;
+  }
+}
+
+function renderMediaTrack() {
+  if (isQuranActive()) return;
+  const m = state.media;
+  if (!m) return;
+  const isAr = document.documentElement.lang === 'ar' || document.documentElement.dir === 'rtl';
+  const cleanTitle = cleanMediaText(m.title) || (isAr ? 'مقطع صوتي' : 'Unknown Track');
+  const cleanArtist = cleanMediaText(m.artist || m.album || appName(m.app));
+
+  if (m.has) {
+    $('#m-title').textContent = $('#p-title').textContent = cleanTitle;
+    $('#m-artist').textContent = $('#p-artist').textContent = cleanArtist;
+    $('#p-eyebrow').textContent = appName(m.app) ? `Now Playing · ${appName(m.app)}` : (isAr ? 'قيد التشغيل' : 'Now Playing');
+  }
+  const idleText = isAr ? 'جاهز للعمل' : 'Idle';
+  $('#x-app-name').textContent = m.has ? appName(m.app) || (isAr ? 'وسائط' : 'Media') : idleText;
+  if (m.thumb) {
+    setArt(`data:image/png;base64,${m.thumb}`);
+  } else if (m.has) {
+    setArt(placeholderArt(cleanTitle + (m.app || '')));
+  }
+  $('#v-media').classList.toggle('browser-src', m.has && BROWSERS.some((b) => (m.app || '').toLowerCase().includes(b)) && !(m.app || '').toLowerCase().includes('firefox'));
+  $('#v-media').classList.toggle('none', !m.has);
+  setPlayingUI(!!m.playing);
+  $('#m-progress').classList.toggle('hidden', !(m.dur > 0));
+}
+window.renderMediaTrack = renderMediaTrack;
+
 bridge.onMedia((m) => {
   if (m.error) return;
-  if (window.quranRadio?.state?.isRadioMode) {
-    // Keep Quran Radio in foreground without rebuilding DOM on every 250ms helper tick
+  const isQuranRadio = isQuranActive();
+  if (isQuranRadio) {
+    // Keep Quran Radio in foreground without rebuilding DOM or overwriting track info
     handleVolume(m);
     handleBrightness(m);
     render();
@@ -700,15 +744,17 @@ bridge.onMedia((m) => {
   state.mediaAt = performance.now();
   state.mediaFront = isMediaInFront(m);
 
-  const key = m.has ? `${m.title}|${m.artist}|${m.app}` : null;
+  const cleanTitle = cleanMediaText(m.title);
+  const cleanArtist = cleanMediaText(m.artist);
+  const key = m.has ? `${cleanTitle}|${cleanArtist}|${m.app}` : null;
   if (key !== lastTrack) {
-    if (key && lastTrack && m.title && !state.mediaFront && feat('trackPeek')) {
+    if (key && lastTrack && cleanTitle && !state.mediaFront && feat('trackPeek')) {
       state.peekUntil = Date.now() + 3200;
       setTimeout(render, 3300);
     }
     lastTrack = key;
     hasRealArt = false;
-    if (key) setArt(placeholderArt(m.title + m.app));
+    if (key) setArt(placeholderArt(cleanTitle + m.app));
   }
   if (m.thumb) {
     hasRealArt = true;
@@ -716,21 +762,19 @@ bridge.onMedia((m) => {
   }
 
   if (m.has) {
-    $('#m-title').textContent = $('#p-title').textContent = m.title || 'Unknown';
-    const sub = m.artist || m.album || appName(m.app);
+    $('#m-title').textContent = $('#p-title').textContent = cleanTitle || 'Unknown';
+    const sub = cleanArtist || cleanMediaText(m.album) || appName(m.app);
     $('#m-artist').textContent = $('#p-artist').textContent = sub;
-    $('#p-eyebrow').textContent = appName(m.app) ? `Now Playing · ${appName(m.app)}` : 'Now Playing';
+    const isAr = document.documentElement.lang === 'ar' || document.documentElement.dir === 'rtl';
+    $('#p-eyebrow').textContent = appName(m.app) ? `Now Playing · ${appName(m.app)}` : (isAr ? 'قيد التشغيل' : 'Now Playing');
   }
   const isAr = document.documentElement.lang === 'ar' || document.documentElement.dir === 'rtl';
   const idleText = isAr ? 'جاهز للعمل' : 'Idle';
   $('#x-app-name').textContent = m.has ? appName(m.app) || (isAr ? 'وسائط' : 'Media') : idleText;
-  const isQuranRadio = window.quranRadio && window.quranRadio.state && window.quranRadio.state.isRadioMode;
-  if (!isQuranRadio) {
-    $('#v-media').classList.toggle('browser-src', m.has && BROWSERS.some((b) => (m.app || '').toLowerCase().includes(b)) && !(m.app || '').toLowerCase().includes('firefox'));
-    $('#v-media').classList.toggle('none', !m.has);
-    setPlayingUI(!!m.playing);
-    $('#m-progress').classList.toggle('hidden', !(m.dur > 0));
-  }
+  $('#v-media').classList.toggle('browser-src', m.has && BROWSERS.some((b) => (m.app || '').toLowerCase().includes(b)) && !(m.app || '').toLowerCase().includes('firefox'));
+  $('#v-media').classList.toggle('none', !m.has);
+  setPlayingUI(!!m.playing);
+  $('#m-progress').classList.toggle('hidden', !(m.dur > 0));
 
   handleVolume(m);
   handleBrightness(m);
@@ -873,7 +917,8 @@ function setVolume(v) {
 }
 function showVolPct(vol, muted) {
   volIconClass($('.vol'), vol, muted);
-  $('#vol-pct').textContent = muted ? 'Muted' : `${Math.round(vol * 100)}%`;
+  const isAr = document.documentElement.lang === 'ar' || document.documentElement.dir === 'rtl';
+  $('#vol-pct').textContent = muted ? (isAr ? 'صامت' : 'Muted') : `${Math.round(vol * 100)}%`;
 }
 const volSlider = makeSlider($('#vol-slider'), { onInput: setVolume });
 
@@ -930,7 +975,8 @@ const brightSlider = makeSlider($('#bright-slider'), {
 
 function handleBrightness(m) {
   if (typeof m.bright !== 'number') return;
-  const elBrightRow = $('#bright-row'); if (elBrightRow) elBrightRow.hidden = m.bright < 0;
+  const elBrightRow = $('#bright-row');
+  if (elBrightRow) elBrightRow.hidden = true; // Never clutter telemetry card with brightness slider
   if (m.bright < 0 || Date.now() < state.brightLockUntil) return;
   const changed = state.bright >= 0 && m.bright !== state.bright;
   state.bright = m.bright;

@@ -387,8 +387,8 @@
           <div class="dropzone">
             <svg class="s" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
             <div>
-              <div class="title" id="shelf-drop-title">إفلات الملفات هنا</div>
-              <div class="sub wrap" id="shelf-drop-sub">اسحب الملفات إلى الجزيرة للاحتفاظ بها في متناول يدك، ثم اسحبها إلى أي مكان.</div>
+              <div class="title" id="shelf-drop-title" dir="auto">إفلات الملفات هنا</div>
+              <div class="sub wrap" id="shelf-drop-sub" dir="auto">اسحب الملفات إلى الجزيرة للاحتفاظ بها في متناول يدك، ثم اسحبها إلى أي مكان.</div>
             </div>
           </div>
           <div class="shelf">
@@ -471,8 +471,8 @@
 
                 <!-- Left Toolbar: Font Size A+/A-, Stepper Counter, Copy Button -->
                 <div class="dua-toolbar">
-                  <button id="btnFontSizeToggle" type="button" title="تكبير / تصغير حجم الخط" class="dua-font-btn">
-                    خط كبير A+
+                  <button id="btnFontSizeToggle" type="button" title="تكبير / تصغير حجم الخط" class="dua-font-btn" aria-label="حجم الخط">
+                    <span class="dua-font-ico">Aa</span>
                   </button>
                   <div class="dua-stepper">
                     <button id="btnPrevInsp" type="button" title="السابق" class="dua-step-btn">
@@ -557,20 +557,20 @@
 
             <div class="card meters">
               <div class="meter">
-                <div class="meter-row"><span><svg class="s" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg>CPU</span><b id="cpu-val">0%</b></div>
+                <div class="meter-row"><span><svg class="s" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg><span id="lbl-cpu">CPU</span></span><b id="cpu-val">0%</b></div>
                 <div class="bar"><b id="cpu-bar"></b></div>
               </div>
               <div class="meter">
-                <div class="meter-row"><span><svg class="s" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10v4M10 10v4M14 10v4M18 10v4"/></svg>Memory</span><b id="ram-val">0%</b></div>
+                <div class="meter-row"><span><svg class="s" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10v4M10 10v4M14 10v4M18 10v4"/></svg><span id="lbl-ram">Memory</span></span><b id="ram-val">0%</b></div>
                 <div class="bar"><b id="ram-bar"></b></div>
               </div>
               <div class="meter net-row" id="net-row">
-                <div class="meter-row"><span><svg class="s" viewBox="0 0 24 24"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M2 9a15 15 0 0 1 20 0"/></svg>Network</span><b id="net-val">…</b></div>
+                <div class="meter-row"><span><svg class="s" viewBox="0 0 24 24"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M2 9a15 15 0 0 1 20 0"/></svg><span id="lbl-net">Network</span></span><b id="net-val">…</b></div>
               </div>
               <div class="meter pv-row" id="pv-row" hidden>
                 <div class="meter-row"><span><svg class="s" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v4"/></svg>In use</span><b id="pv-apps"></b></div>
               </div>
-              <div class="meter" id="bright-row" hidden>
+              <div class="meter" id="bright-row" hidden style="display:none !important;">
                 <div class="meter-row"><span><svg class="s" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/></svg>Brightness</span><b id="bright-val">0%</b></div>
                 <div id="bright-slider" class="slider" role="slider" aria-label="Brightness" aria-valuemin="0" aria-valuemax="100"><b class="fill"><i class="knob"></i></b></div>
               </div>
@@ -680,9 +680,9 @@
               <!-- Row 3: Unified Filter Bar -->
               <div class="nf-unified-filter-bar">
                 <div class="nf-period-tabs-bar">
-                  <button type="button" class="nf-period-tab active" data-period="daily" id="nf-tab-daily">مهام اليوم</button>
-                  <button type="button" class="nf-period-tab" data-period="weekly" id="nf-tab-weekly">مهام الأسبوع</button>
-                  <button type="button" class="nf-period-tab" data-period="done" id="nf-tab-done">المكتملة</button>
+                  <button type="button" class="nf-period-tab active" data-period="daily" id="nf-tab-daily">📅 مهام اليوم</button>
+                  <button type="button" class="nf-period-tab" data-period="weekly" id="nf-tab-weekly">🗓️ مهام الأسبوع</button>
+                  <button type="button" class="nf-period-tab" data-period="done" id="nf-tab-done">✅ المكتملة</button>
                 </div>
                 <div class="nf-cat-filter-wrap">
                   <select id="nf-cat-filter-select" class="nf-cat-filter-dropdown" title="تصفية حسب الفئة" aria-label="تصفية الفئة">

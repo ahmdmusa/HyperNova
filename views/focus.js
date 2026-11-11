@@ -807,9 +807,16 @@
       }
       
       // Period tabs
-      const tabDaily = $('#nf-tab-daily'); if (tabDaily) tabDaily.textContent = isAr ? 'مهام اليوم' : 'Daily Tasks';
-      const tabWeekly = $('#nf-tab-weekly'); if (tabWeekly) tabWeekly.textContent = isAr ? 'مهام الأسبوع' : 'Weekly Tasks';
-      const tabDone = $('#nf-tab-done'); if (tabDone) tabDone.textContent = isAr ? 'المكتملة' : 'Completed';
+      const tabDaily = $('#nf-tab-daily'); if (tabDaily) tabDaily.textContent = isAr ? '📅 مهام اليوم' : '📅 Daily Tasks';
+      const tabWeekly = $('#nf-tab-weekly'); if (tabWeekly) tabWeekly.textContent = isAr ? '🗓️ مهام الأسبوع' : '🗓️ Weekly Tasks';
+      const tabDone = $('#nf-tab-done'); if (tabDone) tabDone.textContent = isAr ? '✅ المكتملة' : '✅ Completed';
+
+      // Category filter dropdown options
+      const optAll = $('#nf-opt-all'); if (optAll) optAll.textContent = isAr ? '📌 الفئة: الكل' : '📌 Filter: All';
+      const optWork = $('#nf-opt-work'); if (optWork) optWork.textContent = isAr ? '💼 عمل' : '💼 Work';
+      const optPersonal = $('#nf-opt-personal'); if (optPersonal) optPersonal.textContent = isAr ? '👤 شخصي' : '👤 Personal';
+      const optUrgent = $('#nf-opt-urgent'); if (optUrgent) optUrgent.textContent = isAr ? '⚡ عاجل' : '⚡ Urgent';
+      const optProject = $('#nf-opt-project'); if (optProject) optProject.textContent = isAr ? '🎯 مشاريع' : '🎯 Projects';
       
       // Sounds
       const sndNone = $('#snd-none'); if (sndNone) sndNone.textContent = isAr ? 'صامت' : 'Mute';

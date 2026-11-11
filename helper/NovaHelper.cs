@@ -221,7 +221,7 @@ class Json {
         case '\r': sb.Append("\\r"); break;
         case '\t': sb.Append("\\t"); break;
         default:
-          if (c < 0x20) sb.Append("\\u").Append(((int)c).ToString("x4")); else sb.Append(c);
+          if (c < 0x20 || c > 127) sb.Append("\\u").Append(((int)c).ToString("x4")); else sb.Append(c);
           break;
       }
     }
@@ -359,6 +359,10 @@ static class Program {
   //   nova-helper yturl <proc> <title> -> URL of the browser tab playing that video
   [MTAThread]
   static int Main(string[] args) {
+    try {
+      Console.OutputEncoding = Encoding.UTF8;
+      Console.InputEncoding = Encoding.UTF8;
+    } catch { }
     Win.PerMonitorDpi();
     if (args.Length >= 1 && args[0] == "apps") return RunSta(w => Apps.Print(w));
     if (args.Length >= 2 && args[0] == "yturl") return RunSta(w => YtUrl.Print(w, args[1], args.Length > 2 ? args[2] : ""));

@@ -3,15 +3,17 @@
   const CLOUD = '<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>';
   const CLOUD_TOP = '<path d="M4 14.9A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.24"/>';
   const WX = {
-    sun: { label: 'Clear', svg: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/>' },
-    moon: { label: 'Clear', svg: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>' },
-    partly: { label: 'Partly Cloudy', svg: '<path d="M12 2v2M4.9 4.9l1.4 1.4M20 12h2M19.1 4.9l-1.4 1.4M15.95 12.65a4 4 0 0 0-5.93-4.13"/><path d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"/>' },
-    cloud: { label: 'Cloudy', svg: CLOUD },
-    fog: { label: 'Fog', svg: `${CLOUD_TOP}<path d="M16 17H7M17 21H9"/>` },
-    rain: { label: 'Rain', svg: `${CLOUD_TOP}<path d="M16 14v6M8 14v6M12 16v6"/>` },
-    snow: { label: 'Snow', svg: `${CLOUD_TOP}<path d="M8 15h.01M8 19h.01M12 17h.01M12 21h.01M16 15h.01M16 19h.01"/>` },
-    storm: { label: 'Thunderstorm', svg: '<path d="M6 16.33A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 .5 8.97"/><path d="m13 12-3 5h4l-3 5"/>' },
+    sun: { label: 'Clear', labelAr: 'صافٍ', svg: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/>' },
+    moon: { label: 'Clear', labelAr: 'صافٍ', svg: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>' },
+    partly: { label: 'Partly Cloudy', labelAr: 'غائم جزئياً', svg: '<path d="M12 2v2M4.9 4.9l1.4 1.4M20 12h2M19.1 4.9l-1.4 1.4M15.95 12.65a4 4 0 0 0-5.93-4.13"/><path d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"/>' },
+    cloud: { label: 'Cloudy', labelAr: 'غائم', svg: CLOUD },
+    fog: { label: 'Fog', labelAr: 'ضباب', svg: `${CLOUD_TOP}<path d="M16 17H7M17 21H9"/>` },
+    rain: { label: 'Rain', labelAr: 'أمطار', svg: `${CLOUD_TOP}<path d="M16 14v6M8 14v6M12 16v6"/>` },
+    snow: { label: 'Snow', labelAr: 'ثلوج', svg: `${CLOUD_TOP}<path d="M8 15h.01M8 19h.01M12 17h.01M12 21h.01M16 15h.01M16 19h.01"/>` },
+    storm: { label: 'Thunderstorm', labelAr: 'عاصفة رعدية', svg: '<path d="M6 16.33A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 .5 8.97"/><path d="m13 12-3 5h4l-3 5"/>' },
   };
+
+  let lastWeather = null;
 
   function wxKind(code, isDay) {
     if (code === 0) return isDay ? 'sun' : 'moon';
@@ -25,21 +27,24 @@
 
   function renderWeather(w) {
     if (!w) return;
+    lastWeather = w;
+    const isAr = (window.state?.features?.appLang || 'ar') === 'ar';
     const kind = wxKind(w.code, w.isDay);
     const info = WX[kind];
+    const descText = isAr ? (info.labelAr || info.label) : info.label;
     const card = $('#wx-card');
     card.classList.toggle('night', !w.isDay);
     card.classList.toggle('cloudy', ['cloud', 'fog', 'rain', 'snow', 'storm'].includes(kind));
     $('#wx-ico').innerHTML = info.svg;
     $('#wx-temp').textContent = `${w.temp}°`;
-    $('#wx-desc').textContent = info.label;
+    $('#wx-desc').textContent = descText;
     $('#wx-meta').textContent = `${w.city ? `${w.city} · ` : ''}H ${w.hi}° L ${w.lo}°`;
     const mini = $('#wx-mini');
     if (mini) {
       mini.hidden = false;
       const s = mini.querySelector('svg'); if (s) s.innerHTML = info.svg;
       const b = mini.querySelector('b'); if (b) b.textContent = `${w.temp}°`;
-      mini.title = `${info.label}${w.city ? ` in ${w.city}` : ''}`;
+      mini.title = `${descText}${w.city ? ` in ${w.city}` : ''}`;
     }
     for (const pill of [$('#i-wx'), $('#v-wx')]) {
       if (!pill) continue;
@@ -102,6 +107,23 @@ function updateSysLang() {
   if (txt) txt.textContent = isAr ? 'سجل الحافظة' : 'Clipboard';
   const btn = document.getElementById('clip-clear');
   if (btn) btn.title = isAr ? 'مسح سجل الحافظة' : 'Clear clipboard history';
+
+  const lblCpu = document.getElementById('lbl-cpu');
+  if (lblCpu) lblCpu.textContent = isAr ? 'المعالج' : 'CPU';
+  const lblRam = document.getElementById('lbl-ram');
+  if (lblRam) lblRam.textContent = isAr ? 'الذاكرة' : 'Memory';
+  const lblNet = document.getElementById('lbl-net');
+  if (lblNet) lblNet.textContent = isAr ? 'الشبكة' : 'Network';
+  const wxDesc = document.getElementById('wx-desc');
+  if (wxDesc && wxDesc.textContent.includes('weather')) {
+    wxDesc.textContent = isAr ? 'جارٍ تحميل الطقس…' : 'Loading weather…';
+  } else if (lastWeather) {
+    renderWeather(lastWeather);
+  }
+  const emptyClip = document.querySelector('.clip-empty');
+  if (emptyClip) {
+    emptyClip.textContent = isAr ? 'النصوص المنسوخة تظهر هنا تلقائياً' : 'Copied text shows up here';
+  }
 }
 window.addEventListener('island:features', (e) => {
   if (e.detail?.appLang) updateSysLang();

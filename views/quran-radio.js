@@ -768,18 +768,25 @@
 
     if (!state.isRadioMode) {
       vMedia.classList.remove('quran-mode');
+      const badge = document.getElementById('qr-art-badge');
+      if (badge) badge.remove();
       const defaultMediaArtist = document.getElementById('m-artist');
       if (defaultMediaArtist) defaultMediaArtist.style.display = '';
       const pillsBar = document.getElementById('qr-pills-bar');
-      if (pillsBar) pillsBar.style.display = 'none';
+      if (pillsBar) pillsBar.remove();
       const extraTransport = document.getElementById('qr-extra-transport');
-      if (extraTransport) extraTransport.style.display = 'none';
+      if (extraTransport) extraTransport.remove();
       const verseBox = document.getElementById('qr-verse-display');
-      if (verseBox) verseBox.style.display = 'none';
+      if (verseBox) verseBox.remove();
+      const eq = document.querySelector('#v-media .eq.big');
+      if (eq) eq.classList.remove('emerald-eq');
       const statusPill = document.getElementById('x-app-name');
       if (statusPill && !statusPill.textContent.trim()) {
         const isAr = document.documentElement.lang === 'ar' || document.documentElement.dir === 'rtl';
         statusPill.textContent = isAr ? 'جاهز للعمل' : 'Ready';
+      }
+      if (typeof window.renderMediaTrack === 'function') {
+        window.renderMediaTrack();
       }
       return;
     }

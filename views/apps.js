@@ -18,10 +18,30 @@
 
   const isAr = () => (window.state?.features?.appLang || 'ar') === 'ar';
 
+  const APP_SVGS = {
+    terminal: '<svg viewBox="0 0 24 24" class="app-svg" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>',
+    explorer: '<svg viewBox="0 0 24 24" class="app-svg" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>',
+    code: '<svg viewBox="0 0 24 24" class="app-svg" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+    browser: '<svg viewBox="0 0 24 24" class="app-svg" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
+    chat: '<svg viewBox="0 0 24 24" class="app-svg" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+    music: '<svg viewBox="0 0 24 24" class="app-svg" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>'
+  };
+
+  function getFallbackContent(name) {
+    const n = (name || '').toLowerCase();
+    if (n.includes('cmd') || n.includes('terminal') || n.includes('bash') || n.includes('powershell')) return APP_SVGS.terminal;
+    if (n.includes('explorer') || n.includes('file') || n.includes('folder')) return APP_SVGS.explorer;
+    if (n.includes('code') || n.includes('studio') || n.includes('cursor')) return APP_SVGS.code;
+    if (n.includes('chrome') || n.includes('edge') || n.includes('firefox') || n.includes('browser') || n.includes('brave')) return APP_SVGS.browser;
+    if (n.includes('whatsapp') || n.includes('telegram') || n.includes('discord') || n.includes('chat') || n.includes('slack')) return APP_SVGS.chat;
+    if (n.includes('spotify') || n.includes('music') || n.includes('vlc') || n.includes('player')) return APP_SVGS.music;
+    return `<span class="letter-badge">${esc((name || '?').trim()[0] || '?')}</span>`;
+  }
+
   const iconHtml = (a) => {
-    const letter = esc((a.name || '?').trim()[0] || '?');
-    if (!a.icon) return letter;
-    return `<img src="${a.icon}" alt="" draggable="false" onerror="this.onerror=null;this.parentElement.classList.add('letter');this.parentElement.textContent='${letter}';">`;
+    const fallback = getFallbackContent(a.name);
+    if (!a.icon) return fallback;
+    return `<img src="${a.icon}" alt="" draggable="false" onerror="this.onerror=null;this.parentElement.classList.add('letter');this.parentElement.innerHTML='${fallback.replace(/'/g, "\\'")}';">`;
   };
 
   function updateBar() {
@@ -153,7 +173,7 @@
       const on = ids.has(a.id);
       b.className = `pick${on ? ' on' : ''}`;
       b.title = on ? `Remove ${a.name}` : `Add ${a.name}`;
-      b.innerHTML = `${a.icon ? `<img src="${a.icon}" alt="">` : `<span class="ph">${esc(a.name[0] || '?')}</span>`}<span>${esc(a.name)}</span>`;
+      b.innerHTML = `${a.icon ? `<img src="${a.icon}" alt="" onerror="this.onerror=null;this.replaceWith(document.createElement('span'));">` : `<span class="ph">${esc(a.name[0] || '?')}</span>`}<span>${esc(a.name)}</span>`;
       b.disabled = !on && pinned.length >= MAX_PINNED;
       b.addEventListener('click', () => (on ? bridge.apps.remove(a.id) : bridge.apps.add(a.id)));
       listEl.append(b);
