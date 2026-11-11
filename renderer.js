@@ -327,6 +327,10 @@ let anchor = { x: window.innerWidth / 2, y: 8, docked: false, vertical: false, s
 
 function positionIsland() {
   let [w, h] = (anchor.vertical ? VDIMS : DIMS)[lastMode] || DIMS.idle;
+  if (lastMode === 'idle' && !anchor.vertical && island.classList.contains('eyes')) {
+    const currentSize = state.features?.islandSize || 'm';
+    w = currentSize === 's' ? 100 : currentSize === 'l' ? 124 : 112;
+  }
   if (lastMode === 'compact' && !anchor.vertical && island.classList.contains('c-wide')) w = COMPACT_WIDE;
   if (lastMode === 'reminder') [w, h] = state.reminderSize;
   if (lastMode === 'focus') {

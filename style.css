@@ -73,9 +73,7 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
 
 /* ============ shell: floating capsule; docks to the top edge like the MacBook notch ============ */
 #island {
-  background: var(--bg-island);
-  backdrop-filter: blur(var(--glass-blur)) saturate(180%);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  background: transparent;
   --w: 236px; --h: 32px; --r: 16px;
   --tl: var(--r); --tr: var(--r); --br: var(--r); --bl: var(--r);
   border-radius: var(--tl) var(--tr) var(--br) var(--bl);
@@ -91,6 +89,17 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
 }
 /* corners touching a screen edge are square */
 #island.docked { --tl: 0px; --tr: 0px; }
+#island.docked .clip {
+  box-shadow:
+    0 16px 40px -10px rgba(0, 0, 0, 0.75),
+    0 6px 16px -4px rgba(0, 0, 0, 0.50),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.08);
+}
+#island.docked .sheen {
+  box-shadow:
+    inset 0 -0.5px 0.5px 0 rgba(255, 255, 255, 0.08),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.05);
+}
 #island.vertical.side-left { --tl: 0px; --bl: 0px; }
 #island.vertical.side-right { --tr: 0px; --br: 0px; }
 #island.shrinking { transition-timing-function: var(--spring-soft); transition-duration: .4s; }
@@ -116,52 +125,46 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
 .clip {
   position: absolute; inset: 0; overflow: hidden; isolation: isolate;
   border-radius: var(--tl) var(--tr) var(--br) var(--bl);
-  background: rgba(18, 20, 28, var(--glass-opacity, 0.78));
-  backdrop-filter: blur(var(--glass-blur, 32px)) saturate(220%) contrast(1.1) brightness(1.06);
-  -webkit-backdrop-filter: blur(var(--glass-blur, 32px)) saturate(220%) contrast(1.1) brightness(1.06);
+  background: rgba(10, 12, 18, var(--glass-opacity, 0.82));
+  backdrop-filter: blur(var(--glass-blur, 30px)) saturate(190%) contrast(1.05);
+  -webkit-backdrop-filter: blur(var(--glass-blur, 30px)) saturate(190%) contrast(1.05);
   box-shadow:
-    0 20px 60px -12px rgba(0, 0, 0, 0.70),
-    0 8px 24px -6px rgba(0, 0, 0, 0.50),
-    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.42),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.14),
-    inset 0 -1.5px 2px 0 rgba(255, 255, 255, 0.06);
+    0 16px 36px -8px rgba(0, 0, 0, 0.70),
+    0 6px 16px -4px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.10);
   transition: border-radius var(--dur-morph) var(--spring), box-shadow .4s var(--ease-out), transform .25s var(--spring);
 }
 #island.expanded .clip, #island.peek .clip, #island.focus .clip {
-  background: rgba(18, 20, 28, var(--glass-opacity, 0.82)) !important;
-  backdrop-filter: blur(var(--glass-blur, 32px)) saturate(210%) contrast(1.08) brightness(1.04) !important;
-  -webkit-backdrop-filter: blur(var(--glass-blur, 32px)) saturate(210%) contrast(1.08) brightness(1.04) !important;
+  background: rgba(10, 12, 18, var(--glass-opacity, 0.85)) !important;
+  backdrop-filter: blur(var(--glass-blur, 32px)) saturate(190%) contrast(1.05) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur, 32px)) saturate(190%) contrast(1.05) !important;
   box-shadow:
-    0 28px 80px -15px rgba(0, 0, 0, 0.80),
-    0 12px 30px -5px rgba(0, 0, 0, 0.55),
-    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.14),
-    inset 0 -1.5px 2px 0 rgba(255, 255, 255, 0.08);
+    0 28px 75px -15px rgba(0, 0, 0, 0.85),
+    0 12px 28px -5px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.12);
 }
 #island.reminder .clip {
-  background: rgba(16, 18, 26, var(--glass-opacity, 0.78)) !important;
-  backdrop-filter: blur(34px) saturate(220%) contrast(1.1) brightness(1.06) !important;
-  -webkit-backdrop-filter: blur(34px) saturate(220%) contrast(1.1) brightness(1.06) !important;
+  background: rgba(10, 12, 18, var(--glass-opacity, 0.82)) !important;
+  backdrop-filter: blur(32px) saturate(190%) contrast(1.05) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(190%) contrast(1.05) !important;
   box-shadow:
-    0 30px 80px -12px rgba(0, 0, 0, 0.80),
-    0 14px 32px -6px rgba(0, 0, 0, 0.55),
-    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.55),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.16),
-    inset 0 -1.5px 2px 0 rgba(255, 255, 255, 0.08) !important;
+    0 28px 75px -12px rgba(0, 0, 0, 0.85),
+    0 12px 28px -6px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.14) !important;
 }
 #island.dropping .sheen { box-shadow: inset 0 0 0 2px rgba(var(--accent-rgb), .9); }
 
 #bd { position: absolute; left: 0; top: 0; z-index: 0; pointer-events: none; }
 .tint {
   position: absolute; inset: 0; z-index: 1; pointer-events: none;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 20%, rgba(0, 0, 0, 0.18) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(0, 0, 0, 0.15) 100%);
   transition: background .4s var(--ease-out);
 }
 #island.expanded .tint, #island.peek .tint, #island.focus .tint {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(0, 0, 0, 0.22) 100%) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(0, 0, 0, 0.20) 100%) !important;
 }
 #island.reminder .tint {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.09) 0%, rgba(0, 0, 0, 0.20) 100%) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(0, 0, 0, 0.18) 100%) !important;
 }
 
 .glow {
@@ -182,13 +185,10 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
 
 .sheen {
   position: absolute; inset: 0; z-index: 3; border-radius: inherit; pointer-events: none;
-  background:
-    radial-gradient(circle at var(--liquid-x, 50%) var(--liquid-y, 20%), rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0.05) 38%, transparent 68%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.03) 25%, transparent 55%);
+  background: radial-gradient(circle at var(--liquid-x, 50%) var(--liquid-y, 20%), rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.02) 42%, transparent 72%);
   box-shadow:
-    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.50),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.16),
-    inset 0 -1px 2px 0 rgba(255, 255, 255, 0.08);
+    inset 0 0.5px 0.5px 0 rgba(255, 255, 255, 0.20),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.06);
   transition: opacity .3s ease;
 }
 
@@ -1010,6 +1010,22 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
 .l-toast.clip-color #t-label { font-family: Consolas, monospace; }
 
 /* ============ Nova (Living Companion & Robot Eyes) ============ */
+#island:not(.vertical).idle.eyes,
+body.size-m #island:not(.vertical).idle.eyes {
+  --w: 112px !important;
+  --h: 32px;
+  --r: 16px;
+}
+body.size-s #island:not(.vertical).idle.eyes {
+  --w: 100px !important;
+  --h: 30px;
+  --r: 15px;
+}
+body.size-l #island:not(.vertical).idle.eyes {
+  --w: 124px !important;
+  --h: 36px;
+  --r: 18px;
+}
 #island:not(.vertical).idle.eyes .l-info { opacity: 0; filter: blur(4px); transform: scale(.94); transition: opacity .18s ease, filter .2s ease, transform .3s var(--ease-out); }
 #island:not(.vertical).idle.eyes .l-eyes { opacity: 1; filter: none; transform: none; transition: opacity .25s ease .08s, filter .3s ease .08s, transform .45s var(--spring) .05s; }
 .l-eyes { display: grid; place-items: center; pointer-events: auto; }

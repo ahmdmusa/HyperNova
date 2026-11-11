@@ -1,0 +1,1 @@
+has: function, res: acrylic ok

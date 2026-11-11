@@ -80,7 +80,11 @@
 
   function apply() {
     const show = feat('novaEyes') && !anchor.vertical && !state.hover && lastMode === 'idle';
+    const changed = islandEl.classList.contains('eyes') !== !!show;
     islandEl.classList.toggle('eyes', !!show);
+    if (changed && typeof positionIsland === 'function') {
+      positionIsland();
+    }
   }
 
   // Set companion mood state across the matrix forms
