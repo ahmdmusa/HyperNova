@@ -6032,3 +6032,737 @@ body.theme-light .app-ico .app-svg {
   color: var(--text-2);
 }
 
+/* ==========================================================================
+   MASTER APPLE LIGHT MODE LIQUID GLASS POLISH (ALL VIEWS & DIALOGS)
+   ========================================================================== */
+
+/* 1. Global Shell & Layers in Light Mode */
+html[data-theme="light"], body.theme-light {
+  --bg-island: rgba(255, 255, 255, var(--glass-opacity, 0.85));
+  --card: rgba(255, 255, 255, 0.85);
+  --card-stroke: rgba(0, 0, 0, 0.08);
+  --text-1: #1d1d1f;
+  --text-2: #6e6e73;
+  --text-3: #86868b;
+  --fill-1: rgba(0, 0, 0, 0.05);
+  --fill-2: rgba(0, 0, 0, 0.09);
+  --fill-3: rgba(0, 0, 0, 0.14);
+}
+
+html[data-theme="light"] .clip,
+body.theme-light .clip,
+html[data-theme="light"] #island.expanded .clip,
+html[data-theme="light"] #island.peek .clip,
+html[data-theme="light"] #island.focus .clip,
+html[data-theme="light"] #island.reminder .clip,
+body.theme-light #island.expanded .clip,
+body.theme-light #island.peek .clip,
+body.theme-light #island.focus .clip,
+body.theme-light #island.reminder .clip {
+  background: rgba(255, 255, 255, var(--glass-opacity, 0.85)) !important;
+  backdrop-filter: blur(var(--glass-blur, 36px)) saturate(190%) contrast(1.02) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur, 36px)) saturate(190%) contrast(1.02) !important;
+  box-shadow:
+    0 24px 60px -12px rgba(0, 0, 0, 0.16),
+    0 8px 24px -4px rgba(0, 0, 0, 0.08),
+    inset 0 0 0 0.5px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.95) !important;
+  color: #1d1d1f !important;
+}
+
+/* 2. Top Bar & Navigation in Light Mode */
+html[data-theme="light"] .topbar-gear-btn,
+body.theme-light .topbar-gear-btn {
+  background: rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid rgba(0, 0, 0, 0.10) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .topbar-gear-btn:hover,
+body.theme-light .topbar-gear-btn:hover {
+  background: rgba(0, 0, 0, 0.12) !important;
+  color: #000000 !important;
+}
+html[data-theme="light"] .chip,
+body.theme-light .chip {
+  background: rgba(0, 0, 0, 0.06) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .seg,
+body.theme-light .seg {
+  background: rgba(0, 0, 0, 0.06) !important;
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.08) !important;
+}
+html[data-theme="light"] .seg-thumb,
+body.theme-light .seg-thumb {
+  background: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14), inset 0 0.5px 0 rgba(255, 255, 255, 0.9) !important;
+}
+html[data-theme="light"] .tab,
+body.theme-light .tab {
+  color: #6e6e73 !important;
+}
+html[data-theme="light"] .tab.active,
+body.theme-light .tab.active,
+html[data-theme="light"] .tab:hover,
+body.theme-light .tab:hover {
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .topbar-compact-clock-card,
+body.theme-light .topbar-compact-clock-card {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgba(0, 0, 0, 0.10) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+}
+html[data-theme="light"] .c-clock,
+body.theme-light .c-clock {
+  color: #1d1d1f !important;
+  text-shadow: none !important;
+}
+html[data-theme="light"] .c-hijri,
+body.theme-light .c-hijri {
+  color: #b45309 !important;
+  font-weight: 600 !important;
+}
+html[data-theme="light"] .c-greg,
+body.theme-light .c-greg {
+  color: #6e6e73 !important;
+}
+
+/* 3. Music & Quran Radio Mode in Light Mode */
+html[data-theme="light"] #m-title,
+body.theme-light #m-title,
+html[data-theme="light"] #v-media.quran-mode #m-title,
+body.theme-light #v-media.quran-mode #m-title {
+  color: #1d1d1f !important;
+  text-shadow: none !important;
+}
+html[data-theme="light"] #m-artist,
+body.theme-light #m-artist,
+html[data-theme="light"] #v-media.quran-mode #m-artist,
+body.theme-light #v-media.quran-mode #m-artist {
+  color: #6e6e73 !important;
+  text-shadow: none !important;
+}
+html[data-theme="light"] #m-pos,
+html[data-theme="light"] #m-dur,
+body.theme-light #m-pos,
+body.theme-light #m-dur,
+html[data-theme="light"] #v-media.quran-mode #m-pos,
+body.theme-light #v-media.quran-mode #m-pos,
+html[data-theme="light"] #v-media.quran-mode #m-dur,
+body.theme-light #v-media.quran-mode #m-dur {
+  color: #86868b !important;
+}
+html[data-theme="light"] .vol-pct,
+body.theme-light .vol-pct,
+html[data-theme="light"] #v-media.quran-mode .vol-pct,
+body.theme-light #v-media.quran-mode .vol-pct {
+  color: #6e6e73 !important;
+}
+html[data-theme="light"] #vol-btn,
+body.theme-light #vol-btn {
+  color: #1d1d1f !important;
+}
+
+/* Sliders in Light Mode (Track, Fill, Knob) */
+html[data-theme="light"] .slider::before,
+body.theme-light .slider::before,
+html[data-theme="light"] #v-media.quran-mode .slider::before,
+body.theme-light #v-media.quran-mode .slider::before {
+  background: rgba(0, 0, 0, 0.12) !important;
+}
+html[data-theme="light"] .slider .fill,
+body.theme-light .slider .fill,
+html[data-theme="light"] #m-bar .fill,
+body.theme-light #m-bar .fill,
+html[data-theme="light"] #vol-slider .fill,
+body.theme-light #vol-slider .fill,
+html[data-theme="light"] #v-media.quran-mode #m-bar .fill,
+body.theme-light #v-media.quran-mode #m-bar .fill,
+html[data-theme="light"] #v-media.quran-mode #vol-slider .fill,
+body.theme-light #v-media.quran-mode #vol-slider .fill {
+  background: #1d1d1f !important;
+  box-shadow: none !important;
+}
+html[data-theme="light"] .slider .knob,
+body.theme-light .slider .knob,
+html[data-theme="light"] #m-bar .knob,
+body.theme-light #m-bar .knob,
+html[data-theme="light"] #vol-slider .knob,
+body.theme-light #vol-slider .knob,
+html[data-theme="light"] #v-media.quran-mode #m-bar .knob,
+body.theme-light #v-media.quran-mode #m-bar .knob,
+html[data-theme="light"] #v-media.quran-mode #vol-slider .knob,
+body.theme-light #v-media.quran-mode #vol-slider .knob {
+  background: #ffffff !important;
+  border: 1.5px solid #1d1d1f !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Transport Controls in Light Mode */
+html[data-theme="light"] .ctl,
+body.theme-light .ctl,
+html[data-theme="light"] [data-cmd="prev"],
+body.theme-light [data-cmd="prev"],
+html[data-theme="light"] [data-cmd="next"],
+body.theme-light [data-cmd="next"] {
+  color: #1d1d1f !important;
+  fill: #1d1d1f !important;
+  background: rgba(0, 0, 0, 0.05) !important;
+}
+html[data-theme="light"] .ctl:hover,
+body.theme-light .ctl:hover,
+html[data-theme="light"] [data-cmd="prev"]:hover,
+body.theme-light [data-cmd="prev"]:hover,
+html[data-theme="light"] [data-cmd="next"]:hover,
+body.theme-light [data-cmd="next"]:hover {
+  background: rgba(0, 0, 0, 0.10) !important;
+  color: #000000 !important;
+}
+html[data-theme="light"] .ctl.play,
+body.theme-light .ctl.play {
+  background: #1d1d1f !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+  border: none !important;
+}
+html[data-theme="light"] .ctl.play:hover,
+body.theme-light .ctl.play:hover {
+  background: #000000 !important;
+}
+html[data-theme="light"] .ctl.play svg,
+body.theme-light .ctl.play svg,
+html[data-theme="light"] .ctl.play .i-play,
+body.theme-light .ctl.play .i-play,
+html[data-theme="light"] .ctl.play .i-pause,
+body.theme-light .ctl.play .i-pause {
+  fill: #ffffff !important;
+  color: #ffffff !important;
+}
+html[data-theme="light"] .quran-radio-btn,
+body.theme-light .quran-radio-btn,
+html[data-theme="light"] .mini-icon-btn,
+body.theme-light .mini-icon-btn {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.10) !important;
+  color: #1d1d1f !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+html[data-theme="light"] .quran-radio-btn:hover,
+body.theme-light .quran-radio-btn:hover,
+html[data-theme="light"] .mini-icon-btn:hover,
+body.theme-light .mini-icon-btn:hover {
+  background: rgba(0, 0, 0, 0.10) !important;
+  color: #000000 !important;
+}
+html[data-theme="light"] .quran-radio-btn.active,
+body.theme-light .quran-radio-btn.active,
+html[data-theme="light"] .mini-icon-btn.active,
+body.theme-light .mini-icon-btn.active {
+  background: rgba(0, 0, 0, 0.14) !important;
+  border-color: rgba(0, 0, 0, 0.25) !important;
+  color: #1d1d1f !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10) !important;
+}
+
+/* Equalizer in Light Mode */
+html[data-theme="light"] .eq i,
+body.theme-light .eq i,
+html[data-theme="light"] .eq.big i,
+body.theme-light .eq.big i,
+html[data-theme="light"] .eq.emerald-eq i,
+body.theme-light .eq.emerald-eq i {
+  background: #1d1d1f !important;
+  box-shadow: none !important;
+}
+
+/* Dropdown Pills & Badges in Light Mode */
+html[data-theme="light"] .qr-pill-btn,
+body.theme-light .qr-pill-btn {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.10) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .qr-pill-btn span,
+body.theme-light .qr-pill-btn span,
+html[data-theme="light"] .qr-pill-btn.qr-pill-gold span,
+body.theme-light .qr-pill-btn.qr-pill-gold span,
+html[data-theme="light"] .qr-pill-btn.qr-pill-emerald span,
+body.theme-light .qr-pill-btn.qr-pill-emerald span {
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .qr-pill-btn:hover,
+body.theme-light .qr-pill-btn:hover {
+  background: rgba(0, 0, 0, 0.10) !important;
+}
+html[data-theme="light"] .qr-pill-live,
+body.theme-light .qr-pill-live {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.10) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .qr-pill-live .qr-live-dot,
+body.theme-light .qr-pill-live .qr-live-dot {
+  background: #0284c7 !important;
+  box-shadow: 0 0 6px #0284c7 !important;
+}
+html[data-theme="light"] .qr-ayah-select,
+body.theme-light .qr-ayah-select {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.10) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .qr-ayah-select option,
+body.theme-light .qr-ayah-select option {
+  background: #ffffff !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .qr-fav-btn,
+body.theme-light .qr-fav-btn {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.10) !important;
+  color: #86868b !important;
+}
+html[data-theme="light"] .qr-fav-btn.active,
+body.theme-light .qr-fav-btn.active {
+  background: rgba(245, 158, 11, 0.15) !important;
+  color: #d97706 !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
+}
+html[data-theme="light"] .qr-art-badge,
+body.theme-light .qr-art-badge {
+  background: rgba(255, 255, 255, 0.90) !important;
+  border: 1px solid rgba(0, 0, 0, 0.10) !important;
+  color: #1d1d1f !important;
+}
+
+/* 4. Reminder Card in Light Mode */
+html[data-theme="light"] .rm-text,
+body.theme-light .rm-text {
+  color: #1d1d1f !important;
+  text-shadow: none !important;
+}
+html[data-theme="light"] .rm-text .an,
+body.theme-light .rm-text .an,
+html[data-theme="light"] .rm-text .br,
+body.theme-light .rm-text .br {
+  color: #d97706 !important;
+  text-shadow: none !important;
+}
+html[data-theme="light"] .dhikr-subnote,
+body.theme-light .dhikr-subnote {
+  color: #1d1d1f !important;
+  text-shadow: none !important;
+}
+html[data-theme="light"] .rm-ref,
+body.theme-light .rm-ref {
+  color: #6e6e73 !important;
+  text-shadow: none !important;
+}
+html[data-theme="light"] .rm-badge,
+body.theme-light .rm-badge {
+  background: rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  color: #1d1d1f !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06) !important;
+}
+html[data-theme="light"] .rm-badge svg,
+body.theme-light .rm-badge svg {
+  color: #1d1d1f !important;
+  stroke: #1d1d1f !important;
+}
+html[data-theme="light"] .rm-x,
+body.theme-light .rm-x {
+  background: rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid rgba(0, 0, 0, 0.10) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .rm-x:hover,
+body.theme-light .rm-x:hover {
+  background: rgba(0, 0, 0, 0.12) !important;
+  color: #000000 !important;
+}
+html[data-theme="light"] .rm-time,
+body.theme-light .rm-time {
+  background: rgba(0, 0, 0, 0.10) !important;
+}
+html[data-theme="light"] .rm-time b,
+body.theme-light .rm-time b {
+  background: #1d1d1f !important;
+  box-shadow: none !important;
+}
+
+/* 5. Prayer View in Light Mode (Full Coverage) */
+html[data-theme="light"] .pr-card,
+html[data-theme="light"] .pr-capsule,
+html[data-theme="light"] .pr-daily-card,
+body.theme-light .pr-card,
+body.theme-light .pr-capsule,
+body.theme-light .pr-daily-card {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .pr-next-title,
+html[data-theme="light"] .pr-name,
+html[data-theme="light"] .pr-time,
+body.theme-light .pr-next-title,
+body.theme-light .pr-name,
+body.theme-light .pr-time {
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .pr-bell-btn,
+body.theme-light .pr-bell-btn {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.10) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .pr-muezzin-lbl,
+body.theme-light .pr-muezzin-lbl {
+  color: #48484a !important;
+}
+html[data-theme="light"] .pr-slim-bar,
+body.theme-light .pr-slim-bar {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+html[data-theme="light"] .pr-loc-group,
+body.theme-light .pr-loc-group {
+  color: #6e6e73 !important;
+}
+html[data-theme="light"] .pr-city-txt,
+body.theme-light .pr-city-txt {
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .pr-method-txt,
+body.theme-light .pr-method-txt {
+  color: #86868b !important;
+}
+html[data-theme="light"] .pr-sep-dot,
+body.theme-light .pr-sep-dot {
+  color: #c7c7cc !important;
+}
+html[data-theme="light"] .pr-countdown-badge,
+body.theme-light .pr-countdown-badge {
+  background: rgba(16, 185, 129, 0.12) !important;
+  border: 1px solid rgba(16, 185, 129, 0.30) !important;
+  color: #047857 !important;
+  box-shadow: none !important;
+}
+html[data-theme="light"] .pr-pulse-dot,
+body.theme-light .pr-pulse-dot {
+  background: #059669 !important;
+  box-shadow: 0 0 6px #059669 !important;
+}
+html[data-theme="light"] .pr-next-txt,
+body.theme-light .pr-next-txt {
+  color: #047857 !important;
+}
+html[data-theme="light"] .pr-next-strong,
+body.theme-light .pr-next-strong {
+  color: #065f46 !important;
+}
+html[data-theme="light"] .pr-count-mono,
+body.theme-light .pr-count-mono {
+  color: #047857 !important;
+}
+html[data-theme="light"] .slim-prayer-pill,
+body.theme-light .slim-prayer-pill {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+html[data-theme="light"] .slim-prayer-pill:hover,
+body.theme-light .slim-prayer-pill:hover {
+  background: rgba(0, 0, 0, 0.08) !important;
+}
+html[data-theme="light"] .slim-prayer-pill.active-prayer,
+body.theme-light .slim-prayer-pill.active-prayer {
+  background: rgba(16, 185, 129, 0.16) !important;
+  border: 1px solid rgba(16, 185, 129, 0.40) !important;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15) !important;
+}
+html[data-theme="light"] .pr-slim-name,
+body.theme-light .pr-slim-name {
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .slim-prayer-pill.active-prayer .pr-slim-name,
+body.theme-light .slim-prayer-pill.active-prayer .pr-slim-name {
+  color: #065f46 !important;
+}
+html[data-theme="light"] .pr-slim-time,
+body.theme-light .pr-slim-time {
+  color: #6e6e73 !important;
+}
+html[data-theme="light"] .slim-prayer-pill.active-prayer .pr-slim-time,
+body.theme-light .slim-prayer-pill.active-prayer .pr-slim-time {
+  color: #047857 !important;
+}
+html[data-theme="light"] .dua-hero-card,
+body.theme-light .dua-hero-card {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
+}
+html[data-theme="light"] .dua-top-bar,
+body.theme-light .dua-top-bar {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+html[data-theme="light"] .segmented-bar,
+body.theme-light .segmented-bar {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+html[data-theme="light"] .seg-btn,
+body.theme-light .seg-btn {
+  color: #6e6e73 !important;
+}
+html[data-theme="light"] .seg-btn:hover,
+body.theme-light .seg-btn:hover {
+  color: #1d1d1f !important;
+  background: rgba(0, 0, 0, 0.06) !important;
+}
+html[data-theme="light"] .seg-btn-active,
+body.theme-light .seg-btn-active {
+  background: #ffffff !important;
+  color: #1d1d1f !important;
+  border: 1px solid rgba(0, 0, 0, 0.10) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.10) !important;
+}
+html[data-theme="light"] .pr-topic-badge,
+body.theme-light .pr-topic-badge {
+  background: rgba(16, 185, 129, 0.12) !important;
+  color: #047857 !important;
+  border: 1px solid rgba(16, 185, 129, 0.25) !important;
+}
+html[data-theme="light"] .dua-font-btn,
+body.theme-light .dua-font-btn {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #d97706 !important;
+}
+html[data-theme="light"] .dua-stepper,
+body.theme-light .dua-stepper {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+html[data-theme="light"] .dua-step-btn,
+body.theme-light .dua-step-btn {
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .dua-step-btn:hover,
+body.theme-light .dua-step-btn:hover {
+  background: rgba(0, 0, 0, 0.08) !important;
+  color: #000000 !important;
+}
+html[data-theme="light"] .dua-step-count,
+body.theme-light .dua-step-count {
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .dua-copy-btn,
+body.theme-light .dua-copy-btn {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .dua-copy-btn:hover,
+body.theme-light .dua-copy-btn:hover {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #047857 !important;
+}
+html[data-theme="light"] .dua-arabic-text,
+html[data-theme="light"] #pr-daily-text,
+body.theme-light .dua-arabic-text,
+body.theme-light #pr-daily-text {
+  color: #1d1d1f !important;
+  text-shadow: none !important;
+}
+html[data-theme="light"] .dua-footer-bar,
+body.theme-light .dua-footer-bar {
+  border-top: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+html[data-theme="light"] .dua-ref-text,
+body.theme-light .dua-ref-text {
+  color: #6e6e73 !important;
+}
+
+/* 6. System View in Light Mode (Full Coverage) */
+html[data-theme="light"] .card,
+body.theme-light .card,
+html[data-theme="light"] #wx-card,
+body.theme-light #wx-card,
+html[data-theme="light"] .clip-card,
+body.theme-light .clip-card {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] #wx-temp,
+html[data-theme="light"] #wx-desc,
+body.theme-light #wx-temp,
+body.theme-light #wx-desc {
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] #wx-meta,
+body.theme-light #wx-meta {
+  color: #6e6e73 !important;
+}
+html[data-theme="light"] .meter-row,
+body.theme-light .meter-row,
+html[data-theme="light"] .meter-row span,
+body.theme-light .meter-row span,
+html[data-theme="light"] .meter-row b,
+body.theme-light .meter-row b {
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .meter-row svg,
+body.theme-light .meter-row svg {
+  color: #1d1d1f !important;
+  stroke: #1d1d1f !important;
+}
+html[data-theme="light"] .meter .bar,
+body.theme-light .meter .bar {
+  background: rgba(0, 0, 0, 0.08) !important;
+}
+html[data-theme="light"] #net-speed-row span,
+body.theme-light #net-speed-row span {
+  color: #6e6e73 !important;
+}
+html[data-theme="light"] .clips-head,
+body.theme-light .clips-head {
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .clip-empty,
+body.theme-light .clip-empty {
+  color: #86868b !important;
+}
+html[data-theme="light"] .clip-item,
+body.theme-light .clip-item {
+  background: rgba(0, 0, 0, 0.04) !important;
+  color: #1d1d1f !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+html[data-theme="light"] .clip-item:hover,
+body.theme-light .clip-item:hover {
+  background: rgba(0, 0, 0, 0.08) !important;
+}
+
+/* 7. Meetings HUD & Private Scratchpad in Light Mode */
+html[data-theme="light"] .meeting-hud-pill,
+body.theme-light .meeting-hud-pill {
+  background: rgba(255, 255, 255, 0.90) !important;
+  border: 1px solid rgba(0, 0, 0, 0.10) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .m-hud-title,
+body.theme-light .m-hud-title {
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .m-hud-action-btn,
+body.theme-light .m-hud-action-btn {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.10) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .meeting-scratchpad-drawer,
+body.theme-light .meeting-scratchpad-drawer {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(0, 0, 0, 0.10) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .m-drawer-textarea,
+body.theme-light .m-drawer-textarea {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #1d1d1f !important;
+}
+
+/* 8. Downloads View in Light Mode */
+html[data-theme="light"] .dl-empty,
+body.theme-light .dl-empty {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .dl-row,
+body.theme-light .dl-row {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+html[data-theme="light"] .dl-name,
+body.theme-light .dl-name {
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .dl-meta,
+body.theme-light .dl-meta {
+  color: #6e6e73 !important;
+}
+html[data-theme="light"] .dl-bar,
+body.theme-light .dl-bar {
+  background: rgba(0, 0, 0, 0.10) !important;
+}
+html[data-theme="light"] .dl-btn,
+body.theme-light .dl-btn {
+  color: #6e6e73 !important;
+}
+html[data-theme="light"] .dl-btn:hover,
+body.theme-light .dl-btn:hover {
+  background: rgba(0, 0, 0, 0.06) !important;
+  color: #1d1d1f !important;
+}
+
+/* 9. Apps & Shelf in Light Mode */
+html[data-theme="light"] .shelf-item,
+body.theme-light .shelf-item {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .shelf-item-name,
+body.theme-light .shelf-item-name {
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .file.is-img img,
+body.theme-light .file.is-img img {
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08) !important;
+}
+html[data-theme="light"] .app.add .app-ico,
+body.theme-light .app.add .app-ico {
+  background: rgba(0, 0, 0, 0.05) !important;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12) !important;
+  color: #6e6e73 !important;
+}
+
+/* 10. Additional Controls & Nova Robot Eyes in Light Mode */
+html[data-theme="light"] .qr-pill-btn svg,
+body.theme-light .qr-pill-btn svg,
+html[data-theme="light"] .qr-pill-btn .arr,
+body.theme-light .qr-pill-btn .arr {
+  color: #1d1d1f !important;
+  stroke: #1d1d1f !important;
+}
+html[data-theme="light"] .ctl:not(.play) svg,
+body.theme-light .ctl:not(.play) svg {
+  fill: #1d1d1f !important;
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .rm-text .sep,
+body.theme-light .rm-text .sep {
+  color: #6e6e73 !important;
+}
+html[data-theme="light"] .eye,
+body.theme-light .eye {
+  background: #1d1d1f !important;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.15) !important;
+}
+html[data-theme="light"] .eye b,
+body.theme-light .eye b {
+  background: #ffffff !important;
+}
+
+
