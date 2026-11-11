@@ -141,8 +141,16 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
 
 .sheen {
   position: absolute; inset: 0; z-index: 3; border-radius: inherit; pointer-events: none;
-  background: linear-gradient(180deg, rgba(255, 255, 255, .06), transparent 45%);
-  box-shadow: inset 0 0 0 1px var(--glass-stroke);
+  background:
+    radial-gradient(circle at var(--liquid-x, 50%) var(--liquid-y, 20%), rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.03) 35%, transparent 65%),
+    linear-gradient(180deg, rgba(255, 255, 255, .10) 0%, transparent 45%);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, .32), inset 0 -0.5px 1px 0 rgba(255, 255, 255, .10), inset 0 0 0 1px var(--glass-stroke);
+  transition: opacity .3s ease;
+}
+#island:not(.expanded) .clip {
+  backdrop-filter: blur(28px) saturate(190%) contrast(1.05) brightness(1.04) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(190%) contrast(1.05) brightness(1.04) !important;
+}
   transition: box-shadow .2s;
 }
 
@@ -941,20 +949,69 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
 .l-toast.clip-math #t-value { background: #fbbf24; color: #2a1a00; font-variant-numeric: tabular-nums; }
 .l-toast.clip-color #t-label { font-family: Consolas, monospace; }
 
-/* ============ Nova (eyes) ============ */
+/* ============ Nova (Living Companion & Robot Eyes) ============ */
 #island:not(.vertical).idle.eyes .l-info { opacity: 0; filter: blur(4px); transform: scale(.94); transition: opacity .18s ease, filter .2s ease, transform .3s var(--ease-out); }
 #island:not(.vertical).idle.eyes .l-eyes { opacity: 1; filter: none; transform: none; transition: opacity .25s ease .08s, filter .3s ease .08s, transform .45s var(--spring) .05s; }
-.l-eyes { display: grid; place-items: center; }
-.eyes { display: flex; gap: 14px; }
+.l-eyes { display: grid; place-items: center; pointer-events: auto; }
+.eyes { display: flex; gap: 14px; position: relative; align-items: center; justify-content: center; cursor: pointer; user-select: none; }
 .eye {
   position: relative; width: 11px; height: 15px; border-radius: 6px; background: #fff; overflow: hidden;
-  box-shadow: 0 0 10px rgba(255, 255, 255, .35); transition: height .16s var(--ease-out), border-radius .2s, transform .3s var(--spring);
+  box-shadow: 0 0 10px rgba(255, 255, 255, .35); transition: height .16s var(--ease-out), border-radius .2s, transform .3s var(--spring), background .3s, box-shadow .3s;
 }
 .eye b {
   position: absolute; left: 50%; top: 50%; width: 6px; height: 7px; margin: -3.5px 0 0 -3px; border-radius: 50%;
-  background: #0b0b12; transform: translate(var(--px, 0px), var(--py, 0px)); transition: transform .12s linear;
+  background: #0b0b12; transform: translate(var(--px, 0px), var(--py, 0px)); transition: transform .08s linear;
 }
 .eyes.blink .eye { height: 2px; }
+
+/* Nova Emotion States */
+.eyes.mood-khushu .eye {
+  height: 4px; border-radius: 0 0 10px 10px; background: #10b981;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.7);
+}
+.eyes.mood-khushu .eye b { display: none; }
+
+.eyes.mood-celebrate .eye, .eyes.mood-petting .eye {
+  height: 5px; border-radius: 10px 10px 0 0; background: #ffd479;
+  box-shadow: 0 0 14px rgba(255, 212, 121, 0.8); transform: scale(1.15);
+}
+.eyes.mood-celebrate .eye b, .eyes.mood-petting .eye b { display: none; }
+
+.eyes.mood-warrior .nova-headband {
+  display: block; position: absolute; top: -7px; left: -8px; right: -8px; height: 4.5px;
+  background: linear-gradient(90deg, #ef4444, #f59e0b, #ef4444); border-radius: 2px;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.7); z-index: 2;
+}
+.eyes.mood-warrior .eye-l { transform: rotate(5deg); }
+.eyes.mood-warrior .eye-r { transform: rotate(-5deg); }
+
+.eyes.mood-sleep .eye { height: 2px; border-radius: 1px; background: rgba(255, 255, 255, 0.35); box-shadow: none; }
+.eyes.mood-sleep .eye b { display: none; }
+
+.eyes.mood-quran .eye {
+  background: #ffd479; box-shadow: 0 0 14px rgba(234, 179, 8, 0.6);
+}
+
+.nova-headband { display: none; pointer-events: none; }
+.nova-cheek {
+  position: absolute; top: 12px; width: 6px; height: 6px; border-radius: 50%;
+  background: #ff8fb8; opacity: 0; transform: scale(0.3); pointer-events: none;
+  transition: opacity .25s ease, transform .3s var(--spring);
+}
+.nova-cheek.l { left: -9px; }
+.nova-cheek.r { right: -9px; }
+.eyes.mood-petting .nova-cheek { opacity: 0.9; transform: scale(1); }
+
+/* Ambient Auras */
+#island.aura-khushu .glow { opacity: 0.85; background: radial-gradient(120% 90% at 50% 50%, rgba(16, 185, 129, .28), transparent 60%); }
+#island.aura-warrior .glow { opacity: 0.85; background: radial-gradient(120% 90% at 50% 50%, rgba(239, 68, 68, .28), transparent 60%); }
+#island.aura-celebrate .glow { opacity: 0.85; background: radial-gradient(120% 90% at 50% 50%, rgba(255, 212, 121, .32), transparent 60%); }
+#island.aura-quran .glow { opacity: 0.85; background: radial-gradient(120% 90% at 50% 50%, rgba(234, 179, 8, .28), transparent 60%); }
+
+/* Inspiration Toast */
+.l-toast.inspire #t-label { color: #ffd479; font-weight: 600; font-size: 11px; }
+.l-toast.inspire #t-value { font-weight: 500; font-family: "Amiri", "Traditional Arabic", var(--font); font-size: 13.5px; }
+.l-toast.copied #t-label { color: var(--green); font-weight: 600; }
 
 /* ============ celebration sparkles ============ */
 .spark { position: fixed; z-index: 50; width: var(--s, 4px); height: var(--s, 4px); border-radius: 50%; pointer-events: none; box-shadow: 0 0 8px currentColor; }

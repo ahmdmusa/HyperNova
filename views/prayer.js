@@ -112,6 +112,9 @@
     const muezzin = ADHAN_MUEZZINS.find(m => m.id === voice) || ADHAN_MUEZZINS[0];
     const durMs = ((muezzin.takbirDurationSec || 28) + 1.5) * 1000;
 
+    window.setNovaMood?.('khushu', durMs);
+    window.audioHaptics?.duckMedia(0.1, 400);
+
     if (window.quranRadio && window.quranRadio.state && window.quranRadio.state.isPlaying) {
       quranWasPlayingBeforeAdhan = true;
       window.quranRadio.pauseAudio();
@@ -123,14 +126,15 @@
       window.playTwoTakbeers(voice);
     }
 
-    if (quranWasPlayingBeforeAdhan && window.state?.features?.adhanAutoResume !== false) {
-      setTimeout(() => {
+    setTimeout(() => {
+      window.audioHaptics?.restoreMedia(1200);
+      if (quranWasPlayingBeforeAdhan && window.state?.features?.adhanAutoResume !== false) {
         if (window.quranRadio && window.quranRadio.state && window.quranRadio.state.isRadioMode) {
           window.quranRadio.playCurrent();
         }
         quranWasPlayingBeforeAdhan = false;
-      }, durMs);
-    }
+      }
+    }, durMs);
   }
   window.handleAdhanAudioWithDucking = handleAdhanAudioWithDucking;
 
@@ -497,6 +501,14 @@
     return n ? `${NAMES[n.key]} ${clock(n.time)}` : '';
   };
 
+  window.nextPrayerObj = () => {
+    const d = days();
+    if (!d) return null;
+    const now = new Date();
+    const n = nextPrayer(d, now);
+    return n ? { name: NAMES[n.key], target: n.time.getTime() } : null;
+  };
+
   bridge.onPrayer((p) => {
     data = p;
     lastListKey = '';
@@ -601,10 +613,17 @@
     // Steppers prev / next
     document.getElementById('btnPrevInsp')?.addEventListener('click', () => {
       curIdx--;
+      window.audioHaptics?.playWoodTap();
       renderActiveItem();
     });
     document.getElementById('btnNextInsp')?.addEventListener('click', () => {
       curIdx++;
+      window.audioHaptics?.playWoodTap();
+      const list = INSPIRATION_DATA[curCat] || INSPIRATION_DATA.dua;
+      if (curIdx + 1 >= list.length) {
+        window.setNovaMood?.('celebrate', 2500);
+        window.audioHaptics?.playCrystalChime(0.18);
+      }
       renderActiveItem();
     });
 
@@ -612,6 +631,7 @@
     const btnCopy = document.getElementById('btnCopyInsp');
     if (btnCopy) {
       btnCopy.addEventListener('click', async () => {
+        window.audioHaptics?.playWoodTap();
         const textEl = document.getElementById('pr-daily-text');
         const refEl = document.getElementById('pr-daily-ref');
         const copyContent = `${textEl?.textContent || ''}

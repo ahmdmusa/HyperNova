@@ -1208,6 +1208,8 @@
     }
 
     playSuccessChime();
+    window.setNovaMood?.('celebrate', 4000);
+    window.audioHaptics?.playCrystalChime(0.22);
     if (typeof celebrate === 'function') celebrate(['#30d158', '#ffd479', '#0a84ff']);
 
     if (curIdx + 1 < t.steps.length) {
@@ -1285,8 +1287,11 @@
     if (typeof state !== 'undefined') state.focusMode = true;
     bridge?.setFocusMode?.(true);
     bridge?.focusInput?.(true);
+    window.setNovaMood?.('warrior');
+    window.audioHaptics?.playWoodTap();
     if (typeof render === 'function') render();
     if (typeof positionIsland === 'function') positionIsland();
+    window.dispatchEvent(new CustomEvent('island:focus', { detail: { active: true } }));
     setTimeout(() => {
       if (!focusState.task && omniboxInput) {
         omniboxInput.focus();
@@ -1298,8 +1303,10 @@
     if (typeof state !== 'undefined') state.focusMode = false;
     bridge?.setFocusMode?.(false);
     bridge?.focusInput?.(false);
+    window.setNovaMood?.('idle');
     if (typeof render === 'function') render();
     if (typeof positionIsland === 'function') positionIsland();
+    window.dispatchEvent(new CustomEvent('island:focus', { detail: { active: false } }));
   }
 
   function toggleFocusMode() {

@@ -581,6 +581,7 @@
     try {
       await primaryAudio.play();
       state.isPlaying = true;
+      window.setNovaMood?.('quran');
       updateUI();
       updateMediaSession();
       preloadNextAyah();
@@ -613,6 +614,7 @@
   function pauseAudio() {
     primaryAudio.pause();
     state.isPlaying = false;
+    window.setNovaMood?.('idle');
     updateUI();
   }
 

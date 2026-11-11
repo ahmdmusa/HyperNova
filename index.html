@@ -76,7 +76,13 @@
 
       <!-- Nova: eyes in the idle pill that follow the cursor, blink and show a mood -->
       <div class="layer l-eyes" aria-hidden="true">
-        <div class="eyes"><i class="eye"><b></b></i><i class="eye"><b></b></i></div>
+        <div class="eyes" id="nova-face">
+          <i class="nova-headband"></i>
+          <i class="eye eye-l"><b></b></i>
+          <i class="eye eye-r"><b></b></i>
+          <i class="nova-cheek l"></i>
+          <i class="nova-cheek r"></i>
+        </div>
       </div>
 
       <!-- compact -->
@@ -766,6 +772,7 @@
   <script src="views/screenshot.js"></script>
   <script src="views/update.js"></script>
   <script src="views/network.js"></script>
+  <script src="views/audio-haptics.js"></script>
   <script src="views/companion.js"></script>
   <script src="views/smartclip.js"></script>
   <script src="views/nova.js"></script>

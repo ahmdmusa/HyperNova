@@ -66,6 +66,17 @@ function note(icon, text) {
 }
 let internalDrag = false; // set by the shelf while dragging a file out
 
+// Liquid glass dynamic specular reflection tracking
+window.addEventListener('mousemove', (e) => {
+  const islandEl = document.getElementById('island');
+  if (!islandEl) return;
+  const rect = islandEl.getBoundingClientRect();
+  const x = ((e.clientX - rect.left) / Math.max(1, rect.width)) * 100;
+  const y = ((e.clientY - rect.top) / Math.max(1, rect.height)) * 100;
+  islandEl.style.setProperty('--liquid-x', `${Math.max(0, Math.min(100, x)).toFixed(1)}%`);
+  islandEl.style.setProperty('--liquid-y', `${Math.max(0, Math.min(100, y)).toFixed(1)}%`);
+});
+
 const fmt = (sec) => {
   sec = Math.max(0, Math.floor(sec));
   const m = Math.floor(sec / 60);
