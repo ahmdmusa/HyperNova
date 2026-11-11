@@ -661,6 +661,8 @@
       updateUI();
       renderDashboardSteps();
     }
+    window.addFocusTask = addTaskDirectly;
+    window.getFocusTasks = () => (focusState.task?.steps?.filter(s => !s.completed) || []);
 
     async function handleDashboardTaskSubmit(isDecompose = false) {
       const text = dashTaskInput ? dashTaskInput.value.trim() : '';

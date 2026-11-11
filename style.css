@@ -64,7 +64,8 @@ html, body {
 button {
   font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer;
 }
-button:focus-visible, input:focus-visible { outline: 2px solid rgba(255, 255, 255, .7); outline-offset: 2px; }
+input:focus-visible { outline: 2px solid rgba(255, 255, 255, .7); outline-offset: 2px; }
+#island button, #island button:focus, #island button:focus-visible { outline: none !important; outline-offset: 0 !important; box-shadow: none !important; }
 button:disabled { opacity: .38; cursor: default; }
 svg { fill: currentColor; display: block; }
 svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
@@ -990,6 +991,33 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
 
 .eyes.mood-quran .eye {
   background: #ffd479; box-shadow: 0 0 14px rgba(234, 179, 8, 0.6);
+}
+
+/* Meeting Mood: Focused eyes with subtle pulsing red recording aura */
+.eyes.mood-meeting .eye {
+  background: #38bdf8;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.7);
+}
+.eyes.mood-meeting .nova-headband {
+  display: block; position: absolute; top: -6px; left: -8px; right: -8px; height: 3.5px;
+  background: linear-gradient(90deg, #ef4444, #f43f5e, #ef4444); border-radius: 2px;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.85); z-index: 2;
+  animation: pulseHeadband 2s infinite ease-in-out;
+}
+@keyframes pulseHeadband {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; filter: drop-shadow(0 0 4px #ef4444); }
+}
+
+.eyes.mood-welcome .eye {
+  height: 5px; border-radius: 10px 10px 0 0; background: #38bdf8;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.8); transform: scale(1.1);
+}
+.eyes.mood-welcome .eye b { display: none; }
+
+#island.aura-meeting .glow {
+  opacity: 0.9;
+  background: radial-gradient(120% 90% at 50% 50%, rgba(239, 68, 68, .22), rgba(56, 189, 248, .12), transparent 60%);
 }
 
 .nova-headband { display: none; pointer-events: none; }
@@ -5426,6 +5454,7 @@ body.theme-light #v-media.quran-mode #m-art-glow {
 .dua-copy-btn,
 .dua-toolbar button {
   outline: none !important;
+  outline-offset: 0 !important;
 }
 .dua-font-btn:focus,
 .dua-font-btn:focus-visible,
@@ -5436,6 +5465,7 @@ body.theme-light #v-media.quran-mode #m-art-glow {
 .dua-toolbar button:focus,
 .dua-toolbar button:focus-visible {
   outline: none !important;
+  outline-offset: 0 !important;
   box-shadow: none !important;
 }
 
@@ -5557,3 +5587,250 @@ html[data-theme="light"] .app-ico .app-svg,
 body.theme-light .app-ico .app-svg {
   stroke: #1d1d1f !important;
 }
+
+#island select {
+  color-scheme: dark !important;
+}
+#island select option {
+  background-color: #181b22 !important;
+  color: #f4f4f5 !important;
+}
+#island.no-liquid-glass .sheen {
+  display: none !important;
+}
+
+/* ==========================================================================
+   HyperNova In-Notch Meeting HUD & Private Scratchpad (Amie & DynamicLake)
+   ========================================================================== */
+.meeting-hud-pill {
+  position: absolute;
+  top: 6px;
+  left: 10px;
+  right: 10px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  border-radius: 16px;
+  background: rgba(18, 18, 22, 0.88);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  z-index: 100;
+  transition: all 0.28s var(--spring);
+}
+.meeting-hud-pill[hidden] {
+  display: none !important;
+}
+
+.m-hud-rec {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-weight: 700;
+  color: #ef4444;
+}
+.m-rec-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ef4444;
+  box-shadow: 0 0 8px #ef4444;
+  animation: pulseRec 1.4s infinite ease-in-out;
+}
+@keyframes pulseRec {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.85); }
+}
+
+.m-hud-title {
+  flex: 1;
+  text-align: center;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 8px;
+}
+
+.m-hud-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.m-hud-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--text-1);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  outline: none !important;
+}
+.m-hud-btn:hover {
+  background: rgba(56, 189, 248, 0.22);
+  border-color: rgba(56, 189, 248, 0.5);
+  color: #38bdf8;
+}
+.m-hud-btn-end {
+  padding: 0 6px;
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+.m-hud-btn-end:hover {
+  background: rgba(239, 68, 68, 0.3);
+  border-color: #ef4444;
+  color: #fff;
+}
+
+/* Scratchpad Drawer */
+.meeting-scratchpad-drawer {
+  position: absolute;
+  top: 42px;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  background: rgba(14, 14, 18, 0.94);
+  backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.22);
+  display: flex;
+  flex-direction: column;
+  z-index: 105;
+  padding: 10px;
+  animation: slideDownDrawer 0.25s var(--spring);
+}
+.meeting-scratchpad-drawer[hidden] {
+  display: none !important;
+}
+@keyframes slideDownDrawer {
+  from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.m-drawer-header {
+  margin-bottom: 8px;
+}
+.m-drawer-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.m-drawer-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #38bdf8;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.m-drawer-timer {
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  color: var(--text-2);
+}
+.m-drawer-close-btn {
+  background: none;
+  border: none;
+  color: var(--text-2);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: color 0.15s ease;
+  outline: none !important;
+}
+.m-drawer-close-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.m-drawer-body {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+#m-drawer-textarea {
+  flex: 1;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 8px;
+  color: var(--text-1);
+  font-family: inherit;
+  font-size: 11.5px;
+  line-height: 1.5;
+  resize: none;
+  outline: none;
+  transition: border-color 0.18s ease;
+}
+#m-drawer-textarea:focus {
+  border-color: rgba(56, 189, 248, 0.45);
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.15);
+}
+
+.m-drawer-footer {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.m-drawer-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.m-drawer-sync-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 7px;
+  background: rgba(16, 185, 129, 0.18);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #34d399;
+  font-size: 10.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  outline: none !important;
+}
+.m-drawer-sync-btn:hover {
+  background: rgba(16, 185, 129, 0.32);
+  border-color: #10b981;
+  color: #fff;
+}
+.m-drawer-clear-btn {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 4px 7px;
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+  color: var(--text-2);
+  outline: none !important;
+}
+.m-drawer-clear-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+.m-drawer-status {
+  font-size: 10px;
+  color: var(--text-2);
+}
+

@@ -83,17 +83,17 @@
     islandEl.classList.toggle('eyes', !!show);
   }
 
-  // Set companion mood state across the 8 matrix forms
+  // Set companion mood state across the matrix forms
   function setMood(mood, durationMs = 0) {
     if (!face) return;
     clearTimeout(moodTimer);
-    face.classList.remove('mood-khushu', 'mood-warrior', 'mood-celebrate', 'mood-petting', 'mood-care', 'mood-sleep', 'mood-quran');
-    islandEl.classList.remove('aura-khushu', 'aura-warrior', 'aura-celebrate', 'aura-quran');
+    face.classList.remove('mood-khushu', 'mood-warrior', 'mood-celebrate', 'mood-petting', 'mood-care', 'mood-sleep', 'mood-quran', 'mood-meeting', 'mood-welcome');
+    islandEl.classList.remove('aura-khushu', 'aura-warrior', 'aura-celebrate', 'aura-quran', 'aura-meeting');
 
     currentMood = mood || 'idle';
     if (currentMood !== 'idle') {
       face.classList.add(`mood-${currentMood}`);
-      if (['khushu', 'warrior', 'celebrate', 'quran'].includes(currentMood)) {
+      if (['khushu', 'warrior', 'celebrate', 'quran', 'meeting'].includes(currentMood)) {
         islandEl.classList.add(`aura-${currentMood}`);
       }
     }
@@ -106,6 +106,7 @@
   }
 
   function getDefaultMood() {
+    if (window.notchMeetings?.getState()?.inMeeting) return 'meeting';
     if (window.state?.focusMode) return 'warrior';
     if (typeof isQuranPlaying === 'function' && isQuranPlaying()) return 'quran';
     return 'idle';

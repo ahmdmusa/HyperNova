@@ -156,8 +156,17 @@
       shortName: 'المعيقلي (الحرم)',
       country: 'السعودية',
       style: 'مرتل • 128kbps',
-      subfolder: 'Maher_AlMuaiqly_64kbps',
+      subfolder: 'MaherAlMuaiqly128kbps',
       radioUrl: 'https://backup.qurango.net/radio/maher'
+    },
+    {
+      id: 'ghamadi',
+      name: 'سعد الغامدي',
+      shortName: 'سعد الغامدي',
+      country: 'السعودية',
+      style: 'مرتل • 40kbps',
+      subfolder: 'Ghamadi_40kbps',
+      radioUrl: 'https://backup.qurango.net/radio/saad_alghamdi'
     }
   ];
 

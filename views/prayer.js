@@ -1,14 +1,15 @@
 
   // Verified 8 Direct CDN Muezzins MP3 Dataset (Archive.org & AlAdhan CDN)
+  // Exact silence-aligned durations so the opening Takbeers are 100% complete with no cut-off
   const ADHAN_MUEZZINS = [
-    { id: 'abdulbasit', name: 'الشيخ عبد الباسط عبد الصمد', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/042--.mp3', startSec: 0, takbirDurationSec: 28 },
-    { id: 'refaat', name: 'الشيخ محمد رفعت (أذان زمان)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/042--.mp3', startSec: 0, takbirDurationSec: 28 },
-    { id: 'banna', name: 'الشيخ محمود علي البنا (القاهرة)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/043--.mp3', startSec: 0, takbirDurationSec: 28 },
-    { id: 'makkah', name: 'أذان الحرم المكي (علي أحمد ملا)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/019--1.mp3', startSec: 0, takbirDurationSec: 30 },
-    { id: 'madinah', name: 'أذان المسجد النبوي الشريف', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/018-.mp3', startSec: 0, takbirDurationSec: 28 },
-    { id: 'aqsa', name: 'أذان المسجد الأقصى المبارك', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/007--.mp3', startSec: 0, takbirDurationSec: 28 },
-    { id: 'alafasy', name: 'الشيخ مشاري راشد العفاسي', url: 'https://cdn.aladhan.com/audio/adhans/a9.mp3', startSec: 0, takbirDurationSec: 28 },
-    { id: 'nafees', name: 'الشيخ أحمد النفيس (خاشع)', url: 'https://cdn.aladhan.com/audio/adhans/a9.mp3', startSec: 0, takbirDurationSec: 28 }
+    { id: 'abdulbasit', name: 'الشيخ عبد الباسط عبد الصمد', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/042--.mp3', startSec: 0, takbirDurationSec: 27 },
+    { id: 'refaat', name: 'الشيخ محمد رفعت (أذان زمان)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/042--.mp3', startSec: 0, takbirDurationSec: 27 },
+    { id: 'banna', name: 'الشيخ محمود علي البنا (القاهرة)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/043--.mp3', startSec: 0, takbirDurationSec: 27 },
+    { id: 'makkah', name: 'أذان الحرم المكي (علي أحمد ملا)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/019--1.mp3', startSec: 0, takbirDurationSec: 29.5 },
+    { id: 'madinah', name: 'أذان المسجد النبوي الشريف', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/018-.mp3', startSec: 0, takbirDurationSec: 40 },
+    { id: 'aqsa', name: 'أذان المسجد الأقصى المبارك', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/007--.mp3', startSec: 0, takbirDurationSec: 34 },
+    { id: 'alafasy', name: 'الشيخ مشاري راشد العفاسي', url: 'https://cdn.aladhan.com/audio/adhans/a9.mp3', startSec: 0, takbirDurationSec: 41 },
+    { id: 'nafees', name: 'الشيخ أحمد النفيس (خاشع)', url: 'https://cdn.aladhan.com/audio/adhans/a9.mp3', startSec: 0, takbirDurationSec: 41 }
   ];
   window.ADHAN_MUEZZINS = ADHAN_MUEZZINS;
 
@@ -75,8 +76,8 @@
       audio.volume = 1.0;
       activeIslandAdhanAudio = audio;
 
-      const targetDuration = muezzin.takbirDurationSec || 28;
-      const fadeStart = Math.max(0, targetDuration - 3.5);
+      const targetDuration = muezzin.takbirDurationSec || 30;
+      const fadeStart = Math.max(0, targetDuration - 2.0);
 
       audio.addEventListener('loadedmetadata', () => {
         if (muezzin.startSec) audio.currentTime = muezzin.startSec;
@@ -110,7 +111,7 @@
 
   function handleAdhanAudioWithDucking(voice) {
     const muezzin = ADHAN_MUEZZINS.find(m => m.id === voice) || ADHAN_MUEZZINS[0];
-    const durMs = ((muezzin.takbirDurationSec || 28) + 1.5) * 1000;
+    const durMs = ((muezzin.takbirDurationSec || 30) + 1.5) * 1000;
 
     window.setNovaMood?.('khushu', durMs);
     window.audioHaptics?.duckMedia(0.1, 400);

@@ -118,11 +118,17 @@ const I18N = {
     nova_prayer: 'التفاعل عند دخول وقت الصلاة',
     nova_focus: 'ارتداء عصابة الرأس أثناء التركيز',
     nova_celebrate: 'الاحتفال التفاعلي بإنجاز المهام',
+    audio_haptics: 'النقرات الصوتية الفيزيائية',
+    audio_haptics_sub: 'أصوات خشبية وكريستالية طبيعية فائقة الهدوء (Web Audio)',
+    liquid_glass: 'الزجاج السائل وانكسار الضوء',
+    liquid_glass_sub: 'انكسار ضوئي وتوهج مائي تفاعلي يتبع حركة الفأرة (Liquid Glass)',
     moments_title: 'اللحظات الذكية والتنبيهات',
     morning_brief: 'الموجز الصباحي الذكي',
     welcome_back: 'تحية العودة عند فتح الجهاز',
     break_reminders: 'تذكيرات أخذ استراحة للعين',
     net_toasts: 'تنبيهات حالة الإنترنت والشبكة',
+    notch_meetings: 'مساعد وتدوين الاجتماعات السريعة',
+    notch_meetings_sub: 'رصد مكالمات Zoom/Teams وتدوين ملاحظات النوتش الخاصة دون خوادم',
     smart_clip: 'سجل الحافظة الذكي',
     smart_clip_sub: 'معاينة الروابط، الألوان، والحسابات',
     water_title: 'تذكير شرب الماء الصحي',
@@ -358,11 +364,17 @@ const I18N = {
     nova_prayer: 'Prayer / Adhan reaction',
     nova_focus: 'Headband in focus sessions',
     nova_celebrate: 'Task celebration',
+    audio_haptics: 'Procedural Audio Haptics',
+    audio_haptics_sub: 'Subtle organic wood taps and crystal chimes (Web Audio)',
+    liquid_glass: 'Liquid Glass Optics',
+    liquid_glass_sub: 'Dynamic optical refraction and cursor caustic sheen (Liquid Glass)',
     moments_title: 'Smart Moments & Alerts',
     morning_brief: 'Morning brief',
     welcome_back: 'Welcome back',
     break_reminders: 'Break reminders',
     net_toasts: 'Network status toasts',
+    notch_meetings: 'Notch Meeting Companion',
+    notch_meetings_sub: 'Auto-detect Zoom/Teams calls & private in-island scratchpad',
     smart_clip: 'Smart clipboard',
     smart_clip_sub: 'Links, colors, math previews',
     water_title: 'Water Hydration Reminder',
@@ -1212,15 +1224,16 @@ setInterval(showBridge, 5000);
 
 
 // Verified 8 Direct CDN Muezzins MP3 Dataset (Archive.org & AlAdhan CDN)
+// Exact silence-aligned durations so the opening Takbeers are 100% complete with no cut-off
 const ADHAN_MUEZZINS = [
-  { id: 'abdulbasit', name: 'الشيخ عبد الباسط عبد الصمد', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/042--.mp3', startSec: 0, takbirDurationSec: 28 },
-  { id: 'refaat', name: 'الشيخ محمد رفعت (أذان زمان)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/042--.mp3', startSec: 0, takbirDurationSec: 28 },
-  { id: 'banna', name: 'الشيخ محمود علي البنا (القاهرة)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/043--.mp3', startSec: 0, takbirDurationSec: 28 },
-  { id: 'makkah', name: 'أذان الحرم المكي (علي أحمد ملا)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/019--1.mp3', startSec: 0, takbirDurationSec: 30 },
-  { id: 'madinah', name: 'أذان المسجد النبوي الشريف', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/018-.mp3', startSec: 0, takbirDurationSec: 28 },
-  { id: 'aqsa', name: 'أذان المسجد الأقصى المبارك', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/007--.mp3', startSec: 0, takbirDurationSec: 28 },
-  { id: 'alafasy', name: 'الشيخ مشاري راشد العفاسي', url: 'https://cdn.aladhan.com/audio/adhans/a9.mp3', startSec: 0, takbirDurationSec: 28 },
-  { id: 'nafees', name: 'الشيخ أحمد النفيس (خاشع)', url: 'https://cdn.aladhan.com/audio/adhans/a9.mp3', startSec: 0, takbirDurationSec: 28 }
+  { id: 'abdulbasit', name: 'الشيخ عبد الباسط عبد الصمد', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/042--.mp3', startSec: 0, takbirDurationSec: 27 },
+  { id: 'refaat', name: 'الشيخ محمد رفعت (أذان زمان)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/042--.mp3', startSec: 0, takbirDurationSec: 27 },
+  { id: 'banna', name: 'الشيخ محمود علي البنا (القاهرة)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/043--.mp3', startSec: 0, takbirDurationSec: 27 },
+  { id: 'makkah', name: 'أذان الحرم المكي (علي أحمد ملا)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/019--1.mp3', startSec: 0, takbirDurationSec: 29.5 },
+  { id: 'madinah', name: 'أذان المسجد النبوي الشريف', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/018-.mp3', startSec: 0, takbirDurationSec: 40 },
+  { id: 'aqsa', name: 'أذان المسجد الأقصى المبارك', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/007--.mp3', startSec: 0, takbirDurationSec: 34 },
+  { id: 'alafasy', name: 'الشيخ مشاري راشد العفاسي', url: 'https://cdn.aladhan.com/audio/adhans/a9.mp3', startSec: 0, takbirDurationSec: 41 },
+  { id: 'nafees', name: 'الشيخ أحمد النفيس (خاشع)', url: 'https://cdn.aladhan.com/audio/adhans/a9.mp3', startSec: 0, takbirDurationSec: 41 }
 ];
 
 let activeAdhanAudio = null;
@@ -1287,8 +1300,8 @@ function playAdhanTakbeers(muezzinId) {
   audio.volume = 1.0;
   activeAdhanAudio = audio;
 
-  const targetDuration = muezzin.takbirDurationSec || 28;
-  const fadeStart = Math.max(0, targetDuration - 3.5);
+  const targetDuration = muezzin.takbirDurationSec || 30;
+  const fadeStart = Math.max(0, targetDuration - 2.0);
 
   audio.addEventListener('loadedmetadata', () => {
     if (muezzin.startSec) audio.currentTime = muezzin.startSec;

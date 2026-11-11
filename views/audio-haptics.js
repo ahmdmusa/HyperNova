@@ -21,6 +21,7 @@
     // Warm organic wood tap (45ms, triangle wave with exponential pitch decay)
     playWoodTap(volume = 0.22) {
       try {
+        if (typeof feat === 'function' && feat('audioHaptics') === false) return;
         this.init();
         if (!this.ctx) return;
         const t = this.ctx.currentTime;
@@ -50,6 +51,7 @@
     // Pristine harmonic crystal chime (528Hz + 1056Hz harmonic with 1.8s exponential tail)
     playCrystalChime(volume = 0.20) {
       try {
+        if (typeof feat === 'function' && feat('audioHaptics') === false) return;
         this.init();
         if (!this.ctx) return;
         const t = this.ctx.currentTime;
@@ -75,6 +77,7 @@
     // Refreshing water drop for health and 20-20-20 eye rests
     playWaterDrop(volume = 0.25) {
       try {
+        if (typeof feat === 'function' && feat('audioHaptics') === false) return;
         this.init();
         if (!this.ctx) return;
         const t = this.ctx.currentTime;

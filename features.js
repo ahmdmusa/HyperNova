@@ -50,6 +50,9 @@ const DEFAULTS = {
   novaEyes: true,
   novaPrayer: true, // Nova in her prayer cap at the adhan
   novaFocus: true, // Nova with her headband at focus start / end
+  liquidGlass: true, // Dynamic refraction, caustics, and curved specular highlights
+  audioHaptics: true, // Procedural zero-asset Web Audio haptic clicks (wood tap, chime)
+  notchMeetings: true, // Smart meeting detection & private in-island scratchpad
   water: true, // the Drop reminds you to drink
   waterEvery: 60, // minutes at the computer between glasses
   waterGoal: 8, // glasses a day (~2 L)

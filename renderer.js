@@ -68,6 +68,7 @@ let internalDrag = false; // set by the shelf while dragging a file out
 
 // Liquid glass dynamic specular reflection tracking
 window.addEventListener('mousemove', (e) => {
+  if (typeof feat === 'function' && feat('liquidGlass') === false) return;
   const islandEl = document.getElementById('island');
   if (!islandEl) return;
   const rect = islandEl.getBoundingClientRect();
@@ -1322,6 +1323,11 @@ function applyFeatures(f) {
   document.body.classList.toggle('size-m', currentSize === 'm');
   document.body.classList.toggle('size-l', currentSize === 'l');
   document.documentElement.setAttribute('data-size', currentSize);
+
+  const island = document.getElementById('island');
+  if (island) {
+    island.classList.toggle('no-liquid-glass', state.features.liquidGlass === false);
+  }
 
   // Internationalized tab names & status
   const TAB_LABELS = {
