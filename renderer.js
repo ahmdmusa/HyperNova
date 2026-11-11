@@ -80,9 +80,34 @@ function timerActive() {
   return state.timer.running || state.timer.remaining > 0;
 }
 
+function isQuranPlaying() {
+  if (window.quranRadio?.state) {
+    return !!(window.quranRadio.state.isRadioMode && window.quranRadio.state.isPlaying);
+  }
+  return false;
+}
+
+function getQuranTrackInfo() {
+  if (!window.quranRadio?.state) return null;
+  const s = window.quranRadio.state;
+  if (!s.isRadioMode) return null;
+  const reciter = (typeof window.quranRadio.getReciter === 'function')
+    ? window.quranRadio.getReciter()
+    : (window.quranRadio.QURAN_RECITERS?.find(r => r.id === s.reciterId) || { name: 'إذاعة القرآن الكريم', shortName: 'القرآن الكريم' });
+  const surahs = window.quranRadio.SURAHS_114 || [];
+  const surahObj = surahs.find(x => x.id === s.surah) || { name: 'البقرة' };
+
+  const title = s.isLiveStream
+    ? `إذاعة ${reciter.name} (بث مباشر 24 ساعة)`
+    : `سورة ${surahObj.name} · ${reciter.shortName}`;
+  const artist = s.isLiveStream ? 'بث إذاعي مباشر 24 ساعة' : `الآية ${s.ayah}`;
+  return { title, artist };
+}
+
 // What the compact pill shows, by priority: timer, playing media, a running download.
 function compactKind() {
   if (timerActive()) return 'timer';
+  if (isQuranPlaying()) return 'media';
   if (feat('mediaPill') && state.media.has && state.media.playing && !state.mediaFront) return 'media';
   if (state.dl.active) return 'dl';
   return '';
@@ -120,8 +145,12 @@ function render() {
     if (typeof wake === 'function') wake();
     window.dispatchEvent(new CustomEvent('island:mode', { detail: { mode, prev } }));
   }
-  island.classList.toggle('has-media', !!state.media.has);
-  island.classList.toggle('playing', !!state.media.playing);
+  const qActive = isQuranActive();
+  const qPlaying = isQuranPlaying();
+  const qInfo = qActive ? getQuranTrackInfo() : null;
+
+  island.classList.toggle('has-media', qActive || !!state.media.has);
+  island.classList.toggle('playing', qPlaying || (state.media.has && !!state.media.playing && !qActive));
   const kind = compactKind();
   for (const el of [$('.l-compact'), $('.l-vcompact')]) {
     el.classList.toggle('timer', kind === 'timer');
@@ -133,7 +162,17 @@ function render() {
     island.classList.toggle('c-wide', wide);
     if (typeof positionIsland === 'function') positionIsland();
   }
-  setCompactTitle(!showTitle ? '' : kind === 'media' ? cleanMediaText(state.media.title) : state.dl.title);
+  let activeTitle = '';
+  if (showTitle) {
+    if (kind === 'dl') {
+      activeTitle = state.dl.title;
+    } else if (qActive) {
+      activeTitle = qInfo ? qInfo.title : 'إذاعة القرآن الكريم';
+    } else {
+      activeTitle = cleanMediaText(state.media.title);
+    }
+  }
+  setCompactTitle(activeTitle);
   const elCTitle = $('.c-title'); if (elCTitle) elCTitle.hidden = !showTitle;
 }
 

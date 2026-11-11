@@ -5344,6 +5344,24 @@ body.theme-light #v-media.quran-mode #m-art-glow {
 }
 
 /* Dua Font Size Button (Safari Reader Aa Style) */
+.dua-font-btn,
+.dua-step-btn,
+.dua-copy-btn,
+.dua-toolbar button {
+  outline: none !important;
+}
+.dua-font-btn:focus,
+.dua-font-btn:focus-visible,
+.dua-step-btn:focus,
+.dua-step-btn:focus-visible,
+.dua-copy-btn:focus,
+.dua-copy-btn:focus-visible,
+.dua-toolbar button:focus,
+.dua-toolbar button:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 .dua-font-btn {
   display: inline-flex !important;
   align-items: center !important;
@@ -5360,14 +5378,15 @@ body.theme-light #v-media.quran-mode #m-art-glow {
   cursor: pointer !important;
   transition: all 0.18s ease !important;
   user-select: none !important;
+  outline: none !important;
 }
 .dua-font-btn:hover {
   background: rgba(255, 255, 255, 0.12) !important;
   color: #fff !important;
 }
 .dua-font-btn.active {
-  background: rgba(16, 185, 129, 0.22) !important;
-  border-color: rgba(16, 185, 129, 0.45) !important;
+  background: rgba(16, 185, 129, 0.18) !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
   color: #34d399 !important;
 }
 html[data-theme="light"] .dua-font-btn,

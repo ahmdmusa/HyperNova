@@ -817,6 +817,17 @@
     const artworkSrc = generateQuranArtworkSvg(surahObj.name, reciter.shortName);
     if (artImg) artImg.src = artworkSrc;
     if (artGlow) artGlow.src = artworkSrc;
+    const cArt = document.getElementById('c-art');
+    if (cArt) cArt.src = artworkSrc;
+    const pArt = document.getElementById('p-art');
+    if (pArt) pArt.src = artworkSrc;
+
+    // Sync topbar chip when Quran Radio is active
+    const xAppName = document.getElementById('x-app-name');
+    if (xAppName) {
+      const isAr = (window.state?.features?.appLang || 'ar') === 'ar';
+      xAppName.textContent = isAr ? 'إذاعة القرآن الكريم' : 'Quran Radio';
+    }
 
     // Overlay Badge on Artwork (Matching Reference: Gold 'سورة الفاتحة' + Emerald '1/7')
     let badge = document.getElementById('qr-art-badge');
@@ -959,6 +970,9 @@
     if (nextBtn) {
       nextBtn.style.opacity = state.isLiveStream ? '0.22' : '';
       nextBtn.style.pointerEvents = state.isLiveStream ? 'none' : '';
+    }
+    if (typeof window.render === 'function') {
+      window.render();
     }
   }
 
