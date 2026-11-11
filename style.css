@@ -36,9 +36,9 @@
   --green: #30d158;
   --red: #ff453a;
   --theme-accent: #38bdf8;
-  --glass-opacity: 0.90;
-  --glass-blur: 24px;
-  --bg-island: rgba(16, 16, 22, var(--glass-opacity));
+  --glass-opacity: 0.78;
+  --glass-blur: 32px;
+  --bg-island: rgba(16, 18, 26, var(--glass-opacity));
   --yellow: var(--theme-accent);
 
   --spring: cubic-bezier(.3, 1.3, .42, 1);
@@ -116,22 +116,56 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
 .clip {
   position: absolute; inset: 0; overflow: hidden; isolation: isolate;
   border-radius: var(--tl) var(--tr) var(--br) var(--bl);
-  background: rgba(20, 20, 26, .6); /* until the first backdrop frame */
-  box-shadow: 0 6px 18px -6px rgba(0, 0, 0, .45);
+  background: rgba(18, 20, 28, var(--glass-opacity, 0.78));
+  backdrop-filter: blur(var(--glass-blur, 32px)) saturate(220%) contrast(1.1) brightness(1.06);
+  -webkit-backdrop-filter: blur(var(--glass-blur, 32px)) saturate(220%) contrast(1.1) brightness(1.06);
+  box-shadow:
+    0 20px 60px -12px rgba(0, 0, 0, 0.70),
+    0 8px 24px -6px rgba(0, 0, 0, 0.50),
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.42),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.14),
+    inset 0 -1.5px 2px 0 rgba(255, 255, 255, 0.06);
   transition: border-radius var(--dur-morph) var(--spring), box-shadow .4s var(--ease-out), transform .25s var(--spring);
 }
-#island.expanded .clip, #island.peek .clip, #island.focus .clip, #island.reminder .clip {
-  background: #0f1118 !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, .2), 0 24px 60px -12px rgba(0, 0, 0, .6), 0 0 0 .5px rgba(0, 0, 0, .4);
+#island.expanded .clip, #island.peek .clip, #island.focus .clip {
+  background: rgba(18, 20, 28, var(--glass-opacity, 0.82)) !important;
+  backdrop-filter: blur(var(--glass-blur, 32px)) saturate(210%) contrast(1.08) brightness(1.04) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur, 32px)) saturate(210%) contrast(1.08) brightness(1.04) !important;
+  box-shadow:
+    0 28px 80px -15px rgba(0, 0, 0, 0.80),
+    0 12px 30px -5px rgba(0, 0, 0, 0.55),
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.14),
+    inset 0 -1.5px 2px 0 rgba(255, 255, 255, 0.08);
+}
+#island.reminder .clip {
+  background: rgba(16, 18, 26, var(--glass-opacity, 0.78)) !important;
+  backdrop-filter: blur(34px) saturate(220%) contrast(1.1) brightness(1.06) !important;
+  -webkit-backdrop-filter: blur(34px) saturate(220%) contrast(1.1) brightness(1.06) !important;
+  box-shadow:
+    0 30px 80px -12px rgba(0, 0, 0, 0.80),
+    0 14px 32px -6px rgba(0, 0, 0, 0.55),
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.16),
+    inset 0 -1.5px 2px 0 rgba(255, 255, 255, 0.08) !important;
 }
 #island.dropping .sheen { box-shadow: inset 0 0 0 2px rgba(var(--accent-rgb), .9); }
 
 #bd { position: absolute; left: 0; top: 0; z-index: 0; pointer-events: none; }
-.tint { position: absolute; inset: 0; z-index: 1; background: var(--glass-tint); transition: background .4s var(--ease-out); }
-#island.expanded .tint, #island.peek .tint, #island.focus .tint, #island.reminder .tint { background: rgba(15, 17, 24, 0.98) !important; }
+.tint {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 20%, rgba(0, 0, 0, 0.18) 100%);
+  transition: background .4s var(--ease-out);
+}
+#island.expanded .tint, #island.peek .tint, #island.focus .tint {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(0, 0, 0, 0.22) 100%) !important;
+}
+#island.reminder .tint {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.09) 0%, rgba(0, 0, 0, 0.20) 100%) !important;
+}
 
 .glow {
-  position: absolute; inset: 0; z-index: 2; opacity: 0;
+  position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0;
   background:
     radial-gradient(120% 90% at 0% 100%, rgba(var(--accent-rgb), .30), transparent 60%),
     radial-gradient(80% 70% at 100% 0%, rgba(var(--accent-rgb), .14), transparent 60%);
@@ -139,20 +173,23 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
 }
 #island.has-media.expanded .glow, #island.has-media.peek .glow { opacity: 1; }
 #island.has-media.compact .glow { opacity: .55; }
+#island.reminder .glow {
+  opacity: 1 !important;
+  background:
+    radial-gradient(90% 80% at 100% 0%, rgba(255, 212, 121, .25), transparent 60%),
+    radial-gradient(80% 90% at 0% 100%, rgba(var(--rm-rgb, 255, 212, 121), .22), transparent 65%) !important;
+}
 
 .sheen {
   position: absolute; inset: 0; z-index: 3; border-radius: inherit; pointer-events: none;
   background:
-    radial-gradient(circle at var(--liquid-x, 50%) var(--liquid-y, 20%), rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.03) 35%, transparent 65%),
-    linear-gradient(180deg, rgba(255, 255, 255, .10) 0%, transparent 45%);
-  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, .32), inset 0 -0.5px 1px 0 rgba(255, 255, 255, .10), inset 0 0 0 1px var(--glass-stroke);
+    radial-gradient(circle at var(--liquid-x, 50%) var(--liquid-y, 20%), rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0.05) 38%, transparent 68%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.03) 25%, transparent 55%);
+  box-shadow:
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.50),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.16),
+    inset 0 -1px 2px 0 rgba(255, 255, 255, 0.08);
   transition: opacity .3s ease;
-}
-#island:not(.expanded) .clip {
-  backdrop-filter: blur(28px) saturate(190%) contrast(1.05) brightness(1.04) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(190%) contrast(1.05) brightness(1.04) !important;
-}
-  transition: box-shadow .2s;
 }
 
 #island.alert .clip { animation: shake .45s var(--ease-out) 2; }
@@ -756,41 +793,63 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
   opacity: 1; filter: none; transform: none; pointer-events: auto;
   transition: opacity .3s ease .12s, filter .35s ease .12s, transform .5s var(--spring) .1s;
 }
-#island.reminder .clip { box-shadow: 0 2px 4px rgba(0, 0, 0, .2), 0 24px 60px -12px rgba(0, 0, 0, .6), 0 0 0 .5px rgba(0, 0, 0, .4); }
-#island.reminder .tint { background: var(--glass-tint-strong); }
-#island.reminder .glow {
-  opacity: 1;
-  background:
-    radial-gradient(90% 80% at 100% 0%, rgba(255, 212, 121, .20), transparent 60%),
-    radial-gradient(80% 90% at 0% 100%, rgba(var(--rm-rgb), .22), transparent 65%);
-}
-.l-reminder { --rm-rgb: 255, 212, 121; display: flex; flex-direction: column; padding: 12px 22px 16px; gap: 6px; }
+.l-reminder { --rm-rgb: 255, 212, 121; display: flex; flex-direction: column; padding: 14px 24px 18px; gap: 7px; }
 .l-reminder.dhikr { --rm-rgb: 94, 234, 212; }
 .l-reminder.dua { --rm-rgb: 167, 139, 250; }
-.rm-head { display: flex; align-items: center; justify-content: space-between; height: 24px; flex: none; }
+.rm-head { display: flex; align-items: center; justify-content: space-between; height: 26px; flex: none; }
 .rm-badge {
-  display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 10px 0 9px; border-radius: 99px;
-  background: rgba(var(--rm-rgb), .14); color: rgb(var(--rm-rgb)); font-size: 12px; font-weight: 600;
+  display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 11px 0 10px; border-radius: 99px;
+  background: rgba(var(--rm-rgb), .16) !important; color: rgb(var(--rm-rgb)) !important; font-size: 12px; font-weight: 600;
+  border: 1px solid rgba(var(--rm-rgb), .35) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, .25), inset 0 1px 0 rgba(255, 255, 255, .25) !important;
+  backdrop-filter: blur(14px) !important;
+  letter-spacing: -0.01em;
 }
 .rm-badge svg { width: 12px; height: 12px; }
-.rm-x { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; color: var(--text-3); transition: background var(--dur-fast), color var(--dur-fast); }
+.rm-x {
+  width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center;
+  color: rgba(255, 255, 255, 0.65) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: blur(8px) !important;
+  cursor: pointer;
+  transition: all var(--dur-fast) ease !important;
+}
 .rm-x svg { width: 12px; height: 12px; stroke-width: 2.4; }
-.rm-x:hover { background: var(--fill-1); color: var(--text-1); }
+.rm-x:hover {
+  background: rgba(255, 255, 255, 0.22) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.30) !important;
+  transform: scale(1.08) !important;
+}
 .rm-text {
   flex: 1; display: flex; align-items: center; justify-content: center; text-align: center;
   font-family: "Nova Quran", "Sakkal Majalla", "Traditional Arabic", "Segoe UI", sans-serif; font-size: var(--rm-fs, 26px);
   font-weight: 400; line-height: 1.6; color: #fff; text-wrap: balance;
-  text-shadow: 0 1px 12px rgba(var(--rm-rgb), .25);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.8), 0 1px 4px rgba(0, 0, 0, 0.9), 0 0 22px rgba(var(--rm-rgb), .35) !important;
+  -webkit-font-smoothing: antialiased;
 }
 .rm-text .an {
   font-family: "Nova Quran"; font-style: normal; font-weight: 400; color: rgb(var(--rm-rgb));
   unicode-bidi: isolate; margin: 0 .1em;
+  text-shadow: 0 0 12px rgba(var(--rm-rgb), 0.7);
 }
 .rm-text .sep { font-style: normal; font-family: "Segoe UI", sans-serif; font-size: .7em; color: var(--text-2); margin-left: .15em; }
-.rm-text .br { font-style: normal; font-weight: 400; color: rgb(var(--rm-rgb)); margin: 0 .22em; }
-.rm-ref { flex: none; text-align: center; font-size: 11.5px; color: var(--text-2); min-height: 16px; }
-.rm-time { position: absolute; left: 30px; right: 30px; bottom: 7px; height: 2px; border-radius: 2px; background: rgba(255, 255, 255, .08); overflow: hidden; }
-.rm-time b { display: block; height: 100%; width: 100%; margin-right: auto; border-radius: 2px; background: rgb(var(--rm-rgb)); box-shadow: 0 0 6px rgba(var(--rm-rgb), .8); transition: width .25s linear; }
+.rm-text .br { font-style: normal; font-weight: 400; color: rgb(var(--rm-rgb)); margin: 0 .22em; text-shadow: 0 0 10px rgba(var(--rm-rgb), 0.7); }
+.rm-ref { flex: none; text-align: center; font-size: 11.5px; color: var(--text-2); min-height: 16px; font-weight: 500; letter-spacing: -0.01em; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); }
+.rm-time {
+  position: absolute; left: 30px; right: 30px; bottom: 8px; height: 2.5px;
+  border-radius: 99px; background: rgba(255, 255, 255, .12) !important;
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4) !important;
+}
+.rm-time b {
+  display: block; height: 100%; width: 100%; margin-right: auto;
+  border-radius: 99px;
+  background: linear-gradient(90deg, rgba(var(--rm-rgb), 0.8), rgb(var(--rm-rgb))) !important;
+  box-shadow: 0 0 12px rgba(var(--rm-rgb), 0.95), 0 0 3px #ffffff !important;
+  transition: width .25s linear;
+}
 .l-reminder.paused .rm-time b { opacity: .45; }
 /* off-screen copy used to measure how tall a text needs the card to be */
 .rm-measure { position: absolute; left: -9999px; top: 0; visibility: hidden; display: block; flex: none; }
@@ -2405,10 +2464,10 @@ html[data-theme="light"] #island, body.theme-light #island {
 
 /* 1. Dark Mode (Default macOS Cupertino Dark Glass) */
 :root, html[data-theme="dark"], body.theme-dark {
-  --bg-island: rgba(28, 28, 32, var(--glass-opacity, 0.88));
-  --glass-stroke: rgba(255, 255, 255, 0.12);
+  --bg-island: rgba(18, 20, 28, var(--glass-opacity, 0.78));
+  --glass-stroke: rgba(255, 255, 255, 0.14);
   --card: rgba(255, 255, 255, 0.05);
-  --card-stroke: rgba(255, 255, 255, 0.08);
+  --card-stroke: rgba(255, 255, 255, 0.09);
   --text-1: #f5f5f7;
   --text-2: rgba(235, 235, 245, 0.70);
   --text-3: rgba(235, 235, 245, 0.45);
@@ -2418,10 +2477,10 @@ html[data-theme="light"] #island, body.theme-light #island {
 
 /* 2. Black Mode (Cupertino OLED True Black Depth) */
 html[data-theme="black"], body.theme-black {
-  --bg-island: rgba(8, 8, 10, var(--glass-opacity, 0.96));
-  --glass-stroke: rgba(255, 255, 255, 0.09);
-  --card: rgba(20, 20, 24, 0.85);
-  --card-stroke: rgba(255, 255, 255, 0.07);
+  --bg-island: rgba(8, 8, 12, var(--glass-opacity, 0.88));
+  --glass-stroke: rgba(255, 255, 255, 0.11);
+  --card: rgba(20, 20, 24, 0.80);
+  --card-stroke: rgba(255, 255, 255, 0.08);
   --text-1: #ffffff;
   --text-2: rgba(255, 255, 255, 0.65);
   --text-3: rgba(255, 255, 255, 0.38);
@@ -2430,12 +2489,12 @@ html[data-theme="black"], body.theme-black {
 }
 html[data-theme="black"] #island, body.theme-black #island {
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.75);
 }
 
 /* 3. Light Mode (Cupertino Daylight Frosted Glass) */
 html[data-theme="light"], body.theme-light {
-  --bg-island: rgba(245, 245, 247, var(--glass-opacity, 0.88));
+  --bg-island: rgba(245, 245, 247, var(--glass-opacity, 0.82));
   --glass-stroke: rgba(0, 0, 0, 0.10);
   --card: rgba(255, 255, 255, 0.82);
   --card-stroke: rgba(0, 0, 0, 0.08);
@@ -2548,12 +2607,19 @@ body.theme-light #island {
 /* Clip & Tint layers (Eliminate black underlay & solid opaque surface preventing desktop window bleed-through) */
 html[data-theme="light"] .clip,
 body.theme-light .clip {
-  background: #f7f7f9 !important;
-  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.08) !important;
+  background: rgba(255, 255, 255, 0.80) !important;
+  backdrop-filter: blur(34px) saturate(200%) brightness(1.02) !important;
+  -webkit-backdrop-filter: blur(34px) saturate(200%) brightness(1.02) !important;
+  box-shadow: 
+    0 20px 48px rgba(0, 0, 0, 0.12),
+    0 1px 3px rgba(0, 0, 0, 0.05),
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.08),
+    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.04) !important;
 }
 html[data-theme="light"] .tint,
 body.theme-light .tint {
-  background: rgba(247, 247, 249, 0.98) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(240, 240, 245, 0.20) 100%) !important;
 }
 html[data-theme="light"] #island.expanded .clip,
 html[data-theme="light"] #island.peek .clip,
@@ -2563,7 +2629,15 @@ body.theme-light #island.expanded .clip,
 body.theme-light #island.peek .clip,
 body.theme-light #island.focus .clip,
 body.theme-light #island.reminder .clip {
-  background: #f7f7f9 !important;
+  background: rgba(255, 255, 255, 0.82) !important;
+  backdrop-filter: blur(34px) saturate(200%) brightness(1.02) !important;
+  -webkit-backdrop-filter: blur(34px) saturate(200%) brightness(1.02) !important;
+  box-shadow: 
+    0 24px 60px -10px rgba(0, 0, 0, 0.14),
+    0 8px 24px -4px rgba(0, 0, 0, 0.08),
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.08),
+    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.04) !important;
 }
 html[data-theme="light"] #island.expanded .tint,
 html[data-theme="light"] #island.peek .tint,
@@ -2573,7 +2647,7 @@ body.theme-light #island.expanded .tint,
 body.theme-light #island.peek .tint,
 body.theme-light #island.focus .tint,
 body.theme-light #island.reminder .tint {
-  background: rgba(247, 247, 249, 0.98) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.50) 0%, rgba(240, 240, 245, 0.25) 100%) !important;
 }
 html[data-theme="light"] .sheen,
 body.theme-light .sheen {
@@ -5642,6 +5716,15 @@ body.theme-light .app-ico .app-svg {
 }
 #island.no-liquid-glass .sheen {
   display: none !important;
+}
+#island.no-liquid-glass .clip {
+  background: #0f1118 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+}
+#island.no-liquid-glass .tint {
+  background: #0f1118 !important;
 }
 
 /* ==========================================================================

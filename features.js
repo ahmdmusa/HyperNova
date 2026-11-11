@@ -87,7 +87,7 @@ const DEFAULTS = {
   aiModel: 'flash',
   islandTheme: 'dark',
   islandSize: 'm',
-  glassOpacity: 90,
+  glassOpacity: 78,
   skipTaskbar: true,
 };
 
