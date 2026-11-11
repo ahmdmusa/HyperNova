@@ -876,18 +876,22 @@
         <span>${reciterDisplayName}</span>
         ${SVG_ICONS.chevronDown}
       </button>
+      ${!state.isLiveStream ? `
       <button type="button" id="qr-pill-surah" class="qr-pill-btn qr-pill-emerald" title="اختيار السورة من 114 سورة" aria-label="اختيار السورة">
         <span>${toArabicDigits(surahObj.id)}. سورة ${surahObj.name}</span>
         ${SVG_ICONS.chevronDown}
       </button>
-      ${!state.isLiveStream ? `
       <div class="qr-ayah-select-wrapper">
         <select id="qr-select-ayah" class="qr-ayah-select" title="الانتقال لآية محددة" aria-label="اختيار الآية">
           ${Array.from({ length: surahObj.ayahCount }, (_, i) => i + 1)
             .map(a => `<option value="${a}" ${a === state.ayah ? 'selected' : ''}>الآية: ${toArabicDigits(a)}/${toArabicDigits(surahObj.ayahCount)}</option>`)
             .join('')}
         </select>
-      </div>` : ''}
+      </div>` : `
+      <div class="qr-pill-btn qr-pill-live" title="البث المباشر نشط على مدار الساعة" style="cursor:default; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; font-weight: 600;">
+        <span class="qr-live-dot" style="display:inline-block; width:7px; height:7px; border-radius:50%; background:#10b981; box-shadow:0 0 8px #10b981; margin-left:6px;"></span>
+        <span>بث مباشر 24 ساعة</span>
+      </div>`}
       <button type="button" id="qr-btn-fav" class="qr-fav-btn ${isFav ? 'active' : ''}" title="${isFav ? 'إزالة من المفضلة' : 'إضافة للمفضلة'}" aria-label="المفضلة">
         ${SVG_ICONS.star}
       </button>
@@ -946,6 +950,16 @@
       if (iPlay) iPlay.style.removeProperty('display');
       if (iPause) iPause.style.removeProperty('display');
     }
+    const prevBtn = document.querySelector('#v-media [data-cmd="prev"]');
+    const nextBtn = document.querySelector('#v-media [data-cmd="next"]');
+    if (prevBtn) {
+      prevBtn.style.opacity = state.isLiveStream ? '0.22' : '';
+      prevBtn.style.pointerEvents = state.isLiveStream ? 'none' : '';
+    }
+    if (nextBtn) {
+      nextBtn.style.opacity = state.isLiveStream ? '0.22' : '';
+      nextBtn.style.pointerEvents = state.isLiveStream ? 'none' : '';
+    }
   }
 
   // Update Transport Extra Vector Buttons with Divider Line
@@ -966,26 +980,35 @@
     }
     extraContainer.style.display = 'flex';
 
-    extraContainer.innerHTML = `
-      <!-- Divider line matching user reference -->
-      <span class="qr-transport-divider"></span>
-      
-      <!-- 3-State Repeat Button with Dynamic Animated SVGs + Corner Badge (S / 1 / A) -->
-      <button type="button" id="qr-btn-repeat" class="ctl mini-icon-btn qr-repeat-ctl" title="نمط التكرار: ${getRepeatTooltip()}" aria-label="نمط التكرار">
-        ${state.repeatMode === '1' ? SVG_ICONS.repeatAyah : state.repeatMode === 'A' ? SVG_ICONS.repeatAuto : SVG_ICONS.repeatSurah}
-        <span class="qr-rep-badge">${state.repeatMode || 'S'}</span>
-      </button>
-      
-      <!-- 24/7 Live Stream Toggle Button -->
-      <button type="button" id="qr-btn-live" class="ctl mini-icon-btn ${state.isLiveStream ? 'active' : ''}" title="${state.isLiveStream ? 'البث المباشر نشط (انقر للانتقال لتلاوة الآيات)' : 'تفعيل البث المباشر 24 ساعة للراديو'}" aria-label="البث المباشر">
-        ${SVG_ICONS.broadcast}
-      </button>
-      
-      <!-- Playback Speed Button -->
-      <button type="button" id="qr-btn-speed" class="ctl mini-icon-btn" title="سرعة التلاوة (${state.playbackSpeed}x)" aria-label="سرعة التلاوة">
-        <span class="qr-speed-txt">${state.playbackSpeed}x</span>
-      </button>
-    `;
+    if (state.isLiveStream) {
+      extraContainer.innerHTML = `
+        <span class="qr-transport-divider"></span>
+        <button type="button" id="qr-btn-live" class="ctl mini-icon-btn active" title="البث المباشر نشط 24/7 (انقر للعودة لتلاوة السور والآيات)" aria-label="البث المباشر">
+          ${SVG_ICONS.broadcast}
+        </button>
+      `;
+    } else {
+      extraContainer.innerHTML = `
+        <!-- Divider line matching user reference -->
+        <span class="qr-transport-divider"></span>
+        
+        <!-- 3-State Repeat Button with Dynamic Animated SVGs + Corner Badge (S / 1 / A) -->
+        <button type="button" id="qr-btn-repeat" class="ctl mini-icon-btn qr-repeat-ctl" title="نمط التكرار: ${getRepeatTooltip()}" aria-label="نمط التكرار">
+          ${state.repeatMode === '1' ? SVG_ICONS.repeatAyah : state.repeatMode === 'A' ? SVG_ICONS.repeatAuto : SVG_ICONS.repeatSurah}
+          <span class="qr-rep-badge">${state.repeatMode || 'S'}</span>
+        </button>
+        
+        <!-- 24/7 Live Stream Toggle Button -->
+        <button type="button" id="qr-btn-live" class="ctl mini-icon-btn" title="تفعيل البث المباشر 24 ساعة للراديو" aria-label="البث المباشر">
+          ${SVG_ICONS.broadcast}
+        </button>
+        
+        <!-- Playback Speed Button -->
+        <button type="button" id="qr-btn-speed" class="ctl mini-icon-btn" title="سرعة التلاوة (${state.playbackSpeed}x)" aria-label="سرعة التلاوة">
+          <span class="qr-speed-txt">${state.playbackSpeed}x</span>
+        </button>
+      `;
+    }
 
     // Repeat button listener
     document.getElementById('qr-btn-repeat')?.addEventListener('click', (e) => {

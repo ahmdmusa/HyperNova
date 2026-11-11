@@ -133,7 +133,7 @@ function render() {
     island.classList.toggle('c-wide', wide);
     if (typeof positionIsland === 'function') positionIsland();
   }
-  setCompactTitle(!showTitle ? '' : kind === 'media' ? state.media.title : state.dl.title);
+  setCompactTitle(!showTitle ? '' : kind === 'media' ? cleanMediaText(state.media.title) : state.dl.title);
   const elCTitle = $('.c-title'); if (elCTitle) elCTitle.hidden = !showTitle;
 }
 
@@ -141,7 +141,7 @@ function render() {
 let cTitle = null;
 let fitTimer = null;
 function setCompactTitle(text) {
-  text = text || '';
+  text = cleanMediaText(text) || '';
   if (text === cTitle) return;
   cTitle = text;
   $('#c-title').textContent = text;
@@ -158,7 +158,7 @@ function fitCompactTitle() {
     if (over <= 2 || lastMode !== 'compact') return;
     box.style.setProperty('--dist', `${-over - 12}px`);
     box.style.setProperty('--dur', `${Math.max(5, over / 22 + 3)}s`);
-    box.classList.toggle('rtl', getComputedStyle(span).direction === 'rtl');
+    box.classList.remove('rtl');
     box.classList.add('scroll');
   }, 560);
 }
@@ -444,22 +444,23 @@ function tickClock() {
   const hour12 = hours % 12 || 12;
   const time = `${hour12}:${minutes} ${ampm}`;
   
-  // 2. Authentic Hijri Date via Um Al-Qura (e.g. ٢٦ جمادى الأولى ١٤٤٨ هـ)
+  // 2. Authentic Hijri Date via Um Al-Qura (e.g. ٢٦ جمادى الأولى ١٤٤٨ هـ / Jumada II 1, 1448 AH)
+  const isAr = (state.features?.appLang || 'ar') === 'ar';
   let hijriStr = '';
   try {
-    hijriStr = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', {
+    hijriStr = new Intl.DateTimeFormat(isAr ? 'ar-SA-u-ca-islamic-umalqura' : 'en-US-u-ca-islamic-umalqura', {
       day: 'numeric',
       month: 'long',
       year: 'numeric'
     }).format(d);
   } catch {
-    hijriStr = '٢٦ جمادى الأولى ١٤٤٨ هـ';
+    hijriStr = isAr ? '٢٦ جمادى الأولى ١٤٤٨ هـ' : '26 Jumada al-Awwal 1448 AH';
   }
 
-  // 3. Gregorian Date formatted exactly like reference (e.g. Friday, Nov 06, 2026)
-  const gregStr = d.toLocaleDateString('en-US', {
+  // 3. Gregorian Date matching selected language (e.g. الأربعاء، ١١ نوفمبر ٢٠٢٦ / Wednesday, Nov 11, 2026)
+  const gregStr = d.toLocaleDateString(isAr ? 'ar-EG' : 'en-US', {
     weekday: 'long',
-    month: 'short',
+    month: isAr ? 'long' : 'short',
     day: '2-digit',
     year: 'numeric'
   });
@@ -1285,6 +1286,16 @@ function applyFeatures(f) {
   });
   if (!$('#x-app-name').closest('#island').classList.contains('playing')) {
     $('#x-app-name').textContent = appLang === 'ar' ? 'جاهز للعمل' : 'Ready';
+  }
+  const emptyTitle = $('#v-media .empty-text-wrap .title');
+  const emptySub = $('#v-media .empty-text-wrap .sub');
+  if (emptyTitle) emptyTitle.textContent = appLang === 'ar' ? 'لا يوجد مشغل نشط' : 'Nothing playing';
+  if (emptySub) emptySub.textContent = appLang === 'ar' ? 'شغّل أي مقطع في سبوتيفاي أو يوتيوب أو أي مشغل وسيظهر هنا تلقائياً.' : 'Play something in Spotify, YouTube or any player and it shows up here.';
+  const emptyRadioBtn = document.getElementById('qr-empty-launch-btn');
+  if (emptyRadioBtn) {
+    const labelSpan = emptyRadioBtn.querySelector('span');
+    if (labelSpan) labelSpan.textContent = appLang === 'ar' ? 'تشغيل راديو القرآن الكريم' : 'Play Quran Radio';
+    emptyRadioBtn.title = appLang === 'ar' ? 'تشغيل راديو وتلاوة القرآن الكريم' : 'Play Quran Radio & Recitations';
   }
   document.documentElement.lang = appLang;
   document.documentElement.dir = appLang === 'ar' ? 'rtl' : 'ltr';

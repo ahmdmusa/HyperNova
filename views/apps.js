@@ -27,22 +27,26 @@
     music: '<svg viewBox="0 0 24 24" class="app-svg" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>'
   };
 
-  function getFallbackContent(name) {
+  function applyFallback(container, name) {
     const n = (name || '').toLowerCase();
-    if (n.includes('cmd') || n.includes('terminal') || n.includes('bash') || n.includes('powershell')) return APP_SVGS.terminal;
-    if (n.includes('explorer') || n.includes('file') || n.includes('folder')) return APP_SVGS.explorer;
-    if (n.includes('code') || n.includes('studio') || n.includes('cursor')) return APP_SVGS.code;
-    if (n.includes('chrome') || n.includes('edge') || n.includes('firefox') || n.includes('browser') || n.includes('brave')) return APP_SVGS.browser;
-    if (n.includes('whatsapp') || n.includes('telegram') || n.includes('discord') || n.includes('chat') || n.includes('slack')) return APP_SVGS.chat;
-    if (n.includes('spotify') || n.includes('music') || n.includes('vlc') || n.includes('player')) return APP_SVGS.music;
-    return `<span class="letter-badge">${esc((name || '?').trim()[0] || '?')}</span>`;
+    container.classList.add('letter');
+    if (n.includes('cmd') || n.includes('terminal') || n.includes('bash') || n.includes('powershell')) {
+      container.innerHTML = APP_SVGS.terminal;
+    } else if (n.includes('explorer') || n.includes('file') || n.includes('folder')) {
+      container.innerHTML = APP_SVGS.explorer;
+    } else if (n.includes('code') || n.includes('studio') || n.includes('cursor')) {
+      container.innerHTML = APP_SVGS.code;
+    } else if (n.includes('chrome') || n.includes('edge') || n.includes('firefox') || n.includes('browser') || n.includes('brave')) {
+      container.innerHTML = APP_SVGS.browser;
+    } else if (n.includes('whatsapp') || n.includes('telegram') || n.includes('discord') || n.includes('chat') || n.includes('slack')) {
+      container.innerHTML = APP_SVGS.chat;
+    } else if (n.includes('spotify') || n.includes('music') || n.includes('vlc') || n.includes('player')) {
+      container.innerHTML = APP_SVGS.music;
+    } else {
+      const letter = (name || '?').trim()[0] || '?';
+      container.innerHTML = `<span class="letter-badge">${esc(letter)}</span>`;
+    }
   }
-
-  const iconHtml = (a) => {
-    const fallback = getFallbackContent(a.name);
-    if (!a.icon) return fallback;
-    return `<img src="${a.icon}" alt="" draggable="false" onerror="this.onerror=null;this.parentElement.classList.add('letter');this.parentElement.innerHTML='${fallback.replace(/'/g, "\\'")}';">`;
-  };
 
   function updateBar() {
     const ar = isAr();
@@ -67,17 +71,55 @@
     const ar = isAr();
     if (!pinned.length) {
       grid.innerHTML = `<div class="apps-empty">${ar ? 'لا توجد تطبيقات بعد. انقر على إضافة لتثبيت تطبيقاتك.' : 'No apps yet. Use Add to pin your favourites.'}</div>`;
+      grid.classList.toggle('editing', editing);
+      updateBar();
+      return;
     }
     for (const a of pinned) {
       const b = document.createElement('button');
       b.className = 'app' + (a.isPinned ? ' is-pinned' : '');
       b.dataset.id = a.id;
       b.title = a.name + (a.weeklyCount ? ` (${a.weeklyCount} ${ar ? 'مرات هذا الأسبوع' : 'times this week'})` : '');
-      const pinTag = a.isPinned ? '<span class="app-pin-ico" title="مثبت">📌</span>' : '';
-      b.innerHTML =
-        `<span class="app-ico ${a.icon ? '' : 'letter'}">${iconHtml(a)}${pinTag}</span>` +
-        `<span class="app-name">${esc(a.name)}</span>` +
-        `<span class="x" role="button" aria-label="Remove ${esc(a.name)}">${ICON_X}</span>`;
+
+      const icoSpan = document.createElement('span');
+      icoSpan.className = 'app-ico';
+
+      if (a.icon) {
+        const img = document.createElement('img');
+        img.src = a.icon;
+        img.alt = '';
+        img.draggable = false;
+        img.onerror = () => {
+          img.remove();
+          applyFallback(icoSpan, a.name);
+        };
+        icoSpan.appendChild(img);
+      } else {
+        applyFallback(icoSpan, a.name);
+      }
+
+      if (a.isPinned) {
+        const pinSpan = document.createElement('span');
+        pinSpan.className = 'app-pin-ico';
+        pinSpan.title = ar ? 'مثبت' : 'Pinned';
+        pinSpan.textContent = '📌';
+        icoSpan.appendChild(pinSpan);
+      }
+
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'app-name';
+      nameSpan.textContent = a.name;
+
+      const xSpan = document.createElement('span');
+      xSpan.className = 'x';
+      xSpan.setAttribute('role', 'button');
+      xSpan.setAttribute('aria-label', `Remove ${a.name}`);
+      xSpan.innerHTML = ICON_X;
+
+      b.appendChild(icoSpan);
+      b.appendChild(nameSpan);
+      b.appendChild(xSpan);
+
       b.addEventListener('click', (e) => {
         if (editing) {
           if (e.target.closest('.x')) bridge.apps.remove(a.id);
@@ -173,7 +215,27 @@
       const on = ids.has(a.id);
       b.className = `pick${on ? ' on' : ''}`;
       b.title = on ? `Remove ${a.name}` : `Add ${a.name}`;
-      b.innerHTML = `${a.icon ? `<img src="${a.icon}" alt="" onerror="this.onerror=null;this.replaceWith(document.createElement('span'));">` : `<span class="ph">${esc(a.name[0] || '?')}</span>`}<span>${esc(a.name)}</span>`;
+
+      const iconWrap = document.createElement('span');
+      iconWrap.className = 'ph';
+      if (a.icon) {
+        const img = document.createElement('img');
+        img.src = a.icon;
+        img.alt = '';
+        img.onerror = () => {
+          img.remove();
+          applyFallback(iconWrap, a.name);
+        };
+        iconWrap.appendChild(img);
+      } else {
+        applyFallback(iconWrap, a.name);
+      }
+
+      const label = document.createElement('span');
+      label.textContent = a.name;
+
+      b.appendChild(iconWrap);
+      b.appendChild(label);
       b.disabled = !on && pinned.length >= MAX_PINNED;
       b.addEventListener('click', () => (on ? bridge.apps.remove(a.id) : bridge.apps.add(a.id)));
       listEl.append(b);

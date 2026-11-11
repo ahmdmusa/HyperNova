@@ -630,6 +630,13 @@
     const dashTaskInput = $('#nf-dash-task-input');
     const btnDecompose = $('#nf-btn-decompose');
     const btnAddTask = $('#nf-btn-add-task');
+    const btnDashUnstickEl = $('#nf-dash-btn-unstick');
+    if (btnDashUnstickEl) {
+      btnDashUnstickEl.addEventListener('click', (e) => {
+        e.stopPropagation();
+        unstickCurrentStep();
+      });
+    }
 
     function addTaskDirectly(title) {
       if (!title) return;
@@ -800,9 +807,16 @@
         btnDecomp.textContent = isAr ? '✨ فكك' : '✨ Break Down';
         btnDecomp.title = isAr ? 'تفكيك المشروع لخطوات ذكية بالذكاء الاصطناعي' : 'Decompose project with AI';
       }
+      const btnDashUnstick = $('#nf-dash-btn-unstick');
+      if (btnDashUnstick) {
+        const span = btnDashUnstick.querySelector('span');
+        if (span) span.textContent = isAr ? '2د' : '2m';
+        btnDashUnstick.title = isAr ? 'ابدأ دقيقتين فقط لكسر التسويف' : 'Start 2 minutes to beat procrastination';
+      }
       const btnUnstick = $('#nf-btn-unstick');
       if (btnUnstick) {
-        btnUnstick.textContent = isAr ? '⚡ 2د' : '⚡ 2m';
+        const span = btnUnstick.querySelector('span');
+        if (span) span.textContent = isAr ? 'فك الشلل (دقيقتين)' : '2-Min Unstick';
         btnUnstick.title = isAr ? 'ابدأ دقيقتين فقط لكسر التسويف' : 'Start 2 minutes to beat procrastination';
       }
       

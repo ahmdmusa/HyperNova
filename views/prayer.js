@@ -1,14 +1,14 @@
 
   // Verified 8 Direct CDN Muezzins MP3 Dataset (Archive.org & AlAdhan CDN)
   const ADHAN_MUEZZINS = [
-    { id: 'abdulbasit', name: 'الشيخ عبد الباسط عبد الصمد', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/042--.mp3', startSec: 0, takbirDurationSec: 15 },
-    { id: 'refaat', name: 'الشيخ محمد رفعت (أذان زمان)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/042--.mp3', startSec: 0, takbirDurationSec: 14 },
-    { id: 'banna', name: 'الشيخ محمود علي البنا (القاهرة)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/043--.mp3', startSec: 0, takbirDurationSec: 14 },
-    { id: 'makkah', name: 'أذان الحرم المكي (علي أحمد ملا)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/019--1.mp3', startSec: 0, takbirDurationSec: 16 },
-    { id: 'madinah', name: 'أذان المسجد النبوي الشريف', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/018-.mp3', startSec: 0, takbirDurationSec: 15 },
-    { id: 'aqsa', name: 'أذان المسجد الأقصى المبارك', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/007--.mp3', startSec: 0, takbirDurationSec: 14 },
-    { id: 'alafasy', name: 'الشيخ مشاري راشد العفاسي', url: 'https://cdn.aladhan.com/audio/adhans/a9.mp3', startSec: 0, takbirDurationSec: 15 },
-    { id: 'nafees', name: 'الشيخ أحمد النفيس (خاشع)', url: 'https://cdn.aladhan.com/audio/adhans/a9.mp3', startSec: 0, takbirDurationSec: 14 }
+    { id: 'abdulbasit', name: 'الشيخ عبد الباسط عبد الصمد', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/042--.mp3', startSec: 0, takbirDurationSec: 28 },
+    { id: 'refaat', name: 'الشيخ محمد رفعت (أذان زمان)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/042--.mp3', startSec: 0, takbirDurationSec: 28 },
+    { id: 'banna', name: 'الشيخ محمود علي البنا (القاهرة)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/043--.mp3', startSec: 0, takbirDurationSec: 28 },
+    { id: 'makkah', name: 'أذان الحرم المكي (علي أحمد ملا)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/019--1.mp3', startSec: 0, takbirDurationSec: 30 },
+    { id: 'madinah', name: 'أذان المسجد النبوي الشريف', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/018-.mp3', startSec: 0, takbirDurationSec: 28 },
+    { id: 'aqsa', name: 'أذان المسجد الأقصى المبارك', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/007--.mp3', startSec: 0, takbirDurationSec: 28 },
+    { id: 'alafasy', name: 'الشيخ مشاري راشد العفاسي', url: 'https://cdn.aladhan.com/audio/adhans/a9.mp3', startSec: 0, takbirDurationSec: 28 },
+    { id: 'nafees', name: 'الشيخ أحمد النفيس (خاشع)', url: 'https://cdn.aladhan.com/audio/adhans/a9.mp3', startSec: 0, takbirDurationSec: 28 }
   ];
   window.ADHAN_MUEZZINS = ADHAN_MUEZZINS;
 
@@ -75,8 +75,8 @@
       audio.volume = 1.0;
       activeIslandAdhanAudio = audio;
 
-      const targetDuration = muezzin.takbirDurationSec || 15;
-      const fadeStart = Math.max(0, targetDuration - 2.5);
+      const targetDuration = muezzin.takbirDurationSec || 28;
+      const fadeStart = Math.max(0, targetDuration - 3.5);
 
       audio.addEventListener('loadedmetadata', () => {
         if (muezzin.startSec) audio.currentTime = muezzin.startSec;
@@ -110,7 +110,7 @@
 
   function handleAdhanAudioWithDucking(voice) {
     const muezzin = ADHAN_MUEZZINS.find(m => m.id === voice) || ADHAN_MUEZZINS[0];
-    const durMs = ((muezzin.takbirDurationSec || 15) + 1.5) * 1000;
+    const durMs = ((muezzin.takbirDurationSec || 28) + 1.5) * 1000;
 
     if (window.quranRadio && window.quranRadio.state && window.quranRadio.state.isPlaying) {
       quranWasPlayingBeforeAdhan = true;
@@ -428,7 +428,7 @@
     if (next) {
       const ms = next.time - now;
       const elPrCount = $('#pr-count');
-      if (elPrCount) elPrCount.textContent = `-${left(ms)}`;
+      if (elPrCount) elPrCount.textContent = `\u200E-${left(ms)}`;
       const lbl = document.getElementById('nextPrayerNameLabel');
       if (lbl) lbl.textContent = NAMES[next.key] || next.key;
       const isAr = (window.state?.features?.appLang || 'ar') === 'ar';
@@ -557,7 +557,15 @@
       if (badgeEl) badgeEl.textContent = item.badge;
       if (textEl) {
         textEl.textContent = item.text;
-        textEl.style.fontSize = isLargeFont ? '25px' : '21px';
+        const isSmall = document.body.classList.contains('size-s');
+        const isLarge = document.body.classList.contains('size-l');
+        if (isSmall) {
+          textEl.style.fontSize = isLargeFont ? '17px' : '14.5px';
+        } else if (isLarge) {
+          textEl.style.fontSize = isLargeFont ? '24px' : '20px';
+        } else {
+          textEl.style.fontSize = isLargeFont ? '20px' : '17px';
+        }
       }
       if (refEl) refEl.textContent = item.ref;
       if (counterEl) counterEl.textContent = `${curIdx + 1}/${list.length}`;

@@ -596,11 +596,16 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
   --dist: 0px; --dur: 8s;
   flex: 1; min-width: 0; margin: 0 10px; overflow: hidden; white-space: nowrap;
   font-size: 12.5px; font-weight: 500; color: var(--text-2); letter-spacing: -.005em;
+  direction: ltr !important;
+  text-align: left;
 }
-.c-title span { display: inline-block; white-space: nowrap; }
+.c-title span {
+  display: inline-block;
+  white-space: nowrap;
+  unicode-bidi: plaintext !important;
+}
 .c-title.scroll { -webkit-mask-image: linear-gradient(90deg, transparent, #000 10px, #000 calc(100% - 14px), transparent); }
 .c-title.scroll span { animation: marquee var(--dur) ease-in-out infinite alternate; }
-.c-title.scroll.rtl span { animation-direction: alternate-reverse; }
 @keyframes marquee { 0%, 14% { transform: translateX(0); } 86%, 100% { transform: translateX(var(--dist)); } }
 .l-compact.timer .c-title { display: none; }
 
@@ -1968,31 +1973,42 @@ html[data-theme="light"] #island, body.theme-light #island {
    ========================================================================== */
 .topbar {
   direction: ltr !important;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
   height: 40px;
   margin-bottom: 10px;
-  gap: 10px;
+  gap: 6px !important;
 }
 
 .topbar-left-zone {
   direction: ltr !important;
-  justify-self: start;
+  flex: 0 1 auto !important;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   min-width: 0;
+  max-width: 170px;
+}
+
+.topbar-left-zone .chip {
+  flex: 0 1 auto;
+  min-width: 50px;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .topbar .tabs {
   direction: ltr !important;
-  justify-self: center;
+  flex: 0 1 auto !important;
+  margin: 0 4px !important;
 }
 
 .topbar-compact-clock-card {
   direction: rtl !important;
-  justify-self: end;
+  flex: 0 0 auto !important;
 }
 
 .topbar-gear-btn {
@@ -4360,6 +4376,9 @@ svg[fill="none"],
   font-weight: 700 !important;
   color: #34d399 !important;
   font-variant-numeric: tabular-nums !important;
+  direction: ltr !important;
+  unicode-bidi: isolate !important;
+  display: inline-block !important;
 }
 
 /* 6 Horizontal Inline Prayer Pills in 1 Single Row */
@@ -4597,16 +4616,16 @@ svg[fill="none"],
   align-items: center !important;
   justify-content: center !important;
   padding: 2px 6px !important;
-  min-height: 0 !important;
+  min-height: 48px !important;
   overflow: hidden !important;
 }
 
 .dua-arabic-text,
 #pr-daily-text {
   font-family: 'Amiri', 'Cairo', serif !important;
-  font-size: 20px !important;
+  font-size: 17.5px !important;
   font-weight: 700 !important;
-  line-height: 1.65 !important;
+  line-height: 1.55 !important;
   color: #fffbeb !important;
   text-align: center !important;
   margin: 0 !important;
@@ -4614,6 +4633,22 @@ svg[fill="none"],
   -webkit-line-clamp: 2 !important;
   -webkit-box-orient: vertical !important;
   overflow: hidden !important;
+}
+
+body.size-s .dua-arabic-text,
+body.size-s #pr-daily-text {
+  font-size: 14.5px !important;
+  line-height: 1.45 !important;
+}
+body.size-m .dua-arabic-text,
+body.size-m #pr-daily-text {
+  font-size: 17.5px !important;
+  line-height: 1.55 !important;
+}
+body.size-l .dua-arabic-text,
+body.size-l #pr-daily-text {
+  font-size: 20px !important;
+  line-height: 1.65 !important;
 }
 
 .dua-footer-bar {
