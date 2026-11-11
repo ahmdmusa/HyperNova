@@ -135,22 +135,24 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
   transition: border-radius var(--dur-morph) var(--spring), box-shadow .4s var(--ease-out), transform .25s var(--spring);
 }
 #island.expanded .clip, #island.peek .clip, #island.focus .clip {
-  background: rgba(10, 12, 18, var(--glass-opacity, 0.85)) !important;
-  backdrop-filter: blur(var(--glass-blur, 32px)) saturate(190%) contrast(1.05) !important;
-  -webkit-backdrop-filter: blur(var(--glass-blur, 32px)) saturate(190%) contrast(1.05) !important;
+  background: rgba(10, 13, 20, 0.60) !important;
+  backdrop-filter: blur(42px) saturate(190%) contrast(1.04) !important;
+  -webkit-backdrop-filter: blur(42px) saturate(190%) contrast(1.04) !important;
   box-shadow:
-    0 28px 75px -15px rgba(0, 0, 0, 0.85),
-    0 12px 28px -5px rgba(0, 0, 0, 0.55),
-    inset 0 0 0 0.5px rgba(255, 255, 255, 0.12);
+    0 24px 60px -15px rgba(0, 0, 0, 0.85),
+    0 8px 24px -6px rgba(0, 0, 0, 0.50),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.12),
+    inset 0 0.5px 0 0 rgba(255, 255, 255, 0.18) !important;
 }
 #island.reminder .clip {
-  background: rgba(10, 12, 18, var(--glass-opacity, 0.82)) !important;
-  backdrop-filter: blur(32px) saturate(190%) contrast(1.05) !important;
-  -webkit-backdrop-filter: blur(32px) saturate(190%) contrast(1.05) !important;
+  background: rgba(10, 13, 20, 0.58) !important;
+  backdrop-filter: blur(40px) saturate(190%) contrast(1.04) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(190%) contrast(1.04) !important;
   box-shadow:
-    0 28px 75px -12px rgba(0, 0, 0, 0.85),
-    0 12px 28px -6px rgba(0, 0, 0, 0.55),
-    inset 0 0 0 0.5px rgba(255, 255, 255, 0.14) !important;
+    0 24px 60px -12px rgba(0, 0, 0, 0.85),
+    0 8px 24px -6px rgba(0, 0, 0, 0.50),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.14),
+    inset 0 0.5px 0 0 rgba(255, 255, 255, 0.20) !important;
 }
 #island.dropping .sheen { box-shadow: inset 0 0 0 2px rgba(var(--accent-rgb), .9); }
 
@@ -177,10 +179,8 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
 #island.has-media.expanded .glow, #island.has-media.peek .glow { opacity: 1; }
 #island.has-media.compact .glow { opacity: .55; }
 #island.reminder .glow {
-  opacity: 1 !important;
-  background:
-    radial-gradient(90% 80% at 100% 0%, rgba(255, 212, 121, .25), transparent 60%),
-    radial-gradient(80% 90% at 0% 100%, rgba(var(--rm-rgb, 255, 212, 121), .22), transparent 65%) !important;
+  opacity: 0 !important;
+  display: none !important;
 }
 
 .sheen {
@@ -793,61 +793,64 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
   opacity: 1; filter: none; transform: none; pointer-events: auto;
   transition: opacity .3s ease .12s, filter .35s ease .12s, transform .5s var(--spring) .1s;
 }
-.l-reminder { --rm-rgb: 255, 212, 121; display: flex; flex-direction: column; padding: 14px 24px 18px; gap: 7px; }
-.l-reminder.dhikr { --rm-rgb: 94, 234, 212; }
-.l-reminder.dua { --rm-rgb: 167, 139, 250; }
+.l-reminder { display: flex; flex-direction: column; padding: 18px 28px 24px; gap: 10px; box-sizing: border-box; }
 .rm-head { display: flex; align-items: center; justify-content: space-between; height: 26px; flex: none; }
 .rm-badge {
-  display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 11px 0 10px; border-radius: 99px;
-  background: rgba(var(--rm-rgb), .16) !important; color: rgb(var(--rm-rgb)) !important; font-size: 12px; font-weight: 600;
-  border: 1px solid rgba(var(--rm-rgb), .35) !important;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, .25), inset 0 1px 0 rgba(255, 255, 255, .25) !important;
-  backdrop-filter: blur(14px) !important;
+  display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 12px; border-radius: 99px;
+  background: rgba(255, 255, 255, 0.10) !important; color: #ffffff !important; font-size: 12.5px; font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.20), inset 0 0.5px 0 rgba(255, 255, 255, 0.3) !important;
+  backdrop-filter: blur(16px) !important;
   letter-spacing: -0.01em;
 }
-.rm-badge svg { width: 12px; height: 12px; }
+.rm-badge svg { width: 12px; height: 12px; color: #ffffff !important; stroke: currentColor; }
 .rm-x {
-  width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center;
-  color: rgba(255, 255, 255, 0.65) !important;
+  width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+  color: rgba(255, 255, 255, 0.70) !important;
   background: rgba(255, 255, 255, 0.08) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  backdrop-filter: blur(12px) !important;
   cursor: pointer;
   transition: all var(--dur-fast) ease !important;
 }
-.rm-x svg { width: 12px; height: 12px; stroke-width: 2.4; }
+.rm-x svg { width: 12px; height: 12px; stroke-width: 2.2; }
 .rm-x:hover {
-  background: rgba(255, 255, 255, 0.22) !important;
+  background: rgba(255, 255, 255, 0.20) !important;
   color: #ffffff !important;
   border-color: rgba(255, 255, 255, 0.30) !important;
-  transform: scale(1.08) !important;
+  transform: scale(1.06) !important;
 }
 .rm-text {
   flex: 1; display: flex; align-items: center; justify-content: center; text-align: center;
-  font-family: "Nova Quran", "Sakkal Majalla", "Traditional Arabic", "Segoe UI", sans-serif; font-size: var(--rm-fs, 26px);
-  font-weight: 400; line-height: 1.6; color: #fff; text-wrap: balance;
-  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.8), 0 1px 4px rgba(0, 0, 0, 0.9), 0 0 22px rgba(var(--rm-rgb), .35) !important;
+  font-family: "Amiri", "Nova Quran", "Traditional Arabic", "Segoe UI", sans-serif; font-size: var(--rm-fs, 26px);
+  font-weight: 600; line-height: 1.6; color: #ffffff; text-wrap: balance;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.9), 0 1px 4px rgba(0, 0, 0, 0.95) !important;
   -webkit-font-smoothing: antialiased;
 }
 .rm-text .an {
-  font-family: "Nova Quran"; font-style: normal; font-weight: 400; color: rgb(var(--rm-rgb));
+  font-family: "Nova Quran"; font-style: normal; font-weight: 400; color: #fbbf24;
   unicode-bidi: isolate; margin: 0 .1em;
-  text-shadow: 0 0 12px rgba(var(--rm-rgb), 0.7);
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.7) !important;
 }
-.rm-text .sep { font-style: normal; font-family: "Segoe UI", sans-serif; font-size: .7em; color: var(--text-2); margin-left: .15em; }
-.rm-text .br { font-style: normal; font-weight: 400; color: rgb(var(--rm-rgb)); margin: 0 .22em; text-shadow: 0 0 10px rgba(var(--rm-rgb), 0.7); }
-.rm-ref { flex: none; text-align: center; font-size: 11.5px; color: var(--text-2); min-height: 16px; font-weight: 500; letter-spacing: -0.01em; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); }
+.rm-text .sep { font-style: normal; font-family: "Segoe UI", sans-serif; font-size: .7em; color: rgba(255, 255, 255, 0.65); margin-left: .15em; }
+.rm-text .br { font-style: normal; font-weight: 400; color: #fbbf24; margin: 0 .22em; text-shadow: 0 0 10px rgba(251, 191, 36, 0.7); }
+.rm-ref {
+  flex: none; text-align: center; font-size: 13.5px !important; color: rgba(255, 255, 255, 0.90) !important;
+  min-height: 20px; font-weight: 600 !important; letter-spacing: -0.01em; line-height: 1.5;
+  margin-top: 4px; margin-bottom: 4px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9) !important;
+}
 .rm-time {
-  position: absolute; left: 30px; right: 30px; bottom: 8px; height: 2.5px;
-  border-radius: 99px; background: rgba(255, 255, 255, .12) !important;
+  position: absolute; left: 28px; right: 28px; bottom: 10px; height: 2.5px;
+  border-radius: 99px; background: rgba(255, 255, 255, 0.12) !important;
   overflow: hidden;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4) !important;
+  box-shadow: none !important;
 }
 .rm-time b {
   display: block; height: 100%; width: 100%; margin-right: auto;
   border-radius: 99px;
-  background: linear-gradient(90deg, rgba(var(--rm-rgb), 0.8), rgb(var(--rm-rgb))) !important;
-  box-shadow: 0 0 12px rgba(var(--rm-rgb), 0.95), 0 0 3px #ffffff !important;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.5), #ffffff) !important;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.8), 0 0 2px #ffffff !important;
   transition: width .25s linear;
 }
 .l-reminder.paused .rm-time b { opacity: .45; }
@@ -1105,11 +1108,11 @@ body.size-l #island:not(.vertical).idle.eyes {
 .nova-cheek.r { right: -9px; }
 .eyes.mood-petting .nova-cheek { opacity: 0.9; transform: scale(1); }
 
-/* Ambient Auras */
-#island.aura-khushu .glow { opacity: 0.85; background: radial-gradient(120% 90% at 50% 50%, rgba(16, 185, 129, .28), transparent 60%); }
-#island.aura-warrior .glow { opacity: 0.85; background: radial-gradient(120% 90% at 50% 50%, rgba(239, 68, 68, .28), transparent 60%); }
-#island.aura-celebrate .glow { opacity: 0.85; background: radial-gradient(120% 90% at 50% 50%, rgba(255, 212, 121, .32), transparent 60%); }
-#island.aura-quran .glow { opacity: 0.85; background: radial-gradient(120% 90% at 50% 50%, rgba(234, 179, 8, .28), transparent 60%); }
+/* Ambient Auras - Disabled in Liquid Glass mode to preserve pristine optical clarity */
+#island.aura-khushu .glow,
+#island.aura-warrior .glow,
+#island.aura-celebrate .glow,
+#island.aura-quran .glow { opacity: 0 !important; display: none !important; }
 
 /* Inspiration Toast */
 .l-toast.inspire #t-label { color: #ffd479; font-weight: 600; font-size: 11px; }
@@ -1703,14 +1706,15 @@ html[data-theme="light"] #island, body.theme-light #island {
 }
 .dhikr-subnote {
   display: block;
-  font-size: 13.5px !important;
+  font-size: 15px !important;
   font-family: var(--font-ar), 'Segoe UI', sans-serif !important;
-  font-weight: 400 !important;
-  line-height: 1.45 !important;
-  color: var(--text-2) !important;
-  margin-top: 6px !important;
-  text-shadow: none !important;
-  opacity: 0.92;
+  font-weight: 600 !important;
+  line-height: 1.6 !important;
+  color: #ffffff !important;
+  margin-top: 8px !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9), 0 2px 10px rgba(0, 0, 0, 0.7) !important;
+  letter-spacing: -0.01em;
+  opacity: 1 !important;
 }
 .pr-subnote {
   display: block;
@@ -2228,14 +2232,14 @@ html[data-theme="light"] #island, body.theme-light #island {
   align-items: center;
   justify-content: center;
   gap: 1px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(14px);
-  border-radius: 12px;
-  padding: 3px 12px 4px;
-  min-width: 135px;
-  max-width: 175px;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18), inset 0 0.5px 0 rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(16px) !important;
+  border-radius: 14px !important;
+  padding: 4px 12px 5px !important;
+  min-width: 120px;
+  max-width: 165px;
   white-space: nowrap !important;
   user-select: none;
   cursor: default;
@@ -2243,25 +2247,31 @@ html[data-theme="light"] #island, body.theme-light #island {
   overflow: hidden !important;
 }
 .topbar-compact-clock-card:hover {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(255, 255, 255, 0.16);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.10) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25), inset 0 0.5px 0 rgba(255, 255, 255, 0.25) !important;
 }
 
 .c-clock {
   font-family: var(--font-en), "Inter", -apple-system, sans-serif !important;
-  font-size: 14.5px !important;
-  font-weight: 700 !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
   color: #ffffff !important;
   line-height: 1.1 !important;
   letter-spacing: -0.2px;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
 
 .c-hijri {
   font-family: var(--font-ar), "Amiri", serif !important;
-  font-size: 11.5px !important;
-  font-weight: 600 !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  color: rgba(255, 255, 255, 0.70) !important;
+}
+
+.c-greg {
+  font-size: 10px !important;
+  color: rgba(255, 255, 255, 0.50) !important;
+}
   color: #f6d89b !important; /* Elegant warm golden parchment as in reference */
   line-height: 1.15 !important;
   white-space: nowrap !important;
@@ -3496,27 +3506,27 @@ body.theme-light .nf-todo-check {
 
 #v-media.quran-mode #m-art {
   border-radius: 20px !important;
-  box-shadow: 0 8px 24px rgba(6, 78, 59, 0.35) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55), inset 0 0 0 0.5px rgba(255, 255, 255, 0.15) !important;
 }
 
 #v-media.quran-mode #m-art-glow {
-  filter: blur(26px) !important;
-  opacity: 0.65 !important;
+  filter: blur(20px) !important;
+  opacity: 0.35 !important;
 }
 
 .qr-art-badge {
   position: absolute;
-  bottom: 6px;
-  left: 6px;
-  right: 6px;
-  background: rgba(6, 78, 59, 0.88);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(52, 211, 153, 0.35);
-  border-radius: 8px;
-  padding: 2px 6px;
-  font-size: 10px;
-  font-weight: 700;
-  color: #fbbf24;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  background: rgba(15, 20, 30, 0.75) !important;
+  backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 999px !important;
+  padding: 3px 8px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
@@ -3524,21 +3534,21 @@ body.theme-light .nf-todo-check {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 5px;
 }
 
 .qr-art-badge.live {
-  background: rgba(15, 23, 42, 0.88);
-  border-color: rgba(16, 185, 129, 0.5);
-  color: #34d399;
+  background: rgba(20, 25, 35, 0.85) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  color: #ffffff !important;
 }
 
 .qr-live-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #10b981;
-  box-shadow: 0 0 8px #10b981;
+  background: #38bdf8 !important;
+  box-shadow: 0 0 8px #38bdf8 !important;
   animation: qrPulse 1.4s infinite ease-in-out;
 }
 
@@ -3547,8 +3557,8 @@ body.theme-light .nf-todo-check {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #10b981;
-  box-shadow: 0 0 8px #10b981;
+  background: #38bdf8 !important;
+  box-shadow: 0 0 8px #38bdf8 !important;
   margin-inline-end: 5px;
   animation: qrPulse 1.4s infinite ease-in-out;
 }
@@ -3560,12 +3570,12 @@ body.theme-light .nf-todo-check {
 
 /* Uthmani Ayah Headline */
 #v-media.quran-mode #m-title {
-  font-family: 'Scheherazade New', 'Amiri', 'Traditional Arabic', system-ui, serif !important;
-  font-size: 15px !important;
+  font-family: 'Amiri', 'Traditional Arabic', system-ui, serif !important;
+  font-size: 16.5px !important;
   line-height: 1.45 !important;
-  color: var(--text-1) !important;
+  color: #ffffff !important;
   font-weight: 600 !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6) !important;
   max-height: 44px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -3574,10 +3584,10 @@ body.theme-light .nf-todo-check {
   -webkit-box-orient: vertical;
 }
 
-/* Emerald Equalizer Bars */
+/* Crisp White Equalizer Bars matching Apple Image 5 */
 #v-media.quran-mode .eq.emerald-eq i {
-  background: #10b981 !important;
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.6) !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.7) !important;
 }
 
 /* Compact Inline Dropdown Pills */
@@ -3606,9 +3616,9 @@ body.theme-light .nf-todo-check {
 }
 
 .qr-pill-btn:hover {
-  background: rgba(16, 185, 129, 0.15) !important;
-  border-color: rgba(16, 185, 129, 0.4) !important;
-  color: #34d399 !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  border-color: rgba(255, 255, 255, 0.28) !important;
+  color: #ffffff !important;
 }
 
 .qr-pill-btn .arr {
@@ -3659,7 +3669,7 @@ body.theme-light .nf-todo-check {
 }
 
 .qr-ayah-select:hover {
-  border-color: rgba(16, 185, 129, 0.4);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .qr-ayah-select option {
@@ -3680,27 +3690,27 @@ body.theme-light .nf-todo-check {
   height: 32px !important;
   border-radius: 50% !important;
   background: rgba(255, 255, 255, 0.06) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
   cursor: pointer !important;
   display: grid !important;
   place-items: center !important;
   font-size: 11px !important;
-  color: var(--text-1) !important;
+  color: #ffffff !important;
   position: relative !important;
   transition: all 0.18s ease !important;
 }
 
 .mini-icon-btn:hover {
-  background: rgba(255, 255, 255, 0.12) !important;
-  border-color: rgba(16, 185, 129, 0.4) !important;
-  color: #34d399 !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+  border-color: rgba(255, 255, 255, 0.28) !important;
+  color: #ffffff !important;
 }
 
 .mini-icon-btn.active {
-  background: rgba(16, 185, 129, 0.22) !important;
-  border-color: #10b981 !important;
-  color: #34d399 !important;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4) !important;
+  background: rgba(255, 255, 255, 0.20) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2) !important;
 }
 
 .qr-repeat-ico {
@@ -3948,26 +3958,31 @@ body.theme-light .qr-ayah-select option {
 /* Quran Radio Mode Refinements */
 #v-media.quran-mode #m-artist {
   display: block !important;
-  color: #34d399 !important;
-  font-size: 12px !important;
-  font-weight: 600 !important;
-  margin-top: 1px !important;
+  color: rgba(255, 255, 255, 0.70) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  margin-top: 2px !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
 }
 
-#v-media.quran-mode #m-bar .fill {
-  background: #10b981 !important;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.6) !important;
-}
-
-#v-media.quran-mode #m-bar .knob {
-  border-color: #10b981 !important;
+#v-media.quran-mode #m-bar .fill,
+#v-media #m-bar .fill {
   background: #ffffff !important;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.6) !important;
+  border-radius: 999px !important;
+}
+
+#v-media.quran-mode #m-bar .knob,
+#v-media #m-bar .knob {
+  border-color: #ffffff !important;
+  background: #ffffff !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
 }
 
 #v-media.quran-mode #m-pos,
 #v-media.quran-mode #m-dur {
-  color: #34d399 !important;
-  font-weight: 600 !important;
+  color: rgba(255, 255, 255, 0.55) !important;
+  font-weight: 500 !important;
 }
 
 /* Focus Mode Layout Adjustments to ensure zero bottom clipping */
@@ -4040,33 +4055,34 @@ body.theme-black .c-meridian {
   direction: ltr !important;
 }
 
-/* Radio Button: Circular Emerald Accent Glow matching reference */
+/* Radio Button: Minimalist Apple Frosted Glass */
 .quran-radio-btn {
-  width: 38px !important;
-  height: 38px !important;
+  width: 36px !important;
+  height: 36px !important;
   border-radius: 50% !important;
-  background: rgba(16, 185, 129, 0.12) !important;
-  border: 1.5px solid #10b981 !important;
-  box-shadow: 0 0 14px rgba(16, 185, 129, 0.4) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
   display: grid !important;
   place-items: center !important;
   cursor: pointer !important;
-  color: #34d399 !important;
+  color: #ffffff !important;
   transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
   padding: 0 !important;
 }
 
 .quran-radio-btn:hover {
-  transform: scale(1.08) !important;
-  background: rgba(16, 185, 129, 0.22) !important;
-  box-shadow: 0 0 18px rgba(16, 185, 129, 0.65) !important;
-  color: #6ee7b7 !important;
+  transform: scale(1.06) !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
 }
 
 .quran-radio-btn.active {
-  background: rgba(16, 185, 129, 0.26) !important;
-  border-color: #10b981 !important;
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.75) !important;
+  background: rgba(255, 255, 255, 0.22) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.30) !important;
+  color: #ffffff !important;
 }
 
 /* Vertical Separator Line between transport and extra tools */
@@ -4154,21 +4170,25 @@ body.theme-light .qr-transport-divider {
   letter-spacing: -0.2px !important;
 }
 
-/* Volume Slider in Quran Mode: Pure Emerald Track & Crisp White Thumb Knob */
-#v-media.quran-mode #vol-slider .fill {
-  background: #10b981 !important;
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5) !important;
+/* Volume Slider in Quran Mode: Pure Apple White Track & Knob */
+#v-media.quran-mode #vol-slider .fill,
+#v-media #vol-slider .fill {
+  background: #ffffff !important;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.5) !important;
+  border-radius: 999px !important;
 }
 
-#v-media.quran-mode #vol-slider .knob {
+#v-media.quran-mode #vol-slider .knob,
+#v-media #vol-slider .knob {
   background: #ffffff !important;
-  border: 2px solid #10b981 !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.8) !important;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
 }
 
-#v-media.quran-mode .vol-pct {
-  color: #34d399 !important;
-  font-weight: 700 !important;
+#v-media.quran-mode .vol-pct,
+#v-media .vol-pct {
+  color: rgba(255, 255, 255, 0.65) !important;
+  font-weight: 600 !important;
 }
 
 /* SVG Inline Pills Styling */
@@ -4997,15 +5017,16 @@ body.size-l .dua-hero-card.font-large #pr-daily-text {
   overflow-y: auto !important;
 }
 
-/* 8. Exact Reference Polish: Prayer Muezzin Pill, Gear Accent, Quran Radio Pills & Repeat Badge */
+/* 8. Apple Liquid Glass Polish: Frosted Monochrome Topbar Gear, Muezzin Pill, and Quran Radio Pills */
 .topbar-gear-btn {
-  background: rgba(245, 158, 11, 0.14) !important;
-  border: 1px solid rgba(245, 158, 11, 0.36) !important;
-  color: #fbbf24 !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  color: #ffffff !important;
 }
 .topbar-gear-btn:hover {
-  background: rgba(245, 158, 11, 0.24) !important;
-  color: #fde68a !important;
+  background: rgba(255, 255, 255, 0.18) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.28) !important;
 }
 
 .pr-bell-btn {
@@ -5014,25 +5035,25 @@ body.size-l .dua-hero-card.font-large #pr-daily-text {
   height: 22px !important;
   padding: 0 8px !important;
   gap: 5px !important;
-  border-radius: 7px !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
+  color: #ffffff !important;
 }
 .pr-muezzin-lbl {
-  font-size: 10.5px !important;
-  font-weight: 700 !important;
-  color: #34d399 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: rgba(255, 255, 255, 0.85) !important;
   white-space: nowrap !important;
 }
 
-.qr-pill-btn.qr-pill-gold span {
-  color: #fbbf24 !important;
-  font-weight: 700 !important;
-}
+.qr-pill-btn.qr-pill-gold span,
 .qr-pill-btn.qr-pill-emerald span {
-  color: #34d399 !important;
-  font-weight: 700 !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
 }
 
 #qr-btn-repeat {
@@ -5059,10 +5080,10 @@ body.size-l .dua-hero-card.font-large #pr-daily-text {
 }
 
 #v-media.quran-mode .art-wrap {
-  padding: 7px !important;
-  border-radius: 26px !important;
-  background: radial-gradient(circle at 30% 20%, rgba(180, 130, 60, 0.18), rgba(14, 18, 22, 0.96)) !important;
-  border: 1px solid rgba(52, 211, 153, 0.28) !important;
+  padding: 0 !important;
+  border-radius: 24px !important;
+  background: transparent !important;
+  border: none !important;
 }
 #qr-art-badge {
   display: flex !important;

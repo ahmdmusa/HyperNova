@@ -6,9 +6,9 @@
   const bar = $('.rm-time b');
   const KIND_NAME = { ayah: 'آية', dhikr: 'ذكر', dua: 'دعاء' };
   const KIND_FEATURE = { ayah: 'remindAyah', dhikr: 'remindDhikr', dua: 'remindDua' };
-  const WIDTH = 500;
+  const WIDTH = 520;
   const V_WIDTH = 340; // docked to a side edge
-  const MAX_H = 270;
+  const MAX_H = 340;
 
   const everyMs = () => {
     const rate = state.features.tasbeehPerHour;
@@ -131,12 +131,12 @@
   // companion cards bring their own (escaped) HTML and use the UI font
   const content = (item) => item.html ?? words(item);
   function fit(item) {
+    const w = anchor.vertical ? V_WIDTH : WIDTH;
     if (item.html != null) {
-      const w = anchor.vertical ? V_WIDTH : WIDTH;
       measure.classList.add('ui');
-      measure.style.width = `${w - 44}px`;
+      measure.style.width = `${w - 56}px`;
       measure.innerHTML = item.html;
-      const h = Math.min(MAX_H, Math.ceil(measure.scrollHeight) + 82);
+      const h = Math.min(MAX_H, Math.max(145, Math.ceil(measure.scrollHeight) + 98));
       measure.classList.remove('ui');
       state.reminderSize = [w, h];
       island.style.setProperty('--rw', `${w}px`);
@@ -147,13 +147,15 @@
     const mainOnly = (item.text || '').replace(/\(([^)]+)\)/g, '').trim();
     const len = (mainOnly || item.text).replace(/[ً-ٰٟۖ-ۭ]/g, '').length;
     const fs = len <= 40 ? 30 : len <= 80 ? 26 : 23;
-    const w = anchor.vertical ? V_WIDTH : WIDTH;
     layer.style.setProperty('--rm-fs', `${fs}px`);
     measure.style.setProperty('--rm-fs', `${fs}px`);
-    measure.style.width = `${w - 44}px`;
+    measure.style.width = `${w - 56}px`;
     measure.innerHTML = words(item);
-    // padding 12 + head 24 + gaps 12 + ref 16 + bottom 16
-    const h = Math.min(MAX_H, Math.ceil(measure.scrollHeight) + 82);
+    // Dynamic height calculation:
+    // padding top 18 + head 26 + gaps 12 + measured text + ref margin/height + padding bottom 26 + countdown bar 10
+    const refLen = (item.ref || '').length;
+    const refH = refLen > 45 ? 44 : refLen > 0 ? 28 : 0;
+    const h = Math.min(MAX_H, Math.max(145, Math.ceil(measure.scrollHeight) + 98 + refH));
     state.reminderSize = [w, h];
     island.style.setProperty('--rw', `${w}px`);
     island.style.setProperty('--rh', `${h}px`);

@@ -910,8 +910,8 @@
             .join('')}
         </select>
       </div>` : `
-      <div class="qr-pill-btn qr-pill-live" title="البث المباشر نشط على مدار الساعة" style="cursor:default; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; font-weight: 600;">
-        <span class="qr-live-dot" style="display:inline-block; width:7px; height:7px; border-radius:50%; background:#10b981; box-shadow:0 0 8px #10b981; margin-left:6px;"></span>
+      <div class="qr-pill-btn qr-pill-live" title="البث المباشر نشط على مدار الساعة" style="cursor:default;">
+        <span class="qr-live-dot"></span>
         <span>بث مباشر 24 ساعة</span>
       </div>`}
       <button type="button" id="qr-btn-fav" class="qr-fav-btn ${isFav ? 'active' : ''}" title="${isFav ? 'إزالة من المفضلة' : 'إضافة للمفضلة'}" aria-label="المفضلة">

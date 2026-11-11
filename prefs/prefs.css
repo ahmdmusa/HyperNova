@@ -415,9 +415,11 @@ input { font: inherit; color: inherit; }
 }
 
 .card {
-  background: var(--panel);
-  border-radius: 12px;
-  border: 1px solid var(--stroke);
+  background: rgba(255, 255, 255, 0.04) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  border-radius: 14px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.20) !important;
   overflow: hidden;
 }
 
@@ -463,7 +465,7 @@ input { font: inherit; color: inherit; }
   box-shadow: 0 2px 4px rgba(0, 0, 0, .3);
   transition: transform .2s var(--ease);
 }
-.sw:checked { background: var(--accent); }
+.sw:checked { background: #34c759 !important; box-shadow: 0 0 10px rgba(52, 199, 89, 0.4) !important; }
 .sw:checked::before { transform: translateX(18px); }
 
 .seg {
