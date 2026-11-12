@@ -245,7 +245,7 @@
     const s = Math.max(0, Math.floor(ms / 1000));
     const h = Math.floor(s / 3600);
     const m = Math.floor((s % 3600) / 60);
-    return h ? `${h}:${pad(m)}:${pad(s % 60)}` : `${m}:${pad(s % 60)}`;
+    return `${pad(h)}:${pad(m)}:${pad(s % 60)}`;
   };
   const shortLeft = (ms) => {
     const m = Math.max(0, Math.ceil(ms / 60000));
@@ -437,7 +437,7 @@
     if (next) {
       const ms = next.time - now;
       const elPrCount = $('#pr-count');
-      if (elPrCount) elPrCount.textContent = `\u200E-${left(ms)}`;
+      if (elPrCount) elPrCount.textContent = left(ms);
       const lbl = document.getElementById('nextPrayerNameLabel');
       if (lbl) lbl.textContent = NAMES[next.key] || next.key;
       const isAr = (window.state?.features?.appLang || 'ar') === 'ar';

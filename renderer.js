@@ -486,6 +486,9 @@ function selectTab(tab) {
     b.setAttribute('aria-selected', on);
   });
   $$('.view').forEach((v) => v.classList.toggle('active', v.id === `v-${tab}`));
+  placeSegThumb();
+  setTimeout(placeSegThumb, 50);
+  setTimeout(placeSegThumb, 150);
   window.dispatchEvent(new CustomEvent('island:tab', { detail: { tab } }));
 }
 
@@ -509,7 +512,7 @@ function tickClock() {
   let hijriStr = '';
   try {
     if (isAr) {
-      // In Arabic, format clearly with modern numerals: "2 جمادى الآخرة 1448 هـ"
+      // In Arabic, format clearly with modern numerals: "2 جمادى الآخرة 1448 هـ" (Day first strictly)
       const f = new Intl.DateTimeFormat('ar-u-ca-islamic-umalqura-nu-latn', {
         day: 'numeric',
         month: 'long',
@@ -517,14 +520,16 @@ function tickClock() {
       }).format(hijriDate);
       hijriStr = f.includes('هـ') ? f : `${f} هـ`;
     } else {
-      hijriStr = new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', {
+      // In English, format day first: "2 Jumada II 1448 AH"
+      hijriStr = new Intl.DateTimeFormat('en-GB-u-ca-islamic-umalqura', {
         day: 'numeric',
         month: 'long',
         year: 'numeric'
       }).format(hijriDate);
+      if (!hijriStr.includes('AH')) hijriStr = `${hijriStr} AH`;
     }
   } catch {
-    hijriStr = isAr ? '2 جمادى الآخرة 1448 هـ' : '2 Jumada al-Akhirah 1448 AH';
+    hijriStr = isAr ? '2 جمادى الآخرة 1448 هـ' : '2 Jumada II 1448 AH';
   }
 
   // 3. Gregorian Date matching selected language (e.g. الخميس، 12 نوفمبر 2026 / Thursday, Nov 12, 2026)
@@ -538,9 +543,15 @@ function tickClock() {
     xClock.innerHTML = `<span id="x-clock-time" class="c-digits">${hour12}:${minutes}</span><span id="x-clock-ampm" class="c-meridian">${ampm}</span>`;
   }
   const xHijri = $('#x-hijri');
-  if (xHijri) xHijri.textContent = hijriStr;
+  if (xHijri) {
+    xHijri.dir = isAr ? 'rtl' : 'ltr';
+    xHijri.innerHTML = `<bdi>${hijriStr}</bdi>`;
+  }
   const xDate = $('#x-date');
-  if (xDate) xDate.textContent = gregStr;
+  if (xDate) {
+    xDate.dir = isAr ? 'rtl' : 'ltr';
+    xDate.innerHTML = `<bdi>${gregStr}</bdi>`;
+  }
 
   const clockCard = $('#clock-card');
   if (clockCard) {

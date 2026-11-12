@@ -5040,8 +5040,9 @@ body.size-l .dua-hero-card.font-large #pr-daily-text {
   max-height: 132px !important;
 }
 #v-focus .nf-todo-list-scroll {
-  max-height: 75px !important;
-  min-height: 52px !important;
+  flex: 1 1 auto !important;
+  max-height: 120px !important;
+  min-height: 60px !important;
   overflow-y: auto !important;
 }
 
@@ -5116,15 +5117,18 @@ body.size-l .dua-hero-card.font-large #pr-daily-text {
 #qr-art-badge {
   display: flex !important;
   align-items: center !important;
-  justify-content: space-between !important;
-  gap: 8px !important;
+  justify-content: center !important;
+  gap: 5px !important;
   background: rgba(11, 13, 17, 0.94) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
   border-radius: 999px !important;
-  padding: 3px 10px !important;
-  bottom: 8px !important;
-  left: 8px !important;
-  right: 8px !important;
+  padding: 2px 6px !important;
+  bottom: 6px !important;
+  left: 4px !important;
+  right: 4px !important;
+  font-size: 10px !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
 }
 .qr-art-surah {
   color: #fbbf24 !important;
@@ -6279,12 +6283,38 @@ body.theme-light .qr-pill-btn {
   color: #1d1d1f !important;
 }
 html[data-theme="light"] .qr-pill-btn span,
-body.theme-light .qr-pill-btn span,
+body.theme-light .qr-pill-btn span {
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .qr-pill-btn.qr-pill-gold,
+body.theme-light .qr-pill-btn.qr-pill-gold {
+  background: rgba(245, 158, 11, 0.12) !important;
+  border: 1px solid rgba(245, 158, 11, 0.30) !important;
+  color: #92400e !important;
+}
 html[data-theme="light"] .qr-pill-btn.qr-pill-gold span,
-body.theme-light .qr-pill-btn.qr-pill-gold span,
+body.theme-light .qr-pill-btn.qr-pill-gold span {
+  color: #92400e !important;
+  font-weight: 600 !important;
+}
+html[data-theme="light"] .qr-pill-btn.qr-pill-gold svg,
+body.theme-light .qr-pill-btn.qr-pill-gold svg {
+  stroke: #92400e !important;
+}
+html[data-theme="light"] .qr-pill-btn.qr-pill-emerald,
+body.theme-light .qr-pill-btn.qr-pill-emerald {
+  background: rgba(16, 185, 129, 0.12) !important;
+  border: 1px solid rgba(16, 185, 129, 0.30) !important;
+  color: #065f46 !important;
+}
 html[data-theme="light"] .qr-pill-btn.qr-pill-emerald span,
 body.theme-light .qr-pill-btn.qr-pill-emerald span {
-  color: #1d1d1f !important;
+  color: #065f46 !important;
+  font-weight: 600 !important;
+}
+html[data-theme="light"] .qr-pill-btn.qr-pill-emerald svg,
+body.theme-light .qr-pill-btn.qr-pill-emerald svg {
+  stroke: #065f46 !important;
 }
 html[data-theme="light"] .qr-pill-btn:hover,
 body.theme-light .qr-pill-btn:hover {
@@ -6292,9 +6322,14 @@ body.theme-light .qr-pill-btn:hover {
 }
 html[data-theme="light"] .qr-pill-live,
 body.theme-light .qr-pill-live {
-  background: rgba(0, 0, 0, 0.05) !important;
-  border: 1px solid rgba(0, 0, 0, 0.10) !important;
-  color: #1d1d1f !important;
+  background: rgba(2, 132, 199, 0.10) !important;
+  border: 1px solid rgba(2, 132, 199, 0.25) !important;
+  color: #0369a1 !important;
+}
+html[data-theme="light"] .qr-pill-live span,
+body.theme-light .qr-pill-live span {
+  color: #0369a1 !important;
+  font-weight: 600 !important;
 }
 html[data-theme="light"] .qr-pill-live .qr-live-dot,
 body.theme-light .qr-pill-live .qr-live-dot {
@@ -6324,11 +6359,28 @@ body.theme-light .qr-fav-btn.active {
   color: #d97706 !important;
   border-color: rgba(245, 158, 11, 0.3) !important;
 }
+html[data-theme="light"] #qr-art-badge,
 html[data-theme="light"] .qr-art-badge,
+body.theme-light #qr-art-badge,
 body.theme-light .qr-art-badge {
-  background: rgba(255, 255, 255, 0.90) !important;
-  border: 1px solid rgba(0, 0, 0, 0.10) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
   color: #1d1d1f !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12) !important;
+}
+html[data-theme="light"] .qr-art-surah,
+body.theme-light .qr-art-surah {
+  color: #b45309 !important;
+}
+html[data-theme="light"] .qr-art-count,
+body.theme-light .qr-art-count {
+  color: #047857 !important;
+}
+
+/* BiDi Isolation for dimensions */
+.size-dims {
+  direction: ltr !important;
+  unicode-bidi: isolate !important;
 }
 
 /* 4. Reminder Card in Light Mode */

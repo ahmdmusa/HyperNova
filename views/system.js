@@ -75,6 +75,11 @@
       const txEl = $('#net-tx');
       if (rxEl) rxEl.textContent = `↓ ${s.net.rxStr || '0 Kbps'}`;
       if (txEl) txEl.textContent = `↑ ${s.net.txStr || '0 Kbps'}`;
+      const netVal = $('#net-val');
+      if (netVal && (netVal.textContent === 'غير متصل' || netVal.textContent === 'Offline' || netVal.textContent === '…')) {
+        const isAr = (window.state?.features?.appLang || 'ar') === 'ar';
+        netVal.textContent = isAr ? 'متصل' : 'Connected';
+      }
     }
   });
 
