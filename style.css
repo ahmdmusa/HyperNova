@@ -6843,5 +6843,79 @@ body.theme-light.solid-opaque #island.reminder .clip {
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14), inset 0 0 0 1px rgba(0, 0, 0, 0.10) !important;
 }
 
+/* ==========================================================================
+   ISLAND STYLE MODES: INLINE / LINE & NOTCH MODES (Windsland & Apple HIG)
+   ========================================================================== */
+body.style-line #island.idle {
+  --w: 140px !important;
+  --h: 5px !important;
+  --r: 99px !important;
+  top: 0 !important;
+}
+
+body.style-line #island.idle::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -24px;
+  right: -24px;
+  height: 28px;
+  background: transparent;
+  cursor: pointer;
+  z-index: 10;
+}
+
+body.style-line #island.idle .clip {
+  background: var(--theme-accent, #38bdf8) !important;
+  box-shadow: 0 0 14px var(--theme-accent, #38bdf8), 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+  opacity: 0.9 !important;
+  border-radius: 99px !important;
+  cursor: pointer !important;
+  transition: all 0.35s var(--spring) !important;
+}
+
+body.style-line #island.idle:hover .clip {
+  transform: scaleY(1.8) scaleX(1.1) !important;
+  box-shadow: 0 0 22px var(--theme-accent, #38bdf8), 0 2px 8px rgba(0, 0, 0, 0.6) !important;
+}
+
+body.style-line #island.idle .layer {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+/* Pulsating reactive glow when audio / quran radio is playing in line mode */
+body.style-line #island.idle.playing .clip {
+  background: linear-gradient(90deg, #10b981, var(--theme-accent, #38bdf8), #fbbf24) !important;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.85), 0 0 10px rgba(16, 185, 129, 0.6) !important;
+  animation: lineMusicPulse 1.6s ease-in-out infinite alternate !important;
+}
+
+@keyframes lineMusicPulse {
+  0% { transform: scaleX(0.85); opacity: 0.75; }
+  100% { transform: scaleX(1.15); opacity: 1; }
+}
+
+/* NOTCH STYLE */
+body.style-notch #island {
+  top: 0 !important;
+}
+body.style-notch #island.idle,
+body.style-notch #island.compact,
+body.style-notch #island.expanded {
+  --tl: 0px !important;
+  --tr: 0px !important;
+  --bl: 24px !important;
+  --br: 24px !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+}
+body.style-notch #island .clip {
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+}
+
+
 
 

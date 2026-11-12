@@ -331,6 +331,12 @@ function positionIsland() {
     const currentSize = state.features?.islandSize || 'm';
     w = currentSize === 's' ? 100 : currentSize === 'l' ? 124 : 112;
   }
+  const currentIslandStyle = state.features?.islandStyle || 'pill';
+  if (lastMode === 'idle' && !anchor.vertical && !anchor.addr) {
+    if (currentIslandStyle === 'line') {
+      [w, h] = [140, 5];
+    }
+  }
   if (lastMode === 'compact' && !anchor.vertical && island.classList.contains('c-wide')) w = COMPACT_WIDE;
   if (lastMode === 'reminder') [w, h] = state.reminderSize;
   if (lastMode === 'focus') {
@@ -366,6 +372,9 @@ function positionIsland() {
   } else {
     x = clamp(anchor.x - w / 2, 4, W - w - 4);
     y = anchor.docked ? 0 : clamp(anchor.y, 0, H - h - 6);
+    if (currentIslandStyle === 'notch' || (currentIslandStyle === 'line' && lastMode === 'idle')) {
+      y = 0;
+    }
   }
   island.style.setProperty('--x', `${Math.round(x)}px`);
   island.style.setProperty('--y', `${Math.round(y)}px`);
@@ -1363,6 +1372,12 @@ function applyFeatures(f) {
   document.body.classList.toggle('size-m', currentSize === 'm');
   document.body.classList.toggle('size-l', currentSize === 'l');
   document.documentElement.setAttribute('data-size', currentSize);
+
+  const currentStyle = state.features.islandStyle || 'pill';
+  document.body.classList.toggle('style-pill', currentStyle === 'pill');
+  document.body.classList.toggle('style-line', currentStyle === 'line');
+  document.body.classList.toggle('style-notch', currentStyle === 'notch');
+  document.documentElement.setAttribute('data-style', currentStyle);
 
   const island = document.getElementById('island');
   if (island) {

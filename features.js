@@ -87,6 +87,7 @@ const DEFAULTS = {
   aiModel: 'flash',
   islandTheme: 'dark',
   islandSize: 'm',
+  islandStyle: 'pill', // 'pill' = floating pill, 'line' = ultra-thin inline bar, 'notch' = bezel notch
   glassOpacity: 78,
   skipTaskbar: true,
 };
@@ -117,6 +118,8 @@ function pick(obj) {
       if (v === 's' || v === 'm' || v === 'l') out[k] = v;
     } else if (k === 'islandTheme') {
       if (v === 'dark' || v === 'light' || v === 'black') out[k] = v;
+    } else if (k === 'islandStyle') {
+      if (v === 'pill' || v === 'line' || v === 'notch') out[k] = v;
     } else if (k === 'glassOpacity') {
       if (Number.isFinite(v)) out[k] = Math.min(Math.max(Math.round(v), 0), 120);
     } else if (k === 'skipTaskbar') {

@@ -823,6 +823,29 @@ function appMenu() {
       click: (item) => { userHidden = !item.checked; updateVisibility(); notifyGeneral(); },
     },
     {
+      label: isAr ? 'نمط الجزيرة (Style)' : 'Island Style',
+      submenu: [
+        {
+          label: isAr ? 'كبسولة عائمة (Pill)' : 'Floating Pill',
+          type: 'radio',
+          checked: (features.get().islandStyle || 'pill') === 'pill',
+          click: () => features.set({ islandStyle: 'pill' }),
+        },
+        {
+          label: isAr ? 'خط رفيع مدمج (Line / Inline)' : 'Inline Bar (Line)',
+          type: 'radio',
+          checked: features.get().islandStyle === 'line',
+          click: () => features.set({ islandStyle: 'line' }),
+        },
+        {
+          label: isAr ? 'نوتش علوي (Notch)' : 'Top Notch',
+          type: 'radio',
+          checked: features.get().islandStyle === 'notch',
+          click: () => features.set({ islandStyle: 'notch' }),
+        },
+      ],
+    },
+    {
       label: isAr ? 'الوضع الرأسي (تثبيت جانبي)' : 'Vertical (dock left / right)',
       type: 'checkbox',
       checked: prefs.vertical,

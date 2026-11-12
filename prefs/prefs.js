@@ -39,6 +39,13 @@ const I18N = {
     about_spec_arch_sub: 'Electron · Native C# Helper · Web Audio API · EveryAyah & MP3Quran',
     about_spec_arch_val: 'Windows Desktop',
     nav_island: 'الجزيرة',
+    island_style_title: 'نمط العرض والسكون (Island Style)',
+    style_pill: 'كبسولة عائمة (Pill)',
+    style_pill_desc: 'النمط الكلاسيكي البيضاوي العائم أعلى الشاشة',
+    style_line: 'شريط خط رفيع (Inline)',
+    style_line_desc: 'خط ليزري مدمج أعلى الشاشة يفتح بسلاسة عند التمرير',
+    style_notch: 'نوتش علوي (Notch)',
+    style_notch_desc: 'ملتصق بالحافة العلوية كلياً مثل شاشات ماك بوك',
     island_size_title: 'حجم الجزيرة التفاعلية',
     size_s: 'صغير (Compact)',
     size_s_desc: 'خفيف ومضغوط للمساحات الصغيرة',
@@ -285,6 +292,13 @@ const I18N = {
     about_spec_arch_sub: 'Electron · Native C# Helper · Web Audio API · EveryAyah & MP3Quran',
     about_spec_arch_val: 'Windows Desktop',
     nav_island: 'Island',
+    island_style_title: 'Idle Display Style',
+    style_pill: 'Floating Pill',
+    style_pill_desc: 'Classic floating oval island at top of screen',
+    style_line: 'Inline Bar (Line)',
+    style_line_desc: 'Ultra-thin sleek line at top edge, springs open on hover',
+    style_notch: 'Top Notch',
+    style_notch_desc: 'Hangs flush from top display bezel like MacBook',
     island_size_title: 'Dynamic Island Size',
     size_s: 'Compact (Small)',
     size_s_desc: 'Lightweight & minimal for compact setups',
@@ -663,6 +677,10 @@ function showFeatures(f) {
   $$('input[name="islandSize"]').forEach((r) => {
     r.checked = (r.value === currentIslandSize);
   });
+  const currentIslandStyle = features.islandStyle || 'pill';
+  $$('input[name="islandStyle"]').forEach((r) => {
+    r.checked = (r.value === currentIslandStyle);
+  });
   $$('[data-feature]').forEach((el) => {
     if (el.tagName === 'SELECT') {
       if (features[el.dataset.feature]) el.value = features[el.dataset.feature];
@@ -825,6 +843,16 @@ $$('input[name="islandSize"]').forEach((r) => {
     if (r.checked) {
       api.setFeatures({ islandSize: r.value });
       saved(currentLang === 'ar' ? 'تم تحديث حجم الجزيرة' : 'Island Size Updated');
+    }
+  });
+});
+
+// Island Style selection (Pill vs Line/Inline vs Notch)
+$$('input[name="islandStyle"]').forEach((r) => {
+  r.addEventListener('change', () => {
+    if (r.checked) {
+      api.setFeatures({ islandStyle: r.value });
+      saved(currentLang === 'ar' ? 'تم تحديث نمط الجزيرة' : 'Island Style Updated');
     }
   });
 });
