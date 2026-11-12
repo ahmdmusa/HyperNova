@@ -776,6 +776,18 @@
     if (radioToggleBtn) {
       radioToggleBtn.classList.toggle('active', state.isRadioMode);
     }
+    const stopRadioBtn = document.getElementById('qr-btn-stop-radio');
+    if (stopRadioBtn) {
+      stopRadioBtn.style.display = state.isRadioMode ? 'inline-flex' : 'none';
+      stopRadioBtn.onclick = (e) => {
+        e.stopPropagation();
+        state.isRadioMode = false;
+        pauseAudio();
+        saveState();
+        updateUI();
+        if (typeof render === 'function') render();
+      };
+    }
 
     if (!state.isRadioMode) {
       vMedia.classList.remove('quran-mode');

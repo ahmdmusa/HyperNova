@@ -1421,3 +1421,21 @@ if (btnClearCache) {
   });
 }
 refreshCacheSizeDisplay();
+
+
+// Escape key closes settings window
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    window.close();
+  }
+});
+
+// Nova Studio test buttons
+document.querySelectorAll('.nova-test-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const st = btn.dataset.st;
+    document.querySelectorAll('.nova-test-btn').forEach((b) => b.classList.remove('active'));
+    btn.classList.add('active');
+    saved(currentLang === 'ar' ? `تم تفعيل: ${btn.textContent}` : `Applied: ${btn.textContent}`);
+  });
+});

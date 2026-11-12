@@ -74,14 +74,109 @@
         <div class="sc-face"><i class="eye"><b></b></i><i class="eye"><b></b></i><i class="cheek"></i><i class="cheek"></i><i class="smile"></i></div>
       </div>
 
-      <!-- Nova: eyes in the idle pill that follow the cursor, blink and show a mood -->
+      <!-- Nova: Living Visuals & Emotional Matrix 2.0 (100% SVG Rig + Particle FX Canvas) -->
       <div class="layer l-eyes" aria-hidden="true">
+        <!-- Confetti & Floating Hearts Canvas Overlay (Zero CPU when idle) -->
+        <canvas id="fxCanvas" width="480" height="160" class="fx-canvas-overlay"></canvas>
         <div class="eyes" id="nova-face">
-          <i class="nova-headband"></i>
-          <i class="eye eye-l"><b></b></i>
-          <i class="eye eye-r"><b></b></i>
-          <i class="nova-cheek l"></i>
-          <i class="nova-cheek r"></i>
+          <!-- Main Sway Rig Group (sways on audio/Quran) -->
+          <svg id="novaNotchSvg" viewBox="0 0 240 82" class="nova-svg-rig" aria-hidden="true">
+            <defs>
+              <linearGradient id="rugGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#065f46" />
+                <stop offset="50%" stop-color="#10b981" />
+                <stop offset="100%" stop-color="#065f46" />
+              </linearGradient>
+              <linearGradient id="umbrellaGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#38bdf8" />
+                <stop offset="50%" stop-color="#818cf8" />
+                <stop offset="100%" stop-color="#c084fc" />
+              </linearGradient>
+            </defs>
+
+            <g id="robotSwayGroup">
+              <!-- PROP 1: 🕋 PRAYER TAQIYAH & RUG (Pre-Adhan) -->
+              <g id="propPrayerGroup" class="hidden">
+                <rect x="68" y="64" width="104" height="7" rx="3.5" fill="url(#rugGrad)" stroke="#facc15" stroke-width="1" />
+                <path d="M 85 64 L 92 59 L 99 64 M 141 64 L 148 59 L 155 64" stroke="#facc15" stroke-width="1.2" fill="none" />
+                <path d="M 86 21 C 86 8, 154 8, 154 21 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2" />
+                <path d="M 92 18 Q 120 13 148 18" stroke="#eab308" stroke-width="1.3" stroke-dasharray="3 2" fill="none" />
+              </g>
+
+              <!-- PROP 2: 🥋 WARRIOR HEADBAND & MINI LAPTOP (Focus) -->
+              <g id="propWarriorGroup" class="hidden">
+                <path d="M 76 18 Q 120 21 164 18 L 164 24 Q 120 27 76 24 Z" fill="#ef4444" />
+                <circle cx="120" cy="21.5" r="3.5" fill="#fde047" />
+                <path d="M 163 20 Q 178 15 184 22 Q 175 25 163 23" fill="#dc2626" />
+                <path d="M 163 23 Q 176 26 181 32 Q 171 31 163 24" fill="#b91c1c" />
+                <rect x="103" y="54" width="34" height="19" rx="3" fill="#334155" stroke="#94a3b8" stroke-width="1" />
+                <circle cx="120" cy="63.5" r="2.5" fill="#38bdf8" />
+                <rect x="97" y="72" width="46" height="3" rx="1.5" fill="#64748b" />
+              </g>
+
+              <!-- PROP 3: ☕ HOT STEAMING MUG (20-20-20 & Water) -->
+              <g id="propCoffeeGroup" class="hidden">
+                <g transform="translate(166, 34)">
+                  <path class="steam-line-1" d="M 8 -2 Q 5 -8 9 -13" stroke="#e2e8f0" stroke-width="1.6" fill="none" stroke-linecap="round" />
+                  <path class="steam-line-2" d="M 14 0 Q 17 -7 13 -12" stroke="#e2e8f0" stroke-width="1.6" fill="none" stroke-linecap="round" />
+                  <path class="steam-line-3" d="M 20 -2 Q 17 -8 21 -13" stroke="#e2e8f0" stroke-width="1.6" fill="none" stroke-linecap="round" />
+                  <path d="M 24 6 C 30 6, 30 16, 24 16" stroke="#f59e0b" stroke-width="2.5" fill="none" />
+                  <rect x="4" y="2" width="21" height="19" rx="4" fill="#f59e0b" stroke="#fef3c7" stroke-width="1.2" />
+                  <ellipse cx="14.5" cy="3" rx="9" ry="2" fill="#78350f" />
+                </g>
+              </g>
+
+              <!-- PROP 4: ☔ CUTE UMBRELLA & RAIN (Rainy Weather) -->
+              <g id="propUmbrellaGroup" class="hidden">
+                <line class="rain-1" x1="52" y1="14" x2="49" y2="22" stroke="#38bdf8" stroke-width="1.6" stroke-linecap="round" />
+                <line class="rain-2" x1="188" y1="12" x2="185" y2="20" stroke="#38bdf8" stroke-width="1.6" stroke-linecap="round" />
+                <line class="rain-3" x1="66" y1="24" x2="63" y2="32" stroke="#38bdf8" stroke-width="1.6" stroke-linecap="round" />
+                <g transform="translate(152, 4)">
+                  <path d="M 2 22 C 2 5, 42 5, 42 22 Q 32 19 22 22 Q 12 19 2 22 Z" fill="url(#umbrellaGrad)" stroke="#e0e7ff" stroke-width="1" />
+                  <path d="M 22 22 L 22 38 C 22 43, 15 43, 15 38" stroke="#fde047" stroke-width="2.2" fill="none" stroke-linecap="round" />
+                </g>
+              </g>
+
+              <!-- CHEEKS (Blushing for Petting, Celebrate, Happy) -->
+              <g id="cheeksLayer" class="hidden" opacity="0.85">
+                <ellipse cx="78" cy="52" rx="8" ry="4.5" fill="#fb7185" />
+                <ellipse cx="162" cy="52" rx="8" ry="4.5" fill="#fb7185" />
+              </g>
+
+              <!-- OPEN EYES GROUP (Glowing Sclera + Dark Pupils + Catchlights) -->
+              <g id="openEyesGroup">
+                <rect id="scleraLeft" class="sclera-glow" x="88" y="24" width="22" height="28" rx="9" fill="#ffffff" />
+                <rect id="scleraRight" class="sclera-glow" x="130" y="24" width="22" height="28" rx="9" fill="#ffffff" />
+                <circle id="pupilLeft" cx="99" cy="39" r="6.2" fill="#0b0d12" />
+                <circle id="catchlightLeft" cx="97" cy="36.5" r="1.8" fill="#ffffff" opacity="0.9" />
+                <circle id="pupilRight" cx="141" cy="39" r="6.2" fill="#0b0d12" />
+                <circle id="catchlightRight" cx="139" cy="36.5" r="1.8" fill="#ffffff" opacity="0.9" />
+
+                <!-- Sleepy Eyelids Mask -->
+                <g id="sleepyEyelidsGroup" class="hidden">
+                  <rect x="86" y="22" width="26" height="14" rx="4" fill="#151920" />
+                  <rect x="128" y="22" width="26" height="14" rx="4" fill="#151920" />
+                </g>
+
+                <!-- Warrior / Focused Eyebrows -->
+                <g id="warriorBrowsGroup" class="hidden">
+                  <path d="M 85 22 L 112 28" stroke="#151920" stroke-width="5" stroke-linecap="round" />
+                  <path d="M 155 22 L 128 28" stroke="#151920" stroke-width="5" stroke-linecap="round" />
+                </g>
+              </g>
+
+              <!-- ARC EYES GROUP (Happy / Khushu / Petting Arcs) -->
+              <g id="arcEyesGroup" class="hidden">
+                <path id="arcLeft" class="sclera-glow" d="M 89 42 Q 99 26 109 42" stroke="#ffffff" stroke-width="5" fill="none" stroke-linecap="round" />
+                <path id="arcRight" class="sclera-glow" d="M 131 42 Q 141 26 151 42" stroke="#ffffff" stroke-width="5" fill="none" stroke-linecap="round" />
+              </g>
+
+              <!-- Mouth & Yawn Shapes -->
+              <path id="robotMouth" class="hidden" d="M 114 52 Q 120 58 126 52" stroke="#ffffff" stroke-width="2.5" fill="none" stroke-linecap="round" />
+              <ellipse id="robotYawnMouth" class="hidden" cx="120" cy="54" rx="4.5" ry="6" fill="#ffffff" />
+              <text id="sleepZzzText" x="165" y="24" class="hidden font-en text-[11px] font-bold fill-sky-300">zZz</text>
+            </g>
+          </svg>
         </div>
       </div>
 
@@ -141,6 +236,25 @@
           <span id="t-value"></span>
           <div class="batt"><b></b></div>
         </div>
+      </div>
+
+      <!-- notification: Windsland / iOS style live notification replacing Windows toasts (Image reference) -->
+      <div class="layer l-notification" id="island-notification" aria-live="polite">
+        <div class="notif-avatar" id="notif-avatar">
+          <span id="notif-avatar-text">M</span>
+          <img id="notif-avatar-img" class="notif-avatar-img" alt="" style="display:none;" />
+        </div>
+        <div class="notif-body">
+          <div class="notif-header">
+            <span class="notif-app" id="notif-app">Messages</span>
+            <span class="notif-dot">•</span>
+            <span class="notif-time" id="notif-time">now</span>
+          </div>
+          <div class="notif-title" id="notif-title">Ada Okafor</div>
+          <div class="notif-msg" id="notif-msg">Are we still on for 8? I'll bring the slides.</div>
+        </div>
+        <button class="notif-x" id="notif-close" aria-label="Close" title="Close"><svg class="s" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+        <div class="notif-bar" aria-hidden="true"><b id="notif-progress-bar"></b></div>
       </div>
 
       <!-- reminder: dhikr / du'a / Qur'an, enlarged for a while -->
@@ -275,11 +389,16 @@
             </button>
           </nav>
           
-          <!-- Compact Vertical Clock & Dates Widget (Matching User Reference Image Exactly) -->
-          <div class="topbar-compact-clock-card" id="clock-card">
-            <b id="x-clock" class="c-clock" dir="ltr"><span id="x-clock-time">--:--</span> <span id="x-clock-ampm">--</span></b>
-            <span id="x-hijri" class="c-hijri">--</span>
-            <span id="x-date" class="c-greg">--</span>
+          <!-- Topbar Right Zone: Clock Card + Explicit Collapse/Close Button -->
+          <div class="topbar-right-zone">
+            <div class="topbar-compact-clock-card" id="clock-card">
+              <b id="x-clock" class="c-clock" dir="ltr"><span id="x-clock-time">--:--</span> <span id="x-clock-ampm">--</span></b>
+              <span id="x-hijri" class="c-hijri">--</span>
+              <span id="x-date" class="c-greg">--</span>
+            </div>
+            <button class="topbar-close-btn" id="btn-collapse-island" title="تصغير الجزيرة (Collapse Island)" aria-label="Collapse Island">
+              <svg class="s" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
           </div>
         </header>
 
@@ -339,6 +458,9 @@
                       <path d="M14 11h4M14 14h4M14 17h2"></path>
                     </svg>
                   </button>
+                  <button type="button" id="qr-btn-stop-radio" class="ctl quran-radio-btn qr-stop-btn" title="إيقاف راديو القرآن وإغلاقه (Stop Radio)" aria-label="Stop Radio" style="display:none; color:#f87171;">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="2.5"/></svg>
+                  </button>
                   <button data-cmd="prev" class="ctl" aria-label="Previous">
                     <svg viewBox="0 0 24 24"><path d="M6.5 5.5h2v13h-2zM20 6.2v11.6a.8.8 0 0 1-1.2.7l-8.6-5.8a.85.85 0 0 1 0-1.4l8.6-5.8a.8.8 0 0 1 1.2.7Z"/></svg>
                   </button>
@@ -365,6 +487,48 @@
         <!-- APPS -->
         <section id="v-apps" class="view" role="tabpanel">
           <div class="apps-wrap">
+            <!-- Modern Spotlight Search Bar for Apps (Matching Reference Image 586d5a6b.jpg) -->
+            <div class="apps-search-container">
+              <div class="apps-search-bar-wrap">
+                <svg class="apps-search-ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                <input type="text" id="apps-live-search" class="apps-live-input" placeholder="Search applications or tools... (ابحث عن تطبيق أو أداة)" spellcheck="false" autocomplete="off" />
+                <button type="button" id="apps-live-clear" class="apps-clear-btn" hidden>✕</button>
+              </div>
+            </div>
+
+            <!-- Quick Utilities & Recording Tools Section (User Request: "ركن التسجيل ضيفه ف ركن التطبيقات .. تحت مسمي tools") -->
+            <div class="apps-tools-section" id="apps-tools-section">
+              <div class="apps-tools-header">
+                <span class="apps-tools-title">🛠️ الأدوات (Tools)</span>
+                <span class="apps-tools-sub">المسجل والمساعدات السريعة</span>
+              </div>
+              <div class="apps-tools-grid">
+                <button type="button" class="tool-tile" id="tool-btn-record" title="مسجل الملاحظات والاجتماعات (Voice Recorder & Notes)">
+                  <span class="tool-ico rec-ico">🎙️</span>
+                  <span class="tool-lbl">تسجيل الملاحظات</span>
+                </button>
+                <button type="button" class="tool-tile" id="tool-btn-screenshot" title="لقطة شاشة وحفظ للمكتبة (Instant Screenshot)">
+                  <span class="tool-ico shot-ico">📸</span>
+                  <span class="tool-lbl">لقطة شاشة</span>
+                </button>
+                <button type="button" class="tool-tile" id="tool-btn-color" title="منتقي الألوان ونسخ الكود (Color Picker)">
+                  <span class="tool-ico color-ico">🎨</span>
+                  <span class="tool-lbl">منتقي الألوان</span>
+                </button>
+                <button type="button" class="tool-tile" id="tool-btn-calc" title="حاسبة سريعة (Calculator)">
+                  <span class="tool-ico calc-ico">🧮</span>
+                  <span class="tool-lbl">الحاسبة</span>
+                </button>
+                <button type="button" class="tool-tile" id="tool-btn-terminal" title="موجه الأوامر (Command Prompt / Terminal)">
+                  <span class="tool-ico term-ico">💻</span>
+                  <span class="tool-lbl">الطرفية</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Live Search Results Grid (when searching) -->
+            <div id="apps-search-results" class="apps-search-results" hidden></div>
+
             <div class="apps-bar">
               <span id="apps-hint" class="sub">Click to open</span>
               <div class="apps-actions">

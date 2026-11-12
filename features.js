@@ -90,6 +90,9 @@ const DEFAULTS = {
   islandStyle: 'pill', // 'pill' = floating pill, 'line' = ultra-thin inline bar, 'notch' = bezel notch
   glassOpacity: 78,
   skipTaskbar: true,
+  audioSway: true,
+  smartProps: true,
+  islandNotifications: true,
 };
 
 // number settings and their allowed range

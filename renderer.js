@@ -1420,7 +1420,85 @@ function applyFeatures(f) {
 bridge.onFeatures(applyFeatures);
 bridge.onVisibility((v) => { state.visible = !!v; });
 bridge.features().then(applyFeatures);
-$('#open-settings').addEventListener('click', () => bridge.openSettings());
+$('#open-settings').addEventListener('click', () => {
+  window.collapseIsland();
+  bridge.openSettings();
+});
+
+// Explicit topbar collapse / close button
+$('#btn-collapse-island')?.addEventListener('click', (e) => {
+  e.stopPropagation();
+  window.collapseIsland();
+});
+
+// Auto-collapse island when clicking outside or losing focus so it never blocks other windows
+window.addEventListener('blur', () => {
+  if (!state.pinned && !state.focusMode) {
+    window.collapseIsland();
+  }
+});
+
+// Windsland / iOS style live notification banner
+let notifTimer = null;
+let notifEndTime = 0;
+let notifTotalMs = 0;
+window.showIslandNotification = (n) => {
+  const notifEl = document.getElementById('island-notification');
+  if (!notifEl) return;
+  const appEl = document.getElementById('notif-app');
+  const timeEl = document.getElementById('notif-time');
+  const titleEl = document.getElementById('notif-title');
+  const msgEl = document.getElementById('notif-msg');
+  const avatarText = document.getElementById('notif-avatar-text');
+  const avatarImg = document.getElementById('notif-avatar-img');
+  const bar = document.getElementById('notif-progress-bar');
+
+  if (appEl) appEl.textContent = n.app || 'Messages';
+  if (timeEl) timeEl.textContent = n.time || 'now';
+  if (titleEl) titleEl.textContent = n.title || '';
+  if (msgEl) msgEl.textContent = n.message || '';
+  if (avatarText) avatarText.textContent = (n.app || 'M')[0].toUpperCase();
+  if (avatarImg && n.icon && n.icon.startsWith('http')) {
+    avatarImg.src = n.icon;
+    avatarImg.style.display = 'block';
+    if (avatarText) avatarText.style.display = 'none';
+  }
+
+  notifTotalMs = n.ms || 6000;
+  notifEndTime = Date.now() + notifTotalMs;
+  state.notificationActive = true;
+  island.classList.add('notification');
+  render();
+  positionIsland();
+
+  clearInterval(notifTimer);
+  notifTimer = setInterval(() => {
+    const remaining = notifEndTime - Date.now();
+    if (bar) bar.style.width = `${Math.max(0, (remaining / notifTotalMs) * 100)}%`;
+    if (remaining <= 0) {
+      window.closeIslandNotification();
+    }
+  }, 100);
+
+  window.setNovaState?.('surprised', 1500);
+  window.audioHaptics?.playCrystalChime?.(0.18);
+};
+
+window.closeIslandNotification = () => {
+  clearInterval(notifTimer);
+  state.notificationActive = false;
+  island.classList.remove('notification');
+  render();
+  positionIsland();
+};
+
+document.getElementById('notif-close')?.addEventListener('click', (e) => {
+  e.stopPropagation();
+  window.closeIslandNotification();
+});
+document.getElementById('island-notification')?.addEventListener('mouseenter', () => {
+  notifEndTime = Date.now() + notifTotalMs; // pause countdown while hovered
+});
 
 selectTab('media');
 drawTimer();
@@ -1462,6 +1540,10 @@ window.closeQuranPopovers = () => {
   document.getElementById('qr-popover-surahs')?.remove();
 };
 window.closeActivePopup = () => {
+  if (state.notificationActive) {
+    window.closeIslandNotification();
+    return true;
+  }
   if (document.getElementById('qr-popover-reciters') || document.getElementById('qr-popover-surahs')) {
     window.closeQuranPopovers();
     return true;

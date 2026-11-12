@@ -300,4 +300,109 @@
   };
   bridge.onApps(apply);
   if (bridge.apps?.list) bridge.apps.list().then(apply);
+
+  // ---------- Modern Live Spotlight Search (Image 586d5a6b.jpg reference) ----------
+  const liveSearch = $('#apps-live-search');
+  const liveClear = $('#apps-live-clear');
+  const searchResults = $('#apps-search-results');
+  const toolsSection = $('#apps-tools-section');
+
+  async function ensureCatalog() {
+    if (!catalog && bridge.apps?.all) {
+      catalog = await bridge.apps.all();
+    }
+    return catalog || [];
+  }
+
+  async function onLiveSearch() {
+    const q = (liveSearch?.value || '').trim().toLowerCase();
+    if (!liveSearch) return;
+    liveClear.hidden = !q;
+
+    if (!q) {
+      searchResults.hidden = true;
+      searchResults.innerHTML = '';
+      toolsSection.hidden = false;
+      grid.hidden = false;
+      return;
+    }
+
+    toolsSection.hidden = true;
+    grid.hidden = true;
+    searchResults.hidden = false;
+
+    const allApps = await ensureCatalog();
+    const matched = allApps.filter((a) => a.name.toLowerCase().includes(q)).slice(0, 30);
+    const ar = isAr();
+
+    searchResults.innerHTML = '';
+    if (!matched.length) {
+      searchResults.innerHTML = `<div class="apps-empty">${ar ? 'لا توجد نتائج مطابقة' : 'No matching applications found'}</div>`;
+      return;
+    }
+
+    matched.forEach((a) => {
+      const item = document.createElement('div');
+      item.className = 'live-app-item';
+      item.innerHTML = `
+        <span class="live-app-ico"></span>
+        <div class="live-app-info">
+          <div class="live-app-name">${esc(a.name)}</div>
+          <div class="live-app-sub">${ar ? 'تطبيق نظام' : 'Application'}</div>
+        </div>
+        <span class="live-app-arrow">→</span>
+      `;
+      const icoSpan = item.querySelector('.live-app-ico');
+      if (a.icon) {
+        const img = document.createElement('img');
+        img.src = a.icon;
+        img.alt = '';
+        img.onerror = () => applyFallback(icoSpan, a.name);
+        icoSpan.appendChild(img);
+      } else {
+        applyFallback(icoSpan, a.name);
+      }
+
+      item.addEventListener('click', () => {
+        bridge.apps.launch(a.id);
+        liveSearch.value = '';
+        onLiveSearch();
+        window.collapseIsland?.();
+      });
+      searchResults.appendChild(item);
+    });
+  }
+
+  liveSearch?.addEventListener('input', onLiveSearch);
+  liveSearch?.addEventListener('pointerdown', () => {
+    bridge.focusInput(true);
+    setTimeout(() => liveSearch.focus(), 60);
+  });
+  liveClear?.addEventListener('click', () => {
+    liveSearch.value = '';
+    onLiveSearch();
+    liveSearch.focus();
+  });
+
+  // ---------- Quick Tools (User Request: "ركن التسجيل ضيفه ف ركن التطبيقات .. تحت مسمي tools") ----------
+  $('#tool-btn-record')?.addEventListener('click', () => {
+    if (window.notchMeetings) {
+      window.notchMeetings.start('تسجيل ملاحظات سريع');
+      window.notchMeetings.toggleDrawer(true);
+    }
+  });
+  $('#tool-btn-screenshot')?.addEventListener('click', () => {
+    bridge.shotToShelf?.();
+  });
+  $('#tool-btn-color')?.addEventListener('click', () => {
+    if (typeof window.showToast === 'function') {
+      window.showToast('clip', '🎨 منتقي الألوان', 'انسخ كود أي لون HEX/RGB من الحافظة ليظهر تلقائياً');
+    }
+  });
+  $('#tool-btn-calc')?.addEventListener('click', () => {
+    try { bridge.apps.launch('calc'); } catch {}
+  });
+  $('#tool-btn-terminal')?.addEventListener('click', () => {
+    try { bridge.apps.launch('powershell'); } catch {}
+  });
 })();
