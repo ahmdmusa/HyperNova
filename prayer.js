@@ -37,7 +37,7 @@ async function fetchDay(date, loc) {
     date: ymd(date),
     // values look like "04:35" or "04:35 (EET)"
     times: Object.fromEntries(KEYS.map((k) => [k.toLowerCase(), String(t[k]).slice(0, 5)])),
-    hijri: h ? `${Number(h.day)} ${h.month?.ar || h.month?.en || ''} ${h.year}` : '',
+    hijri: h ? (h.month?.ar ? `\u200F${h.day} ${h.month.ar} ${h.year} هـ` : `${h.day} ${h.month?.en || ''} ${h.year} AH`) : '',
     hijriMonth: Number(h?.month?.number) || 0, // 9 = Ramadan
     method: j.data.meta?.method?.name || '',
     // times are wall-clock times in this zone, which may differ from the PC's

@@ -118,7 +118,7 @@ function pick(obj) {
     } else if (k === 'islandTheme') {
       if (v === 'dark' || v === 'light' || v === 'black') out[k] = v;
     } else if (k === 'glassOpacity') {
-      if (Number.isFinite(v)) out[k] = Math.min(Math.max(Math.round(v), 20), 100);
+      if (Number.isFinite(v)) out[k] = Math.min(Math.max(Math.round(v), 0), 120);
     } else if (k === 'skipTaskbar') {
       if (typeof v === 'boolean') out[k] = v;
       if (v === 'flash' || v === 'pro') out[k] = v;

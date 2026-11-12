@@ -2224,7 +2224,6 @@ html[data-theme="light"] #island, body.theme-light #island {
 }
 
 .topbar-compact-clock-card {
-  direction: rtl !important;
   flex: 0 0 auto !important;
 }
 
@@ -2297,27 +2296,22 @@ html[data-theme="light"] #island, body.theme-light #island {
 .c-hijri {
   font-family: var(--font-ar), "Amiri", serif !important;
   font-size: 11px !important;
-  font-weight: 500 !important;
-  color: rgba(255, 255, 255, 0.70) !important;
-}
-
-.c-greg {
-  font-size: 10px !important;
-  color: rgba(255, 255, 255, 0.50) !important;
-}
+  font-weight: 600 !important;
   color: #f6d89b !important; /* Elegant warm golden parchment as in reference */
   line-height: 1.15 !important;
   white-space: nowrap !important;
+  unicode-bidi: isolate !important;
 }
 
 .c-greg {
   font-family: var(--font-en), "Inter", sans-serif !important;
-  font-size: 9px !important;
+  font-size: 9.5px !important;
   font-weight: 500 !important;
-  color: rgba(255, 255, 255, 0.62) !important;
+  color: rgba(255, 255, 255, 0.70) !important;
   line-height: 1.05 !important;
   letter-spacing: 0.15px;
   white-space: nowrap !important;
+  unicode-bidi: isolate !important;
 }
 
 /* Fix music title and player layout */
@@ -2986,7 +2980,7 @@ body.theme-light .vol-pct {
 
 /* Topbar Compact Clock: AM/PM strictly on right */
 .topbar-compact-clock-card {
-  direction: ltr !important;
+  unicode-bidi: isolate;
 }
 .c-clock {
   direction: ltr !important;
@@ -6764,5 +6758,33 @@ html[data-theme="light"] .eye b,
 body.theme-light .eye b {
   background: #ffffff !important;
 }
+
+/* ==========================================================================
+   SOLID OPAQUE DARK / LIGHT MODE (Slider > 105% - 120%: Solid Non-Glassy)
+   ========================================================================== */
+body.solid-opaque #island .clip,
+html.solid-opaque #island .clip,
+body.solid-opaque #island.expanded .clip,
+body.solid-opaque #island.peek .clip,
+body.solid-opaque #island.focus .clip,
+body.solid-opaque #island.reminder .clip {
+  background: #0b0d13 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), inset 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+}
+
+body.theme-light.solid-opaque #island .clip,
+html[data-theme="light"].solid-opaque #island .clip,
+body.theme-light.solid-opaque #island.expanded .clip,
+body.theme-light.solid-opaque #island.peek .clip,
+body.theme-light.solid-opaque #island.focus .clip,
+body.theme-light.solid-opaque #island.reminder .clip {
+  background: #ffffff !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14), inset 0 0 0 1px rgba(0, 0, 0, 0.10) !important;
+}
+
 
 

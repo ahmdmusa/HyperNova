@@ -499,26 +499,37 @@ function tickClock() {
   const hour12 = hours % 12 || 12;
   const time = `${hour12}:${minutes} ${ampm}`;
   
-  // 2. Authentic Hijri Date via Um Al-Qura (e.g. ٢٦ جمادى الأولى ١٤٤٨ هـ / Jumada II 1, 1448 AH)
+  // 2. Authentic Hijri Date via Um Al-Qura with moon sighting adjustment
   const isAr = (state.features?.appLang || 'ar') === 'ar';
+  const hijriDate = new Date(d);
+  const adj = Number(state.features?.hijriAdjust) || 0;
+  if (adj) hijriDate.setDate(hijriDate.getDate() + adj);
+
   let hijriStr = '';
   try {
-    hijriStr = new Intl.DateTimeFormat(isAr ? 'ar-SA-u-ca-islamic-umalqura' : 'en-US-u-ca-islamic-umalqura', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    }).format(d);
+    if (isAr) {
+      // In Arabic, format clearly with modern numerals: "2 جمادى الآخرة 1448 هـ"
+      const f = new Intl.DateTimeFormat('ar-u-ca-islamic-umalqura-nu-latn', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      }).format(hijriDate);
+      hijriStr = f.includes('هـ') ? f : `${f} هـ`;
+    } else {
+      hijriStr = new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      }).format(hijriDate);
+    }
   } catch {
-    hijriStr = isAr ? '٢٦ جمادى الأولى ١٤٤٨ هـ' : '26 Jumada al-Awwal 1448 AH';
+    hijriStr = isAr ? '2 جمادى الآخرة 1448 هـ' : '2 Jumada al-Akhirah 1448 AH';
   }
 
-  // 3. Gregorian Date matching selected language (e.g. الأربعاء، ١١ نوفمبر ٢٠٢٦ / Wednesday, Nov 11, 2026)
-  const gregStr = d.toLocaleDateString(isAr ? 'ar-EG' : 'en-US', {
-    weekday: 'long',
-    month: isAr ? 'long' : 'short',
-    day: '2-digit',
-    year: 'numeric'
-  });
+  // 3. Gregorian Date matching selected language (e.g. الخميس، 12 نوفمبر 2026 / Thursday, Nov 12, 2026)
+  const gregStr = isAr
+    ? d.toLocaleDateString('ar-EG-u-nu-latn', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
+    : d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
 
   // Update Compact Card with sub-scaled, colored AM/PM
   const xClock = $('#x-clock');
@@ -529,6 +540,11 @@ function tickClock() {
   if (xHijri) xHijri.textContent = hijriStr;
   const xDate = $('#x-date');
   if (xDate) xDate.textContent = gregStr;
+
+  const clockCard = $('#clock-card');
+  if (clockCard) {
+    clockCard.dir = isAr ? 'rtl' : 'ltr';
+  }
 
   // Sync other views if present
   if ($('#i-time')) $('#i-time').innerHTML = `<span class="i-digits">${hour12}:${minutes}</span> <span class="i-meridian">${ampm}</span>`;
@@ -1308,17 +1324,29 @@ function applyFeatures(f) {
     document.documentElement.style.setProperty('--theme-accent', state.features.themeColor);
     document.documentElement.style.setProperty('--yellow', state.features.themeColor);
   }
+  const currentTheme = state.features.islandTheme || 'dark';
   if (state.features.glassOpacity != null) {
     const rawVal = Number(state.features.glassOpacity);
-    const op = Math.max(0.2, Math.min(1.0, rawVal / 100));
-    const islandAlpha = (0.05 + op * 0.87).toFixed(2);
-    const cardAlpha = (0.02 + op * 0.10).toFixed(2);
-    const glassBlur = Math.round(14 + op * 36);
-    document.documentElement.style.setProperty('--glass-opacity', islandAlpha);
-    document.documentElement.style.setProperty('--card', `rgba(255, 255, 255, ${cardAlpha})`);
-    document.documentElement.style.setProperty('--glass-blur', `${glassBlur}px`);
+    const isSolid = rawVal >= 105;
+    document.body.classList.toggle('solid-opaque', isSolid);
+    document.documentElement.classList.toggle('solid-opaque', isSolid);
+
+    if (isSolid) {
+      // Solid Opaque Dark Mode (Non-glassy solid background / دارك غامق معتم مش زجاجي)
+      document.documentElement.style.setProperty('--glass-opacity', '1.0');
+      document.documentElement.style.setProperty('--glass-blur', '0px');
+      document.documentElement.style.setProperty('--card', currentTheme === 'light' ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.06)');
+    } else {
+      // Liquid Glass Mode (0% to 104%): 0% = ultra-translucent crystal glass, 100% = dense frosted acrylic
+      const op = Math.max(0.0, Math.min(1.0, rawVal / 100));
+      const islandAlpha = (0.15 + op * 0.80).toFixed(2);
+      const cardAlpha = (0.02 + op * 0.12).toFixed(2);
+      const glassBlur = Math.round(16 + op * 34);
+      document.documentElement.style.setProperty('--glass-opacity', islandAlpha);
+      document.documentElement.style.setProperty('--card', currentTheme === 'light' ? `rgba(0, 0, 0, ${cardAlpha})` : `rgba(255, 255, 255, ${cardAlpha})`);
+      document.documentElement.style.setProperty('--glass-blur', `${glassBlur}px`);
+    }
   }
-  const currentTheme = state.features.islandTheme || 'dark';
   document.documentElement.setAttribute('data-theme', currentTheme);
   document.body.classList.toggle('theme-light', currentTheme === 'light');
   document.body.classList.toggle('theme-dark', currentTheme === 'dark');

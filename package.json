@@ -11,7 +11,8 @@
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder --win nsis",
-    "dist:portable": "electron-builder --win portable"
+    "dist:portable": "electron-builder --win portable",
+    "dist:store": "electron-builder --win appx"
   },
   "author": {
     "name": "Ahmed Musa",
@@ -80,6 +81,19 @@
     },
     "portable": {
       "artifactName": "HyperNova-Portable-${version}.${ext}"
+    },
+    "appx": {
+      "applicationId": "HyperNovaDynamicIsland",
+      "identityName": "AhmedMusa.HyperNova",
+      "publisher": "CN=AhmedMusa",
+      "publisherDisplayName": "Ahmed Musa",
+      "artifactName": "HyperNova-Store-${version}.${ext}",
+      "showNameOnTiles": true,
+      "backgroundColor": "#0c0d14",
+      "languages": [
+        "ar",
+        "en"
+      ]
     }
   },
   "dependencies": {

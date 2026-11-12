@@ -451,7 +451,7 @@
       const elVPrLeft = $('#v-pr-left');
       if (elVPrLeft) elVPrLeft.textContent = shortLeft(ms);
     }
-    const elPrHijri = $('#pr-hijri') || $('#x-hijri');
+    const elPrHijri = $('#pr-hijri');
     if (elPrHijri) elPrHijri.textContent = d.today.hijri || '';
     ramadan(d, now);
     const elPrCity = $('#pr-city');
