@@ -486,6 +486,7 @@ function selectTab(tab) {
     b.setAttribute('aria-selected', on);
   });
   $$('.view').forEach((v) => v.classList.toggle('active', v.id === `v-${tab}`));
+  window.dispatchEvent(new CustomEvent('island:tab', { detail: { tab } }));
 }
 
 // ---------------- clock & compact vertical card (Image 2 reference) ----------------

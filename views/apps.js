@@ -299,5 +299,5 @@
     if (!picker.hidden) renderList();
   };
   bridge.onApps(apply);
-  bridge.apps.list().then(apply);
+  if (bridge.apps?.list) bridge.apps.list().then(apply);
 })();

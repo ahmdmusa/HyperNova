@@ -108,34 +108,34 @@
     renderClips(s.clips);
     renderWeather(s.weather);
   });
+
+  function updateSysLang() {
+    const isAr = (window.state?.features?.appLang || 'ar') === 'ar';
+    const txt = document.getElementById('clip-title-txt');
+    if (txt) txt.textContent = isAr ? 'سجل الحافظة' : 'Clipboard';
+    const btn = document.getElementById('clip-clear');
+    if (btn) btn.title = isAr ? 'مسح سجل الحافظة' : 'Clear clipboard history';
+
+    const lblCpu = document.getElementById('lbl-cpu');
+    if (lblCpu) lblCpu.textContent = isAr ? 'المعالج' : 'CPU';
+    const lblRam = document.getElementById('lbl-ram');
+    if (lblRam) lblRam.textContent = isAr ? 'الذاكرة' : 'Memory';
+    const lblNet = document.getElementById('lbl-net');
+    if (lblNet) lblNet.textContent = isAr ? 'الشبكة' : 'Network';
+    const wxDesc = document.getElementById('wx-desc');
+    if (wxDesc && wxDesc.textContent.includes('weather')) {
+      wxDesc.textContent = isAr ? 'جارٍ تحميل الطقس…' : 'Loading weather…';
+    } else if (lastWeather) {
+      renderWeather(lastWeather);
+    }
+    const emptyClip = document.querySelector('.clip-empty');
+    if (emptyClip) {
+      emptyClip.textContent = isAr ? 'النصوص المنسوخة تظهر هنا تلقائياً' : 'Copied text shows up here';
+    }
+  }
+
+  window.addEventListener('island:features', (e) => {
+    if (e.detail?.appLang) updateSysLang();
+  });
+  setTimeout(updateSysLang, 200);
 })();
-
-
-function updateSysLang() {
-  const isAr = (window.state?.features?.appLang || 'ar') === 'ar';
-  const txt = document.getElementById('clip-title-txt');
-  if (txt) txt.textContent = isAr ? 'سجل الحافظة' : 'Clipboard';
-  const btn = document.getElementById('clip-clear');
-  if (btn) btn.title = isAr ? 'مسح سجل الحافظة' : 'Clear clipboard history';
-
-  const lblCpu = document.getElementById('lbl-cpu');
-  if (lblCpu) lblCpu.textContent = isAr ? 'المعالج' : 'CPU';
-  const lblRam = document.getElementById('lbl-ram');
-  if (lblRam) lblRam.textContent = isAr ? 'الذاكرة' : 'Memory';
-  const lblNet = document.getElementById('lbl-net');
-  if (lblNet) lblNet.textContent = isAr ? 'الشبكة' : 'Network';
-  const wxDesc = document.getElementById('wx-desc');
-  if (wxDesc && wxDesc.textContent.includes('weather')) {
-    wxDesc.textContent = isAr ? 'جارٍ تحميل الطقس…' : 'Loading weather…';
-  } else if (lastWeather) {
-    renderWeather(lastWeather);
-  }
-  const emptyClip = document.querySelector('.clip-empty');
-  if (emptyClip) {
-    emptyClip.textContent = isAr ? 'النصوص المنسوخة تظهر هنا تلقائياً' : 'Copied text shows up here';
-  }
-}
-window.addEventListener('island:features', (e) => {
-  if (e.detail?.appLang) updateSysLang();
-});
-setTimeout(updateSysLang, 200);

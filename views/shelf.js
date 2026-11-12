@@ -69,11 +69,11 @@
   window.addEventListener('island:features', (e) => {
     if (e.detail?.appLang) {
       updateShelfLang();
-      bridge.shelf.list().then(renderItems);
+      if (bridge.shelf?.list) bridge.shelf.list().then(renderItems);
     }
   });
 
   updateShelfLang();
   bridge.onShelf(renderItems);
-  bridge.shelf.list().then(renderItems);
+  if (bridge.shelf?.list) bridge.shelf.list().then(renderItems);
 })();

@@ -819,20 +819,21 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
 }
 #island.reminder { --w: var(--rw, 500px); --h: var(--rh, 140px); --r: 30px; }
 #island.reminder .l-reminder {
-  opacity: 1; filter: none; transform: none; pointer-events: auto;
+  opacity: 1 !important; filter: none !important; transform: none !important; pointer-events: auto !important;
   transition: opacity .3s ease .12s, filter .35s ease .12s, transform .5s var(--spring) .1s;
 }
 .l-reminder { display: flex; flex-direction: column; padding: 18px 28px 24px; gap: 10px; box-sizing: border-box; }
 .rm-head { display: flex; align-items: center; justify-content: space-between; height: 26px; flex: none; }
 .rm-badge {
   display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 12px; border-radius: 99px;
-  background: rgba(255, 255, 255, 0.10) !important; color: #ffffff !important; font-size: 12.5px; font-weight: 600;
-  border: 1px solid rgba(255, 255, 255, 0.16) !important;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.20), inset 0 0.5px 0 rgba(255, 255, 255, 0.3) !important;
+  background: rgba(245, 158, 11, 0.14) !important; color: #fbbf24 !important; font-size: 12.5px; font-weight: 600;
+  border: 1px solid rgba(251, 191, 36, 0.35) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25), 0 0 14px rgba(251, 191, 36, 0.16), inset 0 0.5px 0 rgba(255, 255, 255, 0.25) !important;
   backdrop-filter: blur(16px) !important;
   letter-spacing: -0.01em;
 }
-.rm-badge svg { width: 12px; height: 12px; color: #ffffff !important; stroke: currentColor; }
+.rm-badge svg { width: 12px; height: 12px; color: #fbbf24 !important; stroke: #fbbf24 !important; }
+.rm-badge #rm-kind { color: #fbbf24 !important; }
 .rm-x {
   width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
   color: rgba(255, 255, 255, 0.70) !important;
@@ -864,10 +865,10 @@ svg.s { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: rou
 .rm-text .sep { font-style: normal; font-family: "Segoe UI", sans-serif; font-size: .7em; color: rgba(255, 255, 255, 0.65); margin-left: .15em; }
 .rm-text .br { font-style: normal; font-weight: 400; color: #fbbf24; margin: 0 .22em; text-shadow: 0 0 10px rgba(251, 191, 36, 0.7); }
 .rm-ref {
-  flex: none; text-align: center; font-size: 13.5px !important; color: rgba(255, 255, 255, 0.90) !important;
+  flex: none; text-align: center; font-size: 13.5px !important; color: #f6d89b !important;
   min-height: 20px; font-weight: 600 !important; letter-spacing: -0.01em; line-height: 1.5;
   margin-top: 4px; margin-bottom: 4px;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9) !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9), 0 0 12px rgba(246, 216, 155, 0.35) !important;
 }
 .rm-time {
   position: absolute; left: 28px; right: 28px; bottom: 10px; height: 2.5px;
@@ -2271,7 +2272,7 @@ html[data-theme="light"] #island, body.theme-light #island {
   border-radius: 14px !important;
   padding: 4px 12px 5px !important;
   min-width: 120px;
-  max-width: 165px;
+  max-width: 195px;
   white-space: nowrap !important;
   user-select: none;
   cursor: default;
@@ -6350,20 +6351,24 @@ body.theme-light .dhikr-subnote {
 }
 html[data-theme="light"] .rm-ref,
 body.theme-light .rm-ref {
-  color: #6e6e73 !important;
+  color: #b45309 !important;
   text-shadow: none !important;
 }
 html[data-theme="light"] .rm-badge,
 body.theme-light .rm-badge {
-  background: rgba(0, 0, 0, 0.06) !important;
-  border: 1px solid rgba(0, 0, 0, 0.12) !important;
-  color: #1d1d1f !important;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06) !important;
+  background: rgba(217, 119, 6, 0.10) !important;
+  border: 1px solid rgba(217, 119, 6, 0.28) !important;
+  color: #b45309 !important;
+  box-shadow: 0 1px 6px rgba(217, 119, 6, 0.12) !important;
 }
 html[data-theme="light"] .rm-badge svg,
 body.theme-light .rm-badge svg {
-  color: #1d1d1f !important;
-  stroke: #1d1d1f !important;
+  color: #b45309 !important;
+  stroke: #b45309 !important;
+}
+html[data-theme="light"] .rm-badge #rm-kind,
+body.theme-light .rm-badge #rm-kind {
+  color: #b45309 !important;
 }
 html[data-theme="light"] .rm-x,
 body.theme-light .rm-x {

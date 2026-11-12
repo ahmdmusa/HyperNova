@@ -262,11 +262,15 @@
   }
 
   function nextPrayer(d, now) {
+    if (!d || !d.today || !d.today.times) return null;
     for (const k of PRAYERS) {
+      if (!d.today.times[k]) continue;
       const t = at(d.today.date, d.today.times[k]);
       if (t > now) return { key: k, time: t };
     }
-    if (d.tomorrow) return { key: 'fajr', time: at(d.tomorrow.date, d.tomorrow.times.fajr) };
+    if (d.tomorrow && d.tomorrow.times && d.tomorrow.times.fajr) {
+      return { key: 'fajr', time: at(d.tomorrow.date, d.tomorrow.times.fajr) };
+    }
     return null;
   }
 
@@ -525,12 +529,14 @@
 
   // Setup Expanded Interactive Daily Inspiration Hero Card
   let isDailyInited = false;
+  let renderActiveItem = () => {};
+
   function initDailyIslamicCorner() {
     const tabs = document.querySelectorAll('.pr-daily-tab');
     if (!tabs.length) return;
 
     if (isDailyInited) {
-      renderActiveItem();
+      if (typeof renderActiveItem === 'function') renderActiveItem();
       return;
     }
     isDailyInited = true;
@@ -563,7 +569,7 @@
     let isLargeFont = false;
     let tasbihCount = 0;
 
-    function renderActiveItem() {
+    renderActiveItem = function() {
       const list = INSPIRATION_DATA[curCat] || INSPIRATION_DATA.dua;
       if (curIdx >= list.length) curIdx = 0;
       if (curIdx < 0) curIdx = list.length - 1;

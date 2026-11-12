@@ -246,6 +246,8 @@
   // other views open the big card for their own messages (welcome back, morning, breaks)
   window.showCard = (item) => {
     previewing = true; // independent of the reminders switch
+    state.pinned = false;
+    state.hover = false;
     show(item);
   };
   window.cardShowing = () => state.reminderUntil > Date.now();
