@@ -250,6 +250,9 @@
     state.hover = false;
     show(item);
   };
+  window.hideCard = hide;
+  window.closeCard = hide;
+  window.dismissReminder = hide;
   window.cardShowing = () => state.reminderUntil > Date.now();
 
   // "show one now" from the Settings window works even with reminders switched off

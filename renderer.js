@@ -504,6 +504,7 @@ function tickClock() {
   const time = `${hour12}:${minutes} ${ampm}`;
   
   // 2. Authentic Hijri Date via Um Al-Qura with moon sighting adjustment
+  // User Requirement: "التاريخ .. الهجري دايما عربي" (Hijri Date is ALWAYS in authentic Arabic script)
   const isAr = (state.features?.appLang || 'ar') === 'ar';
   const hijriDate = new Date(d);
   const adj = Number(state.features?.hijriAdjust) || 0;
@@ -511,25 +512,15 @@ function tickClock() {
 
   let hijriStr = '';
   try {
-    if (isAr) {
-      // In Arabic, format clearly with modern numerals: "2 جمادى الآخرة 1448 هـ" (Day first strictly)
-      const f = new Intl.DateTimeFormat('ar-u-ca-islamic-umalqura-nu-latn', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-      }).format(hijriDate);
-      hijriStr = f.includes('هـ') ? f : `${f} هـ`;
-    } else {
-      // In English, format day first: "2 Jumada II 1448 AH"
-      hijriStr = new Intl.DateTimeFormat('en-GB-u-ca-islamic-umalqura', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-      }).format(hijriDate);
-      if (!hijriStr.includes('AH')) hijriStr = `${hijriStr} AH`;
-    }
+    // Format clearly in authentic Arabic calligraphy: "2 جمادى الآخرة 1448 هـ" (Day first strictly)
+    const f = new Intl.DateTimeFormat('ar-u-ca-islamic-umalqura-nu-latn', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    }).format(hijriDate);
+    hijriStr = f.includes('هـ') ? f : `${f} هـ`;
   } catch {
-    hijriStr = isAr ? '2 جمادى الآخرة 1448 هـ' : '2 Jumada II 1448 AH';
+    hijriStr = '2 جمادى الآخرة 1448 هـ';
   }
 
   // 3. Gregorian Date matching selected language (e.g. الخميس، 12 نوفمبر 2026 / Thursday, Nov 12, 2026)
@@ -544,13 +535,13 @@ function tickClock() {
   }
   const xHijri = $('#x-hijri');
   if (xHijri) {
-    xHijri.dir = isAr ? 'rtl' : 'ltr';
-    xHijri.innerHTML = `<bdi>${hijriStr}</bdi>`;
+    xHijri.dir = 'rtl';
+    xHijri.innerHTML = `<bdi dir="rtl">${hijriStr}</bdi>`;
   }
   const xDate = $('#x-date');
   if (xDate) {
     xDate.dir = isAr ? 'rtl' : 'ltr';
-    xDate.innerHTML = `<bdi>${gregStr}</bdi>`;
+    xDate.innerHTML = `<bdi dir="${isAr ? 'rtl' : 'ltr'}">${gregStr}</bdi>`;
   }
 
   const clockCard = $('#clock-card');
@@ -1431,17 +1422,65 @@ document.addEventListener('pointerdown', (e) => {
   }
 }, true);
 
+// Universal Programmatic Dismiss / Close Functions (User requirement: أي حاجة بتظهر وتختفي تبقى function بتتقفل)
+window.closeReminder = () => {
+  if (typeof window.hideCard === 'function') window.hideCard();
+  state.reminderUntil = 0;
+  state.hover = false;
+  render();
+};
+window.closeToast = () => {
+  state.toast = null;
+  state.toastUntil = 0;
+  state.toastAction = null;
+  render();
+};
+window.collapseIsland = () => {
+  state.pinned = false;
+  state.hover = false;
+  state.focusMode = false;
+  render();
+  bridge.focusInput?.(false);
+};
+window.closeQuranPopovers = () => {
+  document.getElementById('qr-popover-reciters')?.remove();
+  document.getElementById('qr-popover-surahs')?.remove();
+};
+window.closeActivePopup = () => {
+  if (document.getElementById('qr-popover-reciters') || document.getElementById('qr-popover-surahs')) {
+    window.closeQuranPopovers();
+    return true;
+  }
+  if (state.reminderUntil > Date.now()) {
+    window.closeReminder();
+    return true;
+  }
+  if (state.toast && state.toastUntil > Date.now()) {
+    window.closeToast();
+    return true;
+  }
+  if (window.neuroFocus?.isOpen?.() || state.focusMode) {
+    window.neuroFocus?.hide();
+    bridge.focusInput?.(false);
+    return true;
+  }
+  if (state.pinned || state.hover || lastMode === 'expanded') {
+    window.collapseIsland();
+    return true;
+  }
+  return false;
+};
+window.closeCard = window.closeReminder;
+window.dismissReminder = window.closeReminder;
+window.dismissToast = window.closeToast;
+window.dismissActive = window.closeActivePopup;
+
 // Universal Escape key listener
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    if (window.neuroFocus?.isOpen?.() || state.focusMode) {
+    if (window.closeActivePopup()) {
       e.preventDefault();
-      window.neuroFocus?.hide();
-      bridge.focusInput?.(false);
-    } else if (state.expanded || state.hover) {
-      e.preventDefault();
-      state.pinned = false; state.hover = false; render();
-      bridge.focusInput?.(false);
+      e.stopPropagation();
     }
   }
 });
