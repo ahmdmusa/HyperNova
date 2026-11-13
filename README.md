@@ -20,10 +20,10 @@
 <a href="https://github.com/ahmdmusa/HyperNova/releases/download/v2.1.3/HyperNova-Setup-2.1.3.exe">
   <img src="https://img.shields.io/badge/Direct%20Download-HyperNova--Setup--2.1.3.exe-10b981?style=for-the-badge&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMjEgMTV2NGEyIDIgMCAwIDEtMiAySDVhMiAyIDAgMCAxLTItMnYtNCIvPjxwb2x5bGluZSBwb2ludHM9IjcgMTAgMTIgMTUgMTcgMTAiLz48bGluZSB4MT0iMTIiIHkxPSIxNSIgeDI9IjEyIiB5Mj0iMyIvPjwvc3ZnPg%3D%3D" alt="Download HyperNova Setup (.exe)" />
 </a>
-&nbsp;
-<a href="https://github.com/ahmdmusa/HyperNova/releases/download/v2.1.3/HyperNova-Store-2.1.3.appx">
-  <img src="https://img.shields.io/badge/Microsoft%20Store%20Package-HyperNova--Store--2.1.3.appx-0ea5e9?style=for-the-badge&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMjEgMTV2NGEyIDIgMCAwIDEtMiAySDVhMiAyIDAgMCAxLTItMnYtNCIvPjxwb2x5bGluZSBwb2ludHM9IjcgMTAgMTIgMTUgMTcgMTAiLz48bGluZSB4MT0iMTIiIHkxPSIxNSIgeDI9IjEyIiB5Mj0iMyIvPjwvc3ZnPg%3D%3D" alt="Download HyperNova Store (.appx)" />
-</a>
+
+<br/>
+
+**[⬇️ تحميل مباشر للويندوز &nbsp;|&nbsp; Direct Windows Download (`HyperNova-Setup-2.1.3.exe`)](https://github.com/ahmdmusa/HyperNova/releases/download/v2.1.3/HyperNova-Setup-2.1.3.exe)**
 
 <br/>
 
@@ -51,7 +51,6 @@
 | الحزمة / Package | الإصدار / Version | النظام / Platform | رابط التحميل المباشر / Direct Download |
 |:---|:---:|:---:|:---|
 | **المثبّت الرسمي للويندوز** (`NSIS .exe` — موصى به)<br/>Official Windows Installer *(Recommended)* | `v2.1.3` | Windows 10 / 11 (x64) | [**⬇️ تحميل مباشر · Direct Download (`HyperNova-Setup-2.1.3.exe`)**](https://github.com/ahmdmusa/HyperNova/releases/download/v2.1.3/HyperNova-Setup-2.1.3.exe) |
-| **حزمة متجر مايكروسوفت** (`Store .appx`)<br/>Windows Store Package *(AppX)* | `v2.1.3` | Windows 10 / 11 (x64) | [**⬇️ تحميل حزمة المتجر · Download AppX (`HyperNova-Store-2.1.3.appx`)**](https://github.com/ahmdmusa/HyperNova/releases/download/v2.1.3/HyperNova-Store-2.1.3.appx) |
 | **كافة الإصدارات والملاحظات**<br/>All Releases & Changelogs | Latest | Windows (x64) | [**📦 صفحة الإصدارات · GitHub Releases (`v2.1.3`)**](https://github.com/ahmdmusa/HyperNova/releases) |
 
 ---
