@@ -175,6 +175,7 @@ function render() {
   if (mode !== lastMode) {
     island.classList.toggle('shrinking', !!lastMode && SIZE[mode] < SIZE[lastMode]);
     island.classList.remove('idle', 'meeting', 'compact', 'toast', 'peek', 'reminder', 'scene', 'notification', 'expanded', 'focus');
+    if (mode !== 'toast') island.classList.remove('toast-hud', 'toast-kbd');
     island.classList.add(mode);
     const prev = lastMode;
     lastMode = mode;
@@ -299,7 +300,7 @@ bridge.onFocusToggle?.(() => {
 });
 
 // ---------------- drag to move (docks when dropped at the top edge) ----------------
-const NO_DRAG = 'button, input, .slider, .file, .app, .pick, .picker, .clip-item, .shelf-items, .l-notification';
+const NO_DRAG = 'button, input, .slider, .file, .app, .pick, .picker, .clip-item, .shelf-items, .l-notification, .notifs-list, .notif-hist-item';
 let press = null;
 let justMoved = false;
 
@@ -356,8 +357,10 @@ const SIZE_DIMS = {
   l: { expanded: [780, 420], idle: [298, 36], compact: [330, 36] }
 };
 const DIMS = {
-  idle: [272, 32], meeting: [380, 36], compact: [300, 34], toast: [340, 34], peek: [400, 78], notification: [420, 82], focus: [620, 76], expanded: [640, 335],
+  idle: [272, 32], meeting: [380, 36], compact: [300, 34], toast: [300, 32], peek: [400, 78], notification: [340, 60], focus: [620, 76], expanded: [640, 335],
 };
+const TOAST_HUD_DIMS = [188, 26]; // volume / brightness compact HUD
+const TOAST_KBD_DIMS = [158, 26]; // keyboard language / Caps Lock compact HUD
 const COMPACT_WIDE = 420; // compact with a title (media / download / quran)
 const SIZE_EYES_COMPACT = { s: [112, 30], m: [118, 34], l: [130, 36] };
 const SIZE_EYES_STAGE = { s: [196, 66], m: [224, 74], l: [252, 82] };
@@ -366,6 +369,10 @@ let anchor = { x: window.innerWidth / 2, y: 8, docked: false, vertical: false, s
 
 function positionIsland() {
   let [w, h] = (anchor.vertical ? VDIMS : DIMS)[lastMode] || DIMS.idle;
+  if (lastMode === 'toast' && !anchor.vertical) {
+    if (['vol', 'bright'].includes(state.toast)) [w, h] = TOAST_HUD_DIMS;
+    else if (['kbd', 'caps', 'copied'].includes(state.toast)) [w, h] = TOAST_KBD_DIMS;
+  }
   if (lastMode === 'idle' && !anchor.vertical && island.classList.contains('eyes') && !island.classList.contains('show-slide')) {
     const currentSize = state.features?.islandSize || 'm';
     const stage = island.classList.contains('nova-stage');
@@ -549,6 +556,11 @@ function selectTab(tab) {
     b.setAttribute('aria-selected', on);
   });
   $$('.view').forEach((v) => v.classList.toggle('active', v.id === `v-${tab}`));
+  if (tab === 'notifs') {
+    notifUnread = false;
+    $('#notifs-badge')?.classList.remove('on');
+    renderNotifHistory?.();
+  }
   placeSegThumb();
   setTimeout(placeSegThumb, 50);
   setTimeout(placeSegThumb, 150);
@@ -1145,6 +1157,10 @@ let toastTimer = null;
 // state.toastAction: what a click on the current toast does (set right after showToast)
 function showToast(kind, label, value, pct, ms = 3200) {
   state.toastAction = null;
+  const isHud = ['vol', 'bright'].includes(kind);
+  const isKbd = ['kbd', 'caps', 'copied'].includes(kind);
+  island.classList.toggle('toast-hud', isHud);
+  island.classList.toggle('toast-kbd', isKbd);
   const t = $('.l-toast');
   t.className = `layer l-toast ${kind}`;
   $('#t-label').textContent = label;
@@ -1158,6 +1174,7 @@ function showToast(kind, label, value, pct, ms = 3200) {
   state.toast = kind;
   state.toastUntil = Date.now() + ms;
   render();
+  if (lastMode === 'toast') positionIsland();
   clearTimeout(toastTimer);
   toastTimer = setTimeout(render, ms + 50);
 }
@@ -1379,7 +1396,7 @@ setInterval(() => {
 }, 250);
 
 // ---------------- settings ----------------
-const TAB_FEATURE = { media: 'tabMedia', apps: 'tabApps', shelf: 'tabShelf', prayer: 'tabPrayer', timer: 'tabTimer', focus: 'tabFocus', system: 'tabSystem' };
+const TAB_FEATURE = { media: 'tabMedia', apps: 'tabApps', shelf: 'tabShelf', prayer: 'tabPrayer', timer: 'tabTimer', focus: 'tabFocus', system: 'tabSystem', notifs: 'tabNotifs' };
 
 // Hide tabs that are switched off (Downloads shows itself only around download activity).
 function refreshTabs() {
@@ -1457,8 +1474,8 @@ function applyFeatures(f) {
 
   // Internationalized tab names & status
   const TAB_LABELS = {
-    ar: { media: 'الصوتيات', apps: 'التطبيقات', shelf: 'الرف', prayer: 'الصلاة', timer: 'المؤقت', focus: 'التركيز', system: 'النظام' },
-    en: { media: 'Music', apps: 'Apps', shelf: 'Shelf', prayer: 'Prayer', timer: 'Timer', focus: 'Focus', system: 'System' }
+    ar: { media: 'الصوتيات', apps: 'التطبيقات', shelf: 'الرف', prayer: 'الصلاة', timer: 'المؤقت', focus: 'التركيز', system: 'النظام', notifs: 'الإشعارات' },
+    en: { media: 'Music', apps: 'Apps', shelf: 'Shelf', prayer: 'Prayer', timer: 'Timer', focus: 'Focus', system: 'System', notifs: 'Notifs' }
   };
   const labels = TAB_LABELS[appLang] || TAB_LABELS.ar;
   $$('.seg .tab[data-tab]').forEach((tab) => {
@@ -1481,6 +1498,15 @@ function applyFeatures(f) {
   }
   document.documentElement.lang = appLang;
   document.documentElement.dir = appLang === 'ar' ? 'rtl' : 'ltr';
+  const nh = $('#notifs-heading');
+  const nc = $('#notifs-clear');
+  const net = $('#notifs-empty-title');
+  const nes = $('#notifs-empty-sub');
+  if (nh) nh.textContent = appLang === 'ar' ? 'سجل الإشعارات' : 'Notifications History';
+  if (nc) nc.textContent = appLang === 'ar' ? 'مسح الكل' : 'Clear all';
+  if (net) net.textContent = appLang === 'ar' ? 'لا توجد إشعارات بعد' : 'No notifications yet';
+  if (nes) nes.textContent = appLang === 'ar' ? 'ستظهر هنا إشعارات التطبيقات ويمكنك الضغط على أي إشعار لفتح تطبيقه.' : 'Incoming app alerts appear here and open their app when clicked.';
+  renderNotifHistory?.();
   $$('[data-feat]').forEach((el) => el.classList.toggle('off', !feat(el.dataset.feat)));
   if ($('.info-slide.on')?.classList.contains('off')) showSlide(0);
   if (typeof tickClock === 'function') tickClock();
@@ -1510,13 +1536,139 @@ window.addEventListener('blur', () => {
   }
 });
 
-// Windsland / iOS style live notification banner
+// Windsland / iOS style live notification banner + Persistent History
+const NOTIF_HIST_KEY = 'hypernova_notif_history_v1';
 let notifTimer = null;
 let notifEndTime = 0;
 let notifTotalMs = 0;
 let activeNotifPayload = null;
+let notifUnread = false;
+
+function loadNotifHistory() {
+  try {
+    const raw = localStorage.getItem(NOTIF_HIST_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed.slice(0, 60) : [];
+  } catch {
+    return [];
+  }
+}
+
+let notifHistory = loadNotifHistory();
+
+function saveNotifHistory() {
+  try {
+    localStorage.setItem(NOTIF_HIST_KEY, JSON.stringify(notifHistory.slice(0, 60)));
+  } catch {}
+}
+
+function formatNotifStamp(ts, isAr) {
+  try {
+    return new Date(ts).toLocaleTimeString(isAr ? 'ar-EG-u-nu-latn' : 'en-US', { hour: 'numeric', minute: '2-digit' });
+  } catch {
+    return '';
+  }
+}
+
+function renderNotifHistory() {
+  const listEl = document.getElementById('notifs-list');
+  const emptyEl = document.getElementById('notifs-empty');
+  const countEl = document.getElementById('notifs-count');
+  const badgeEl = document.getElementById('notifs-badge');
+  if (countEl) countEl.textContent = String(notifHistory.length);
+  if (badgeEl) badgeEl.classList.toggle('on', notifUnread && notifHistory.length > 0 && state.tab !== 'notifs');
+  if (!listEl || !emptyEl) return;
+
+  const isAr = (state.features?.appLang || 'ar') === 'ar';
+  emptyEl.hidden = notifHistory.length > 0;
+  listEl.hidden = notifHistory.length === 0;
+  if (!notifHistory.length) {
+    listEl.innerHTML = '';
+    return;
+  }
+
+  listEl.innerHTML = notifHistory.map((item, idx) => {
+    const hasImg = !!(item.icon && /^https?:|^data:image\//i.test(item.icon));
+    const appText = esc(item.app || 'Windows');
+    const titleText = esc(item.title || '');
+    const msgText = esc(item.message || '');
+    const stamp = esc(formatNotifStamp(item.at, isAr) || item.time || '');
+    const initial = esc((item.app || 'N')[0].toUpperCase());
+    return `<div class="notif-hist-item" data-idx="${idx}" title="${isAr ? 'اضغط لفتح التطبيق' : 'Click to open app'}">
+      <div class="notif-hist-ava${hasImg ? ' has-icon' : ''}">${hasImg ? `<img src="${esc(item.icon)}" alt="">` : `<span>${initial}</span>`}</div>
+      <div class="notif-hist-body">
+        <div class="notif-hist-meta"><span class="notif-hist-app">${appText}</span><span class="notif-hist-time">${stamp}</span></div>
+        <div class="notif-hist-title" dir="auto">${titleText}</div>
+        ${msgText ? `<div class="notif-hist-msg" dir="auto">${msgText}</div>` : ''}
+      </div>
+      <button type="button" class="notif-hist-del" data-del="${idx}" aria-label="Remove">&times;</button>
+    </div>`;
+  }).join('');
+}
+
+function recordNotifHistory(n) {
+  if (!n || typeof n !== 'object') return;
+  const sig = `${n.app || ''}|${n.title || ''}|${n.message || ''}`;
+  const head = notifHistory[0];
+  if (head && head.sig === sig && (Date.now() - (head.at || 0)) < 2000) return;
+  notifHistory.unshift({
+    sig,
+    app: n.app || 'Windows',
+    aumid: n.aumid || '',
+    title: n.title || n.app || 'Notification',
+    message: n.message || '',
+    icon: n.icon || '',
+    time: n.time || '',
+    test: !!n.test,
+    at: Date.now(),
+  });
+  if (notifHistory.length > 60) notifHistory.length = 60;
+  notifUnread = state.tab !== 'notifs';
+  saveNotifHistory();
+  renderNotifHistory();
+}
+
+window.notifHistoryApi = {
+  list: () => notifHistory,
+  add: recordNotifHistory,
+  clear: () => { notifHistory = []; notifUnread = false; saveNotifHistory(); renderNotifHistory(); },
+};
+
+document.getElementById('notifs-clear')?.addEventListener('click', (e) => {
+  e.stopPropagation();
+  window.notifHistoryApi.clear();
+});
+
+document.getElementById('notifs-list')?.addEventListener('click', (e) => {
+  const delBtn = e.target.closest('.notif-hist-del');
+  if (delBtn) {
+    e.stopPropagation();
+    const idx = Number(delBtn.dataset.del);
+    if (Number.isInteger(idx) && idx >= 0 && idx < notifHistory.length) {
+      notifHistory.splice(idx, 1);
+      saveNotifHistory();
+      renderNotifHistory();
+    }
+    return;
+  }
+  const row = e.target.closest('.notif-hist-item');
+  if (!row) return;
+  const item = notifHistory[Number(row.dataset.idx)];
+  if (item) {
+    bridge.activateNotification?.({
+      app: item.app,
+      aumid: item.aumid,
+      title: item.title,
+      message: item.message,
+      test: !!item.test,
+    });
+    window.collapseIsland?.();
+  }
+});
+
 window.showIslandNotification = (n) => {
   activeNotifPayload = n;
+  recordNotifHistory(n);
   const notifEl = document.getElementById('island-notification');
   if (!notifEl) return;
   const appEl = document.getElementById('notif-app');

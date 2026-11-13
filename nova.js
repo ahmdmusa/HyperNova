@@ -3,6 +3,7 @@ const {
   app, BrowserWindow, screen, ipcMain, Tray, Menu, nativeImage, globalShortcut, desktopCapturer, shell,
 } = require('electron');
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const { spawn } = require('child_process');
 
@@ -1169,6 +1170,28 @@ ipcMain.on('test-island-notification', (_e, payload) => {
     send('island-notification', payload);
   }
 });
+function tryFocusAppWindow(queries) {
+  const args = (queries || []).map((q) => String(q || '').trim()).filter((q) => q.length >= 2).slice(0, 6);
+  if (!args.length) return Promise.resolve(false);
+  return new Promise((resolve) => {
+    const ps = spawn(HELPER(), ['focus', ...args], { windowsHide: true });
+    let out = '';
+    const t = setTimeout(() => { try { ps.kill(); } catch {} resolve(false); }, 1800);
+    ps.on('error', () => { clearTimeout(t); resolve(false); });
+    ps.stdout.setEncoding('utf8');
+    ps.stdout.on('data', (d) => { out += d; });
+    ps.on('exit', () => {
+      clearTimeout(t);
+      try {
+        const parsed = JSON.parse(out.replace(/^﻿/, '').trim());
+        resolve(!!parsed.ok);
+      } catch {
+        resolve(false);
+      }
+    });
+  });
+}
+
 ipcMain.on('activate-notification', async (_e, payload) => {
   if (!payload || typeof payload !== 'object') return;
   interactiveMode = false;
@@ -1179,19 +1202,38 @@ ipcMain.on('activate-notification', async (_e, payload) => {
   }
   const aumid = typeof payload.aumid === 'string' ? payload.aumid.trim() : '';
   const appName = typeof payload.app === 'string' ? payload.app.trim() : '';
+  const msgTitle = typeof payload.title === 'string' ? payload.title.trim() : '';
+  const aumidBase = aumid
+    .split('!')[0]
+    .split(/[\\/]/)
+    .pop()
+    .replace(/\.exe$/i, '')
+    .split('_')[0]
+    .split('.')
+    .pop();
+  const focusCandidates = [appName, aumidBase, msgTitle].filter(Boolean);
   try {
+    if (appName.toLowerCase() === 'hypernova' || (payload.test && !aumid)) {
+      prefsWindow.open?.();
+      return;
+    }
+    const focused = await tryFocusAppWindow(focusCandidates);
+    if (focused) return;
+
     if (aumid) {
       if (/\.exe$/i.test(aumid) || aumid.includes('\\') || aumid.includes('/')) {
         await shell.openPath(aumid);
         return;
       }
-      spawn('explorer.exe', [`shell:AppsFolder\\${aumid}`], { detached: true, stdio: 'ignore' }).unref();
-      return;
+      if (aumid.includes('!') || /^[A-Za-z0-9._-]+$/.test(aumid)) {
+        spawn('explorer.exe', [`shell:AppsFolder\\${aumid}`], { detached: true, stdio: 'ignore' }).unref();
+        return;
+      }
     }
-    if (appName) {
+    if (appName || aumidBase) {
       const catalog = apps && typeof apps.all === 'function' ? await apps.all() : [];
-      const low = appName.toLowerCase();
-      const found = catalog.find((a) => (a.name || '').toLowerCase() === low)
+      const low = (appName || aumidBase).toLowerCase();
+      const found = catalog.find((a) => (a.name || '').toLowerCase() === low || (a.id || '').toLowerCase() === (aumid || '').toLowerCase())
         || catalog.find((a) => {
           const n = (a.name || '').toLowerCase();
           return n && (n.includes(low) || low.includes(n));
@@ -1200,9 +1242,9 @@ ipcMain.on('activate-notification', async (_e, payload) => {
         apps.launch(found.id);
         return;
       }
-      if (payload.test || low === 'hypernova') {
-        prefsWindow.open?.();
-      }
+    }
+    if (aumid) {
+      spawn('explorer.exe', [`shell:AppsFolder\\${aumid}`], { detached: true, stdio: 'ignore' }).unref();
     }
   } catch (err) {
     console.warn('activate-notification error:', err);
@@ -1275,6 +1317,21 @@ const SUPPORT_LINKS = {
 };
 ipcMain.on('open-support', (_e, key) => {
   if (Object.hasOwn(SUPPORT_LINKS, key)) shell.openExternal(SUPPORT_LINKS[key]);
+});
+ipcMain.on('open-mailto', (_e, mailtoUrl) => {
+  const s = String(mailtoUrl || '');
+  if (/^mailto:/i.test(s)) shell.openExternal(s).catch(() => {});
+});
+ipcMain.handle('device-info', () => {
+  const ver = typeof os.version === 'function' ? os.version() : `${os.type()} ${os.release()}`;
+  return {
+    appVersion: app.getVersion(),
+    os: `${ver} (${os.release()})`,
+    arch: os.arch(),
+    cpu: os.cpus()?.[0]?.model || '',
+    memGb: Math.round(os.totalmem() / (1024 ** 3)),
+    host: os.hostname(),
+  };
 });
 ipcMain.handle('bridge-status', () => bridgeStatus());
 ipcMain.on('open-log', () => {

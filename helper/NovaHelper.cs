@@ -112,6 +112,15 @@ static class Win {
   [DllImport("user32.dll")] public static extern bool ShowWindowAsync(IntPtr h, int cmd);
   [DllImport("user32.dll")] public static extern bool PostMessage(IntPtr h, uint msg, IntPtr w, IntPtr l);
   [DllImport("user32.dll")] static extern IntPtr GetForegroundWindow();
+  delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+  [DllImport("user32.dll")] static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
+  [DllImport("user32.dll")] static extern bool IsWindowVisible(IntPtr h);
+  [DllImport("user32.dll")] static extern bool IsIconic(IntPtr h);
+  [DllImport("user32.dll")] static extern bool SetForegroundWindow(IntPtr h);
+  [DllImport("user32.dll")] static extern bool BringWindowToTop(IntPtr h);
+  [DllImport("user32.dll")] static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, bool fAttach);
+  [DllImport("user32.dll")] static extern bool AllowSetForegroundWindow(int dwProcessId);
+  [DllImport("kernel32.dll")] static extern uint GetCurrentThreadId();
   [DllImport("user32.dll")] static extern bool GetWindowRect(IntPtr h, out RECT r);
   [DllImport("user32.dll")] static extern IntPtr MonitorFromWindow(IntPtr h, int flags);
   [DllImport("user32.dll")] static extern bool GetMonitorInfo(IntPtr m, ref MONITORINFO mi);
@@ -206,6 +215,64 @@ static class Win {
     if (!GetMonitorInfo(MonitorFromWindow(h, 2), ref mi)) return false;
     var m = mi.rcMonitor;
     return r.L == m.L && r.T == m.T && r.R == m.R && r.B == m.B;
+  }
+
+  public static bool FocusByQuery(string[] queries) {
+    if (queries == null || queries.Length == 0) return false;
+    var clean = new List<string>();
+    foreach (var q in queries) {
+      if (!string.IsNullOrWhiteSpace(q)) clean.Add(q.Trim().ToLowerInvariant());
+    }
+    if (clean.Count == 0) return false;
+
+    IntPtr best = IntPtr.Zero;
+    int bestScore = 0;
+
+    EnumWindows((hwnd, _lp) => {
+      if (!IsWindowVisible(hwnd)) return true;
+      var sbTitle = new StringBuilder(512);
+      GetWindowText(hwnd, sbTitle, 512);
+      string title = sbTitle.ToString().Trim();
+      if (string.IsNullOrEmpty(title)) return true;
+
+      uint pid;
+      GetWindowThreadProcessId(hwnd, out pid);
+      string proc = "";
+      try { proc = System.Diagnostics.Process.GetProcessById((int)pid).ProcessName ?? ""; } catch { }
+      string lowProc = proc.ToLowerInvariant();
+      string lowTitle = title.ToLowerInvariant();
+      if (lowProc == "hypernova" || lowProc == "nova-helper" || (lowProc == "electron" && lowTitle.Contains("hypernova"))) return true;
+
+      int score = 0;
+      foreach (var q in clean) {
+        if (lowProc == q) score = Math.Max(score, 100);
+        else if (!string.IsNullOrEmpty(lowProc) && (lowProc.Contains(q) || q.Contains(lowProc)) && q.Length >= 3) score = Math.Max(score, 75);
+        if (lowTitle == q) score = Math.Max(score, 90);
+        else if (lowTitle.Contains(q) && q.Length >= 3) score = Math.Max(score, 55);
+      }
+      if (score > bestScore) {
+        bestScore = score;
+        best = hwnd;
+      }
+      return true;
+    }, IntPtr.Zero);
+
+    if (best == IntPtr.Zero) return false;
+    try {
+      AllowSetForegroundWindow(-1);
+      if (IsIconic(best)) ShowWindow(best, 9);
+      IntPtr fg = GetForegroundWindow();
+      uint dummy;
+      uint fgTid = fg != IntPtr.Zero ? GetWindowThreadProcessId(fg, out dummy) : 0;
+      uint curTid = GetCurrentThreadId();
+      if (fgTid != 0 && fgTid != curTid) AttachThreadInput(curTid, fgTid, true);
+      BringWindowToTop(best);
+      SetForegroundWindow(best);
+      if (fgTid != 0 && fgTid != curTid) AttachThreadInput(curTid, fgTid, false);
+      return true;
+    } catch {
+      return false;
+    }
   }
 }
 
@@ -620,6 +687,14 @@ static class Program {
     Win.PerMonitorDpi();
     if (args.Length >= 1 && args[0] == "apps") return RunSta(w => Apps.Print(w));
     if (args.Length >= 2 && args[0] == "yturl") return RunSta(w => YtUrl.Print(w, args[1], args.Length > 2 ? args[2] : ""));
+    if (args.Length >= 2 && args[0] == "focus") {
+      return RunSta(w => {
+        var qs = new string[args.Length - 1];
+        Array.Copy(args, 1, qs, 0, qs.Length);
+        bool ok = Win.FocusByQuery(qs);
+        w.WriteLine(ok ? "{\"ok\":true}" : "{\"ok\":false}");
+      });
+    }
     outw = new StreamWriter(Console.OpenStandardOutput(), new UTF8Encoding(false)) { AutoFlush = true };
     AppDomain.CurrentDomain.ProcessExit += (_s, _e) => { NotificationsBridge.SetOsBannerSuppression(false); };
     mgr = Await(GlobalSystemMediaTransportControlsSessionManager.RequestAsync(), 8000);

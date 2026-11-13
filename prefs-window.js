@@ -5,7 +5,7 @@ const { BrowserWindow, ipcMain, shell } = require('electron');
 let win = null;
 
 function openExternalSafe(url) {
-  if (/^https?:\/\//i.test(String(url || ''))) {
+  if (/^(https?:\/\/|mailto:)/i.test(String(url || ''))) {
     shell.openExternal(url).catch(() => {});
   }
 }

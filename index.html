@@ -393,6 +393,9 @@
             <button role="tab" data-tab="system" class="tab" aria-label="System">
               <svg class="s" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><span>System</span>
             </button>
+            <button role="tab" data-tab="notifs" class="tab" aria-label="Notifications History">
+              <svg class="s" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span>Notifs</span><i class="badge" id="notifs-badge"></i>
+            </button>
           </nav>
           
           <!-- Topbar Right Zone: Clock Card + Explicit Collapse/Close Button -->
@@ -610,11 +613,11 @@
               <!-- Micro Header: Location on Right + Next Prayer Countdown on Left (NO duplicate countdown!) -->
               <div class="pr-slim-meta">
                 <div class="pr-loc-group">
-                  <button id="pr-alerts" type="button" title="معاينة صوت المؤذن (تكبيرتان فقط)" class="pr-bell-btn">
+                  <button id="pr-alerts" type="button" title="تنبيهات الأذان" aria-pressed="true" class="pr-bell-btn on">
                     <svg class="s" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                      <path class="off-line" stroke-linecap="round" d="M3 3l18 18"/>
                     </svg>
-                    <span id="pr-muezzin-lbl" class="pr-muezzin-lbl">عبد الباسط</span>
                   </button>
                   <span id="pr-city" class="pr-city-txt">الزقازيق</span>
                   <span class="pr-sep-dot">•</span>
@@ -771,6 +774,26 @@
               </div>
               <div id="clip-list" class="clip-list"></div>
             </div>
+          </div>
+        </section>
+
+        <!-- NOTIFICATIONS HISTORY -->
+        <section id="v-notifs" class="view v-notifs" role="tabpanel">
+          <div class="notifs-head">
+            <div class="notifs-title-wrap">
+              <span class="notifs-title-ico" aria-hidden="true">
+                <svg class="s" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+              </span>
+              <b id="notifs-heading">Notifications History</b>
+              <span class="notifs-count-pill" id="notifs-count">0</span>
+            </div>
+            <button type="button" id="notifs-clear" class="mini-btn notifs-clear-btn">Clear all</button>
+          </div>
+          <div id="notifs-list" class="notifs-list"></div>
+          <div id="notifs-empty" class="notifs-empty">
+            <svg class="s" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+            <b id="notifs-empty-title">No notifications yet</b>
+            <small id="notifs-empty-sub">Incoming alerts appear here and open their app when clicked.</small>
           </div>
         </section>
 

@@ -231,6 +231,7 @@
             <label class="chip"><input type="checkbox" data-feature="tabTimer" data-tab><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M10 2h4"/></svg><b data-i18n="tab_timer">المؤقت</b></label>
             <label class="chip"><input type="checkbox" data-feature="tabFocus" data-tab><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1.5"/></svg><b data-i18n="tab_focus">التركيز</b></label>
             <label class="chip"><input type="checkbox" data-feature="tabSystem" data-tab><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><b data-i18n="tab_system">النظام</b></label>
+            <label class="chip"><input type="checkbox" data-feature="tabNotifs" data-tab><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><b data-i18n="tab_notifs">الإشعارات</b></label>
           </div>
           <p class="hint warn" id="tabs-warn" data-i18n="tabs_warn" hidden>يجب الإبقاء على تبويب واحد على الأقل</p>
         </div>
@@ -369,7 +370,7 @@
                   <option value="aqsa">أذان المسجد الأقصى المبارك</option>
                   <option value="nafees">الشيخ أحمد النفيس (خاشع)</option>
                 </select>
-                <button type="button" id="btn-preview-adhan" class="mini-btn" title="معاينة التكبيرتين">🔊 معاينة</button>
+                <button type="button" id="btn-preview-adhan" class="mini-btn" title="معاينة التكبيرتين" data-i18n="btn_preview_adhan">🔊 معاينة</button>
               </div>
             </div>
             <label class="row"><b data-i18n="hanafi_asr">حساب صلاة العصر على المذهب الحنفي</b><input type="checkbox" class="sw" data-feature="asrHanafi"></label>
@@ -667,7 +668,7 @@
                   <span class="about-publisher-sub" data-i18n="about_publisher">Developed &amp; Published by <b>Ahmed Musa (@ahmdmusa)</b></span>
                 </div>
               </div>
-              <span id="about-ver-badge" class="about-ver-badge">v2.1.3 · Open Source</span>
+              <span id="about-ver-badge" class="about-ver-badge">v3.0.0 · Open Source</span>
             </div>
 
             <div class="about-actions-grid">
@@ -675,14 +676,40 @@
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" stroke="none"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
                 <span data-i18n="about_btn_github">GitHub والتحديثات</span>
               </a>
-              <a href="https://www.paypal.com/ncp/payment/4SWPEP8Q3YF78" target="_blank" class="btn-coffee" id="btn-coffee-link" title="دعم المشروع عبر PayPal">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
-                <span data-i18n="about_btn_coffee">Buy Me a Coffee</span>
+              <a href="https://www.paypal.com/ncp/payment/4SWPEP8Q3YF78" target="_blank" class="btn-coffee" id="btn-coffee-link" title="Buy Me a Coffee (PayPal)">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" stroke="none" aria-hidden="true"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.816-5.09a.932.932 0 0 1 .923-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.471z"/></svg>
+                <span data-i18n="about_btn_coffee">Buy Me a Coffee (PayPal)</span>
               </a>
-              <a href="https://ipn.eg/S/ahmdmusa/instapay/2yqQQN" target="_blank" class="btn-instapay" id="btn-instapay-link" title="دعم عبر InstaPay Egypt: ahmdmusa@instapay">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                <span data-i18n="about_btn_instapay">InstaPay Egypt (ahmdmusa)</span>
+              <a href="https://ipn.eg/S/ahmdmusa/instapay/2yqQQN" target="_blank" class="btn-instapay" id="btn-instapay-link" title="Buy Me a Coffee (InstaPay · ahmdmusa@instapay)">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="none" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="6" fill="rgba(255,255,255,0.22)"/><path d="M13.6 5.5L7.8 13h4.1l-1.5 5.5L16.2 11h-4.1l1.5-5.5z" fill="currentColor"/><circle cx="17.8" cy="6.8" r="1.4" fill="#fb923c"/></svg>
+                <span data-i18n="about_btn_instapay">Buy Me a Coffee (InstaPay)</span>
               </a>
+            </div>
+          </div>
+
+          <div class="group">
+            <h2 data-i18n="about_feedback_title">الاقتراحات والأعطال والدعم الفني</h2>
+            <div class="card feedback-card" id="about-feedback-card">
+              <div class="fb-top-meta">
+                <div class="fb-type-wrap">
+                  <label for="fb-type" class="fb-lbl" data-i18n="fb_type_lbl">نوع الرسالة</label>
+                  <select id="fb-type" class="select-input fb-select">
+                    <option value="Suggestion" data-i18n="fb_opt_suggestion">💡 مقترح وتطوير</option>
+                    <option value="Bug Report" data-i18n="fb_opt_bug">🐛 تبليغ عن عطل (Bug)</option>
+                    <option value="Complaint" data-i18n="fb_opt_complaint">⚠️ شكوى أو مشكلة</option>
+                    <option value="Praise" data-i18n="fb_opt_praise">❤️ رسالة شكر وتقدير</option>
+                  </select>
+                </div>
+                <span id="fb-device-pill" class="fb-device-pill" dir="ltr">HyperNova v3.0.0 · Windows</span>
+              </div>
+              <textarea id="fb-message" class="fb-textarea" rows="3" data-i18n-ph="fb_msg_ph" placeholder="اكتب مقترحك، أو تفاصيل العطل، أو شكواك أو كلمة شكر..."></textarea>
+              <div class="fb-actions">
+                <a id="btn-send-feedback-mail" href="mailto:ahmedmousa.eng+novaSupport@gmail.com?subject=HyperNovaSupport%20V3.0" class="btn-feedback-send">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                  <span data-i18n="fb_send_btn">إرسال عبر البريد الإلكتروني</span>
+                </a>
+                <a id="fb-direct-email-link" href="mailto:ahmedmousa.eng+novaSupport@gmail.com?subject=HyperNovaSupport%20V3.0" class="fb-direct-email" dir="ltr" title="ahmedmousa.eng+novaSupport@gmail.com">ahmedmousa.eng+novaSupport@gmail.com</a>
+              </div>
             </div>
           </div>
 

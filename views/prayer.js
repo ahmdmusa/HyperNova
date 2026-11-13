@@ -169,51 +169,33 @@
   let data = null;
   const fired = new Set(); // reminders already shown this run
 
-  const MUEZZIN_SHORT = {
-    mukhtasar: 'مختصر (أبو إيفاء)',
-    ali: 'عيد علي',
-    abdulbasit: 'عبد الباسط',
-    refaat: 'محمد رفعت',
-    banna: 'محمود البنا',
-    makkah: 'الحرم المكي',
-    madinah: 'المسجد النبوي',
-    aqsa: 'الأقصى',
-    nafees: 'أحمد النفيس'
-  };
-
-  // the bell and the Settings window share one switch (prayerAlerts) + shows active Muezzin
+  // the bell and the Settings window share one switch (prayerAlerts): toggle Active <-> Silent
   let alertsOn = true;
-  let currentMuezzinId = 'mukhtasar';
   const showBell = () => {
     if (!bell) return;
     bell.classList.toggle('on', alertsOn);
-    const lbl = document.getElementById('pr-muezzin-lbl');
-    if (lbl) lbl.textContent = MUEZZIN_SHORT[currentMuezzinId] || 'مختصر (أبو إيفاء)';
+    bell.classList.toggle('silent', !alertsOn);
+    bell.setAttribute('aria-pressed', alertsOn ? 'true' : 'false');
+    const isAr = (window.state?.features?.appLang || document.documentElement.lang || 'ar') === 'ar';
+    const label = isAr
+      ? (alertsOn ? 'تنبيهات الأذان: مفعّلة (اضغط للكتم)' : 'تنبيهات الأذان: صامت (اضغط للتفعيل)')
+      : (alertsOn ? 'Prayer alerts: On (click to mute)' : 'Prayer alerts: Silent (click to enable)');
+    bell.title = label;
+    bell.setAttribute('aria-label', label);
   };
   showBell();
   window.addEventListener('island:features', (e) => {
     alertsOn = e.detail.prayerAlerts !== false;
-    if (e.detail.adhanVoice) currentMuezzinId = e.detail.adhanVoice;
     showBell();
   });
-  bell.addEventListener('click', () => {
+  bell?.addEventListener('click', () => {
+    alertsOn = !alertsOn;
     if (activeIslandAdhanAudio) {
-      activeIslandAdhanAudio.pause();
+      try { activeIslandAdhanAudio.pause(); } catch {}
       activeIslandAdhanAudio = null;
-      return;
     }
-    const voice = window.state?.features?.adhanVoice || currentMuezzinId || 'abdulbasit';
-    if (typeof window.handleAdhanAudioWithDucking === 'function') {
-      window.handleAdhanAudioWithDucking(voice);
-    }
-  });
-  bell.addEventListener('contextmenu', (e) => {
-    e.preventDefault();
-    const ids = Object.keys(MUEZZIN_SHORT);
-    const nextIdx = (ids.indexOf(currentMuezzinId) + 1) % ids.length;
-    currentMuezzinId = ids[nextIdx];
     showBell();
-    bridge.setFeatures({ adhanVoice: currentMuezzinId });
+    bridge.setFeatures?.({ prayerAlerts: alertsOn });
   });
 
   const pad = (n) => String(n).padStart(2, '0');

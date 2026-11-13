@@ -26,6 +26,8 @@ contextBridge.exposeInMainWorld('prefs', {
   setCalendar: (url) => ipcRenderer.invoke('cal-set', url),
   onCalendar: on('calendar'),
   openSupport: (key) => ipcRenderer.send('open-support', key),
+  openMailto: (url) => ipcRenderer.send('open-mailto', url),
+  deviceInfo: () => ipcRenderer.invoke('device-info'),
   setDeepFocus: (enabled) => ipcRenderer.invoke('set-deep-focus', enabled),
   getDeepFocus: () => ipcRenderer.invoke('get-deep-focus'),
   focusShield: {

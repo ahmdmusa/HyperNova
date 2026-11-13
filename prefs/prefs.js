@@ -27,8 +27,17 @@ const I18N = {
     about_tech_specs: 'المواصفات التقنية والمصادر',
     about_publisher: 'تطوير ونشر المهندس أحمد موسى (@ahmdmusa)',
     about_btn_github: 'مستودع GitHub والتحديثات',
-    about_btn_coffee: 'Buy Me a Coffee',
-    about_btn_instapay: 'InstaPay Egypt (ahmdmusa)',
+    about_btn_coffee: 'Buy Me a Coffee (PayPal)',
+    about_btn_instapay: 'Buy Me a Coffee (InstaPay)',
+    about_feedback_title: 'الاقتراحات والأعطال والدعم الفني',
+    fb_type_lbl: 'نوع الرسالة',
+    fb_opt_suggestion: '💡 مقترح وتطوير',
+    fb_opt_bug: '🐛 تبليغ عن عطل (Bug)',
+    fb_opt_complaint: '⚠️ شكوى أو مشكلة',
+    fb_opt_praise: '❤️ رسالة شكر وتقدير',
+    fb_msg_ph: 'اكتب مقترحك، أو تفاصيل العطل، أو شكواك أو كلمة شكر...',
+    fb_send_btn: 'إرسال عبر البريد الإلكتروني',
+    btn_preview_adhan: '🔊 معاينة',
     about_spec_publisher: 'الناشر والمطور',
     about_spec_publisher_sub: 'Ahmed Musa · github.com/ahmdmusa',
     about_spec_license: 'الترخيص البرمجي',
@@ -111,6 +120,7 @@ const I18N = {
     tab_timer: 'المؤقت',
     tab_focus: 'التركيز',
     tab_system: 'النظام',
+    tab_notifs: 'الإشعارات',
     tabs_warn: 'يجب الإبقاء على تبويب واحد على الأقل',
     collapsed_title: 'الشريط المصغر (عند التصغير)',
     slide_clock: 'الساعة وحالة الطقس',
@@ -314,8 +324,17 @@ const I18N = {
     about_tech_specs: 'Technical Specs & Credits',
     about_publisher: 'Developed & Published by Ahmed Musa (@ahmdmusa)',
     about_btn_github: 'GitHub Repository',
-    about_btn_coffee: 'Buy Me a Coffee',
-    about_btn_instapay: 'InstaPay Egypt (ahmdmusa)',
+    about_btn_coffee: 'Buy Me a Coffee (PayPal)',
+    about_btn_instapay: 'Buy Me a Coffee (InstaPay)',
+    about_feedback_title: 'Suggestions, Bugs & Support',
+    fb_type_lbl: 'Category',
+    fb_opt_suggestion: '💡 Suggestion / Idea',
+    fb_opt_bug: '🐛 Bug Report',
+    fb_opt_complaint: '⚠️ Complaint / Issue',
+    fb_opt_praise: '❤️ Thank You / Praise',
+    fb_msg_ph: 'Write your suggestion, bug details, complaint, or thank-you note...',
+    fb_send_btn: 'Send via Email App',
+    btn_preview_adhan: '🔊 Preview',
     about_spec_publisher: 'Publisher & Author',
     about_spec_publisher_sub: 'Ahmed Musa · github.com/ahmdmusa',
     about_spec_license: 'Open Source License',
@@ -398,6 +417,7 @@ const I18N = {
     tab_timer: 'Timer',
     tab_focus: 'Focus',
     tab_system: 'System',
+    tab_notifs: 'Notifs',
     tabs_warn: 'Keep at least one tab',
     collapsed_title: 'Collapsed (Mini Bar)',
     slide_clock: 'Clock & weather',
@@ -856,6 +876,8 @@ function applyLanguage(lang) {
 
   // Re-render steppers with localized unit strings
   showSteppers();
+  if (typeof refreshCacheSizeDisplay === 'function') refreshCacheSizeDisplay();
+  if (typeof updateFeedbackMailto === 'function') updateFeedbackMailto();
 
 
   // Update dynamic badges / version
@@ -1348,7 +1370,7 @@ function stopAdhanPreview() {
     activeAdhanAudio = null;
   }
   const btn = document.getElementById('btn-preview-adhan');
-  if (btn) btn.innerHTML = '🔊 معاينة';
+  if (btn) btn.innerHTML = currentLang === 'ar' ? '🔊 معاينة' : '🔊 Preview';
 }
 
 function playTwoTakbeersLocal(voice) {
@@ -1394,7 +1416,7 @@ function playAdhanTakbeers(muezzinId) {
   }
   const muezzin = ADHAN_MUEZZINS.find(m => m.id === muezzinId) || ADHAN_MUEZZINS[0];
   const btn = document.getElementById('btn-preview-adhan');
-  if (btn) btn.innerHTML = '⏹️ إيقاف';
+  if (btn) btn.innerHTML = currentLang === 'ar' ? '⏹️ إيقاف' : '⏹️ Stop';
 
   const audio = new Audio();
   audio.src = muezzin.url;
@@ -1523,3 +1545,65 @@ document.getElementById('btn-test-notif')?.addEventListener('click', () => {
   });
   saved(currentLang === 'ar' ? 'تم إرسال إشعار تجريبي للجزيرة' : 'Test notification sent to Island');
 });
+
+// About Page: Feedback, Bug Reports & Suggestions Mailer
+let cachedDevInfo = {
+  appVersion: '3.0.0',
+  os: navigator.platform || 'Windows',
+  arch: navigator.userAgent?.includes('64') ? 'x64' : '',
+  memGb: '',
+};
+
+function buildFeedbackMailto() {
+  const typeEl = document.getElementById('fb-type');
+  const msgEl = document.getElementById('fb-message');
+  const typeVal = typeEl ? typeEl.value : 'Suggestion';
+  const msgText = (msgEl?.value || '').trim();
+  const ver = cachedDevInfo.appVersion || '3.0.0';
+  const deviceLine = [cachedDevInfo.os, cachedDevInfo.arch, cachedDevInfo.memGb ? `${cachedDevInfo.memGb}GB RAM` : ''].filter(Boolean).join(' · ');
+  const subject = `HyperNovaSupport V3.0 - ${typeVal}`;
+  const bodyLines = [
+    `App Version: HyperNova v${ver}`,
+    `Device / OS: ${deviceLine || 'Windows Desktop'}`,
+    `Category: ${typeVal}`,
+    '',
+    'Message / Details:',
+    msgText || (currentLang === 'ar' ? '(اكتب رسالتك هنا)' : '(Write your message here)'),
+    '',
+  ];
+  return `mailto:ahmedmousa.eng+novaSupport@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines.join('\n'))}`;
+}
+
+function updateFeedbackMailto() {
+  const pill = document.getElementById('fb-device-pill');
+  const ver = cachedDevInfo.appVersion || '3.0.0';
+  const devShort = [cachedDevInfo.os || 'Windows', cachedDevInfo.arch].filter(Boolean).join(' · ');
+  if (pill) pill.textContent = `HyperNova v${ver} · ${devShort}`;
+  const href = buildFeedbackMailto();
+  const sendBtn = document.getElementById('btn-send-feedback-mail');
+  const directLink = document.getElementById('fb-direct-email-link');
+  if (sendBtn) sendBtn.setAttribute('href', href);
+  if (directLink) directLink.setAttribute('href', href);
+}
+
+api.deviceInfo?.().then((info) => {
+  if (info && typeof info === 'object') {
+    cachedDevInfo = { ...cachedDevInfo, ...info };
+    updateFeedbackMailto();
+  }
+}).catch(() => {});
+
+document.getElementById('fb-type')?.addEventListener('change', updateFeedbackMailto);
+document.getElementById('fb-message')?.addEventListener('input', updateFeedbackMailto);
+
+function handleFeedbackLinkClick(e) {
+  updateFeedbackMailto();
+  const href = buildFeedbackMailto();
+  if (typeof api.openMailto === 'function') {
+    e.preventDefault();
+    api.openMailto(href);
+  }
+}
+document.getElementById('btn-send-feedback-mail')?.addEventListener('click', handleFeedbackLinkClick);
+document.getElementById('fb-direct-email-link')?.addEventListener('click', handleFeedbackLinkClick);
+updateFeedbackMailto();

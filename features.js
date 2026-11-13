@@ -10,6 +10,7 @@ const DEFAULTS = {
   tabTimer: true,
   tabFocus: true,
   tabSystem: true,
+  tabNotifs: true,
   // idle pill slides
   slideClock: true,
   slideStats: true,
