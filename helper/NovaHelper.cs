@@ -6,6 +6,7 @@
 // Build: helper/build.cmd (uses the C# compiler that ships with Windows).
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Management;
@@ -15,6 +16,8 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using Windows.Media.Control;
 using Windows.Storage.Streams;
+using Windows.UI.Notifications;
+using Windows.UI.Notifications.Management;
 
 [ComImport, Guid("5CDF2C82-841E-4546-9722-0CF74078229A"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 interface IAudioEndpointVolume {
@@ -88,7 +91,24 @@ static class Win {
 
   [StructLayout(LayoutKind.Sequential)] public struct RECT { public int L, T, R, B; }
   [StructLayout(LayoutKind.Sequential)] public struct MONITORINFO { public int cbSize; public RECT rcMonitor; public RECT rcWork; public int dwFlags; }
-    [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr h, int cmd);
+  [DllImport("user32.dll", SetLastError = true)] public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+  public static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
+  public const uint SWP_NOSIZE = 0x0001;
+  public const uint SWP_NOMOVE = 0x0002;
+  public const uint SWP_NOACTIVATE = 0x0010;
+  public const uint SWP_NOOWNERZORDER = 0x0200;
+  public const uint TOPMOST_FLAGS = SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOOWNERZORDER;
+
+  public static bool EnsureTopmost(IntPtr hwnd) {
+    if (hwnd == IntPtr.Zero) return false;
+    try {
+      return SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
+    } catch {
+      return false;
+    }
+  }
+
+  [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr h, int cmd);
   [DllImport("user32.dll")] public static extern bool ShowWindowAsync(IntPtr h, int cmd);
   [DllImport("user32.dll")] public static extern bool PostMessage(IntPtr h, uint msg, IntPtr w, IntPtr l);
   [DllImport("user32.dll")] static extern IntPtr GetForegroundWindow();
@@ -230,18 +250,216 @@ class Json {
   public Json Add(string k, string v) { Key(k); Str(v); return this; }
   public Json Add(string k, bool v) { Key(k); sb.Append(v ? "true" : "false"); return this; }
   public Json Add(string k, int v) { Key(k); sb.Append(v.ToString(CultureInfo.InvariantCulture)); return this; }
+  public Json Add(string k, uint v) { Key(k); sb.Append(v.ToString(CultureInfo.InvariantCulture)); return this; }
   public Json Raw(string k, string json) { Key(k); sb.Append(json); return this; }
   public Json Add(string k, double v) { Key(k); sb.Append(Math.Round(v, 3).ToString(CultureInfo.InvariantCulture)); return this; }
   public override string ToString() { return sb.ToString() + "}"; }
 }
 
+static class NotificationsBridge {
+  const string NOTIF_SETTINGS_KEY = @"Software\Microsoft\Windows\CurrentVersion\Notifications\Settings";
+  const string BACKUP_KEY = @"Software\HyperNova";
+  static UserNotificationListener listener;
+  static readonly HashSet<uint> seenIds = new HashSet<uint>();
+  static readonly Dictionary<string, string> logoCache = new Dictionary<string, string>();
+  static readonly AutoResetEvent wakeEvt = new AutoResetEvent(false);
+  static volatile bool dirty = false;
+  static bool started = false;
+  public static volatile bool CaptureEnabled = false;
+  public static volatile bool ReplaceMode = false;
+
+  public static void SetOsBannerSuppression(bool suppress) {
+    try {
+      using (var bk = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(BACKUP_KEY))
+      using (var sk = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(NOTIF_SETTINGS_KEY)) {
+        if (bk == null || sk == null) return;
+        int pending = Convert.ToInt32(bk.GetValue("OrigToastsPending", 0));
+        if (suppress) {
+          if (pending == 0) {
+            object cur = sk.GetValue("NOC_GLOBAL_SETTING_TOASTS_ENABLED", null);
+            if (cur != null) {
+              bk.SetValue("OrigToastsExisted", 1, Microsoft.Win32.RegistryValueKind.DWord);
+              bk.SetValue("OrigToastsValue", Convert.ToInt32(cur), Microsoft.Win32.RegistryValueKind.DWord);
+            } else {
+              bk.SetValue("OrigToastsExisted", 0, Microsoft.Win32.RegistryValueKind.DWord);
+              bk.SetValue("OrigToastsValue", 1, Microsoft.Win32.RegistryValueKind.DWord);
+            }
+            bk.SetValue("OrigToastsPending", 1, Microsoft.Win32.RegistryValueKind.DWord);
+          }
+          sk.SetValue("NOC_GLOBAL_SETTING_TOASTS_ENABLED", 0, Microsoft.Win32.RegistryValueKind.DWord);
+        } else if (pending == 1) {
+          int existed = Convert.ToInt32(bk.GetValue("OrigToastsExisted", 0));
+          int origVal = Convert.ToInt32(bk.GetValue("OrigToastsValue", 1));
+          if (existed == 1) {
+            sk.SetValue("NOC_GLOBAL_SETTING_TOASTS_ENABLED", origVal, Microsoft.Win32.RegistryValueKind.DWord);
+          } else {
+            sk.DeleteValue("NOC_GLOBAL_SETTING_TOASTS_ENABLED", false);
+          }
+          bk.SetValue("OrigToastsPending", 0, Microsoft.Win32.RegistryValueKind.DWord);
+        }
+      }
+    } catch { }
+  }
+
+  public static void Wake() {
+    try { wakeEvt.Set(); } catch { }
+  }
+
+  public static void Start() {
+    if (started) return;
+    started = true;
+    var th = new Thread(() => {
+      Init();
+      while (true) {
+        if (!CaptureEnabled || listener == null) {
+          wakeEvt.WaitOne(1000);
+          continue;
+        }
+        PollAndEmit();
+        if (!dirty) wakeEvt.WaitOne(1500);
+      }
+    }) { IsBackground = true };
+    th.Start();
+  }
+
+  static void Init() {
+    try {
+      listener = UserNotificationListener.Current;
+      if (listener == null) return;
+      var status = Program.AwaitOp(listener.RequestAccessAsync(), 6000);
+      if (status != UserNotificationListenerAccessStatus.Allowed) { listener = null; return; }
+      var existing = Program.AwaitOp(listener.GetNotificationsAsync(NotificationKinds.Toast), 8000);
+      if (existing != null) {
+        foreach (var n in existing) seenIds.Add(n.Id);
+      }
+      try {
+        listener.NotificationChanged += (s, args) => { dirty = true; Wake(); };
+      } catch { }
+    } catch { listener = null; }
+  }
+
+  static string GetLogoBase64(UserNotification n, string key) {
+    if (string.IsNullOrEmpty(key)) return "";
+    string cached;
+    if (logoCache.TryGetValue(key, out cached)) return cached;
+    string b64 = "";
+    try {
+      if (n.AppInfo != null && n.AppInfo.DisplayInfo != null) {
+        var logoRef = n.AppInfo.DisplayInfo.GetLogo(new Windows.Foundation.Size(48, 48));
+        if (logoRef != null) {
+          using (var s = Program.AwaitOp(logoRef.OpenReadAsync(), 1500)) {
+            if (s != null && s.Size > 0 && s.Size < 262144) {
+              var reader = new DataReader(s.GetInputStreamAt(0));
+              uint read = Program.AwaitOp(reader.LoadAsync((uint)s.Size), 1500);
+              if (read > 0) {
+                var bytes = new byte[read];
+                reader.ReadBytes(bytes);
+                b64 = "data:image/png;base64," + Convert.ToBase64String(bytes);
+              }
+              reader.Dispose();
+            }
+          }
+        }
+      }
+    } catch { }
+    if (logoCache.Count > 40) logoCache.Clear();
+    logoCache[key] = b64;
+    return b64;
+  }
+
+  static void PollAndEmit() {
+    if (!CaptureEnabled || listener == null) return;
+    dirty = false;
+    try {
+      // GetNotificationsAsync can exceed 1.5s under Windows wpnservice load; keep generous timeout off the main loop.
+      var list = Program.AwaitOp(listener.GetNotificationsAsync(NotificationKinds.Toast), 8000);
+      if (list == null) return;
+      foreach (var n in list) {
+        if (seenIds.Contains(n.Id)) continue;
+        seenIds.Add(n.Id);
+
+        string appName = "Windows", aumid = "", title = "", msg = "";
+        try {
+          if (n.AppInfo != null) {
+            aumid = n.AppInfo.AppUserModelId ?? "";
+            if (n.AppInfo.DisplayInfo != null && !string.IsNullOrEmpty(n.AppInfo.DisplayInfo.DisplayName)) {
+              appName = n.AppInfo.DisplayInfo.DisplayName;
+            }
+          }
+          if (n.Notification != null && n.Notification.Visual != null) {
+            var binding = n.Notification.Visual.GetBinding(KnownNotificationBindings.ToastGeneric);
+            if (binding != null) {
+              var texts = binding.GetTextElements();
+              var body = new List<string>();
+              int idx = 0;
+              foreach (var el in texts) {
+                string txt = (el.Text ?? "").Trim();
+                if (string.IsNullOrEmpty(txt)) continue;
+                if (idx == 0) title = txt;
+                else body.Add(txt);
+                idx++;
+              }
+              msg = string.Join(" · ", body.ToArray());
+            }
+          }
+        } catch { }
+
+        if (string.Equals(aumid, "com.ahmdmusa.hypernova", StringComparison.OrdinalIgnoreCase)) continue;
+        if (string.IsNullOrEmpty(title) && string.IsNullOrEmpty(msg)) continue;
+
+        if (ReplaceMode) {
+          try { listener.RemoveNotification(n.Id); } catch { }
+        }
+
+        string icon = GetLogoBase64(n, string.IsNullOrEmpty(aumid) ? appName : aumid);
+        var j = new Json()
+          .Add("id", n.Id)
+          .Add("app", appName)
+          .Add("aumid", aumid)
+          .Add("title", string.IsNullOrEmpty(title) ? appName : title)
+          .Add("message", msg);
+        if (!string.IsNullOrEmpty(icon)) j.Add("icon", icon);
+        var line = new Json().Raw("notif", j.ToString()).ToString();
+        Program.PinTopmost();
+        Program.EmitLine(line);
+      }
+      if (seenIds.Count > 500) {
+        var keep = new HashSet<uint>();
+        foreach (var item in list) keep.Add(item.Id);
+        seenIds.IntersectWith(keep);
+      }
+    } catch { }
+  }
+}
+
 static class Program {
+  public static IntPtr IslandHwnd = IntPtr.Zero;
+  public static void PinTopmost() {
+    if (IslandHwnd != IntPtr.Zero) {
+      try { Win.EnsureTopmost(IslandHwnd); } catch { }
+    }
+  }
+
   static GlobalSystemMediaTransportControlsSessionManager mgr;
   static readonly BlockingCollection<string> commands = new BlockingCollection<string>();
+  static readonly object writeLock = new object();
   static TextWriter outw;
+
+  public static bool EmitLine(string line) {
+    if (outw == null || line == null) return true;
+    lock (writeLock) {
+      try { outw.WriteLine(line); return true; }
+      catch (IOException) { return false; }
+      catch { return true; }
+    }
+  }
 
   // Waits on a WinRT operation through its own Status/GetResults: the AsTask bridge would need
   // the Windows SDK's union Windows.winmd, which the compiler that ships with Windows lacks.
+  public static T AwaitOp<T>(Windows.Foundation.IAsyncOperation<T> op, int ms = 3000) {
+    return Await(op, ms);
+  }
+
   static T Await<T>(Windows.Foundation.IAsyncOperation<T> op, int ms = 3000) {
     if (op == null) return default(T);
     try {
@@ -287,6 +505,29 @@ static class Program {
 
   static void Handle(string cmd) {
 
+    if (cmd == "notif-replace-on") {
+      NotificationsBridge.CaptureEnabled = true;
+      NotificationsBridge.ReplaceMode = true;
+      NotificationsBridge.SetOsBannerSuppression(true);
+      NotificationsBridge.Wake();
+      return;
+    }
+    if (cmd == "notif-replace-off") {
+      NotificationsBridge.ReplaceMode = false;
+      NotificationsBridge.SetOsBannerSuppression(false);
+      return;
+    }
+    if (cmd == "notif-capture-on") {
+      NotificationsBridge.CaptureEnabled = true;
+      NotificationsBridge.Wake();
+      return;
+    }
+    if (cmd == "notif-capture-off") {
+      NotificationsBridge.CaptureEnabled = false;
+      NotificationsBridge.ReplaceMode = false;
+      NotificationsBridge.SetOsBannerSuppression(false);
+      return;
+    }
     if (cmd == "hide-desktop-icons") {
       Win.SetDesktopIcons(true);
       return;
@@ -309,6 +550,19 @@ static class Program {
         Win.PostMessage(h, 0x0112, (IntPtr)0xF020, IntPtr.Zero);
         Win.ShowWindowAsync(h, 6);
       }
+      return;
+    }
+    if (cmd.StartsWith("island-hwnd ")) {
+      string val = cmd.Substring(12).Trim();
+      long h;
+      if (long.TryParse(val, out h)) {
+        IslandHwnd = new IntPtr(h);
+        Win.EnsureTopmost(IslandHwnd);
+      }
+      return;
+    }
+    if (cmd == "pin-topmost") {
+      PinTopmost();
       return;
     }
     Match m;
@@ -367,14 +621,17 @@ static class Program {
     if (args.Length >= 1 && args[0] == "apps") return RunSta(w => Apps.Print(w));
     if (args.Length >= 2 && args[0] == "yturl") return RunSta(w => YtUrl.Print(w, args[1], args.Length > 2 ? args[2] : ""));
     outw = new StreamWriter(Console.OpenStandardOutput(), new UTF8Encoding(false)) { AutoFlush = true };
+    AppDomain.CurrentDomain.ProcessExit += (_s, _e) => { NotificationsBridge.SetOsBannerSuppression(false); };
     mgr = Await(GlobalSystemMediaTransportControlsSessionManager.RequestAsync(), 8000);
-    if (mgr == null) outw.WriteLine("{\"error\":\"smtc-unavailable\"}");
+    if (mgr == null) EmitLine("{\"error\":\"smtc-unavailable\"}");
+    NotificationsBridge.Start();
 
-    // stdin on its own thread; when the island closes the pipe, exit
+    // stdin on its own thread; when the island closes the pipe, restore OS notification settings and exit
     var reader = new Thread(() => {
       var stdin = new StreamReader(Console.OpenStandardInput(), new UTF8Encoding(false));
       string line;
       while ((line = stdin.ReadLine()) != null) commands.Add(line.Trim());
+      NotificationsBridge.SetOsBannerSuppression(false);
       Environment.Exit(0);
     }) { IsBackground = true };
     reader.Start();
@@ -397,6 +654,16 @@ static class Program {
       if (!acted && DateTime.UtcNow < next) continue;
       next = DateTime.UtcNow.AddMilliseconds(500);
       loop++;
+
+      if (IslandHwnd != IntPtr.Zero) {
+        try {
+          IntPtr fgH = Win.ForegroundHandle();
+          string fgCls = fgH != IntPtr.Zero ? Win.ClassOf(fgH) : "";
+          if (fgCls == "Shell_TrayWnd" || fgCls == "Shell_SecondaryTrayWnd" || loop % 6 == 0) {
+            Win.EnsureTopmost(IslandHwnd);
+          }
+        } catch { }
+      }
 
       var o = new Json();
       var s = mgr == null ? null : mgr.GetCurrentSession();
@@ -441,7 +708,7 @@ static class Program {
       try { string t; Win.Foreground(out fgProc, out t); o.Add("fgProc", fgProc).Add("fgTitle", t); } catch { }
       try { o.Raw("omni", AddressBar.Json(Win.ForegroundHandle(), fgProc, Win.IsFullscreen())); } catch { o.Raw("omni", "null"); }
 
-      try { outw.WriteLine(o.ToString()); } catch (IOException) { return 0; }
+      if (!EmitLine(o.ToString())) return 0;
     }
   }
 }

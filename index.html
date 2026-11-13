@@ -80,7 +80,7 @@
         <canvas id="fxCanvas" width="480" height="160" class="fx-canvas-overlay"></canvas>
         <div class="eyes" id="nova-face">
           <!-- Main Sway Rig Group (sways on audio/Quran) -->
-          <svg id="novaNotchSvg" viewBox="0 0 240 82" class="nova-svg-rig" aria-hidden="true">
+          <svg id="novaNotchSvg" viewBox="0 0 240 82" preserveAspectRatio="xMidYMid meet" class="nova-svg-rig" aria-hidden="true">
             <defs>
               <linearGradient id="rugGrad" x1="0" y1="0" x2="1" y2="0">
                 <stop offset="0%" stop-color="#065f46" />
@@ -95,86 +95,92 @@
             </defs>
 
             <g id="robotSwayGroup">
-              <!-- PROP 1: 🕋 PRAYER TAQIYAH & RUG (Pre-Adhan) -->
-              <g id="propPrayerGroup" class="hidden">
-                <rect x="68" y="64" width="104" height="7" rx="3.5" fill="url(#rugGrad)" stroke="#facc15" stroke-width="1" />
-                <path d="M 85 64 L 92 59 L 99 64 M 141 64 L 148 59 L 155 64" stroke="#facc15" stroke-width="1.2" fill="none" />
-                <path d="M 86 21 C 86 8, 154 8, 154 21 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2" />
-                <path d="M 92 18 Q 120 13 148 18" stroke="#eab308" stroke-width="1.3" stroke-dasharray="3 2" fill="none" />
-              </g>
-
-              <!-- PROP 2: 🥋 WARRIOR HEADBAND & MINI LAPTOP (Focus) -->
-              <g id="propWarriorGroup" class="hidden">
-                <path d="M 76 18 Q 120 21 164 18 L 164 24 Q 120 27 76 24 Z" fill="#ef4444" />
-                <circle cx="120" cy="21.5" r="3.5" fill="#fde047" />
-                <path d="M 163 20 Q 178 15 184 22 Q 175 25 163 23" fill="#dc2626" />
-                <path d="M 163 23 Q 176 26 181 32 Q 171 31 163 24" fill="#b91c1c" />
-                <rect x="103" y="54" width="34" height="19" rx="3" fill="#334155" stroke="#94a3b8" stroke-width="1" />
-                <circle cx="120" cy="63.5" r="2.5" fill="#38bdf8" />
-                <rect x="97" y="72" width="46" height="3" rx="1.5" fill="#64748b" />
-              </g>
-
-              <!-- PROP 3: ☕ HOT STEAMING MUG (20-20-20 & Water) -->
-              <g id="propCoffeeGroup" class="hidden">
-                <g transform="translate(166, 34)">
-                  <path class="steam-line-1" d="M 8 -2 Q 5 -8 9 -13" stroke="#e2e8f0" stroke-width="1.6" fill="none" stroke-linecap="round" />
-                  <path class="steam-line-2" d="M 14 0 Q 17 -7 13 -12" stroke="#e2e8f0" stroke-width="1.6" fill="none" stroke-linecap="round" />
-                  <path class="steam-line-3" d="M 20 -2 Q 17 -8 21 -13" stroke="#e2e8f0" stroke-width="1.6" fill="none" stroke-linecap="round" />
-                  <path d="M 24 6 C 30 6, 30 16, 24 16" stroke="#f59e0b" stroke-width="2.5" fill="none" />
-                  <rect x="4" y="2" width="21" height="19" rx="4" fill="#f59e0b" stroke="#fef3c7" stroke-width="1.2" />
-                  <ellipse cx="14.5" cy="3" rx="9" ry="2" fill="#78350f" />
-                </g>
-              </g>
-
-              <!-- PROP 4: ☔ CUTE UMBRELLA & RAIN (Rainy Weather) -->
-              <g id="propUmbrellaGroup" class="hidden">
-                <line class="rain-1" x1="52" y1="14" x2="49" y2="22" stroke="#38bdf8" stroke-width="1.6" stroke-linecap="round" />
-                <line class="rain-2" x1="188" y1="12" x2="185" y2="20" stroke="#38bdf8" stroke-width="1.6" stroke-linecap="round" />
-                <line class="rain-3" x1="66" y1="24" x2="63" y2="32" stroke="#38bdf8" stroke-width="1.6" stroke-linecap="round" />
-                <g transform="translate(152, 4)">
-                  <path d="M 2 22 C 2 5, 42 5, 42 22 Q 32 19 22 22 Q 12 19 2 22 Z" fill="url(#umbrellaGrad)" stroke="#e0e7ff" stroke-width="1" />
-                  <path d="M 22 22 L 22 38 C 22 43, 15 43, 15 38" stroke="#fde047" stroke-width="2.2" fill="none" stroke-linecap="round" />
-                </g>
-              </g>
-
-              <!-- CHEEKS (Blushing for Petting, Celebrate, Happy) -->
-              <g id="cheeksLayer" class="hidden" opacity="0.85">
-                <ellipse cx="78" cy="52" rx="8" ry="4.5" fill="#fb7185" />
-                <ellipse cx="162" cy="52" rx="8" ry="4.5" fill="#fb7185" />
-              </g>
-
-              <!-- OPEN EYES GROUP (Glowing Sclera + Dark Pupils + Catchlights) -->
-              <g id="openEyesGroup">
-                <rect id="scleraLeft" class="sclera-glow" x="88" y="24" width="22" height="28" rx="9" fill="#ffffff" />
-                <rect id="scleraRight" class="sclera-glow" x="130" y="24" width="22" height="28" rx="9" fill="#ffffff" />
-                <circle id="pupilLeft" cx="99" cy="39" r="6.2" fill="#0b0d12" />
-                <circle id="catchlightLeft" cx="97" cy="36.5" r="1.8" fill="#ffffff" opacity="0.9" />
-                <circle id="pupilRight" cx="141" cy="39" r="6.2" fill="#0b0d12" />
-                <circle id="catchlightRight" cx="139" cy="36.5" r="1.8" fill="#ffffff" opacity="0.9" />
-
-                <!-- Sleepy Eyelids Mask -->
-                <g id="sleepyEyelidsGroup" class="hidden">
-                  <rect x="86" y="22" width="26" height="14" rx="4" fill="#151920" />
-                  <rect x="128" y="22" width="26" height="14" rx="4" fill="#151920" />
+              <!-- LAYER A: Core Eyes, Lids, Cheeks & Expressions -->
+              <g id="coreEyesLayer">
+                <!-- CHEEKS (Blushing for Petting, Celebrate, Happy) -->
+                <g id="cheeksLayer" class="hidden" opacity="0.85">
+                  <ellipse cx="78" cy="52" rx="8" ry="4.5" fill="#fb7185" />
+                  <ellipse cx="162" cy="52" rx="8" ry="4.5" fill="#fb7185" />
                 </g>
 
-                <!-- Warrior / Focused Eyebrows -->
-                <g id="warriorBrowsGroup" class="hidden">
-                  <path d="M 85 22 L 112 28" stroke="#151920" stroke-width="5" stroke-linecap="round" />
-                  <path d="M 155 22 L 128 28" stroke="#151920" stroke-width="5" stroke-linecap="round" />
+                <!-- OPEN EYES GROUP (Glowing Sclera + Dark Pupils + Catchlights) -->
+                <g id="openEyesGroup">
+                  <rect id="scleraLeft" class="sclera-glow" x="88" y="24" width="22" height="28" rx="9" fill="var(--nova-eye, #ffffff)" />
+                  <rect id="scleraRight" class="sclera-glow" x="130" y="24" width="22" height="28" rx="9" fill="var(--nova-eye, #ffffff)" />
+                  <circle id="pupilLeft" cx="99" cy="39" r="6.2" fill="var(--nova-pupil, #0b0d12)" />
+                  <circle id="catchlightLeft" cx="97" cy="36.5" r="1.8" fill="var(--nova-catch, #ffffff)" opacity="0.9" />
+                  <circle id="pupilRight" cx="141" cy="39" r="6.2" fill="var(--nova-pupil, #0b0d12)" />
+                  <circle id="catchlightRight" cx="139" cy="36.5" r="1.8" fill="var(--nova-catch, #ffffff)" opacity="0.9" />
+
+                  <!-- Sleepy Eyelids Mask -->
+                  <g id="sleepyEyelidsGroup" class="hidden">
+                    <rect class="nova-lid-fill" x="86" y="22" width="26" height="14" rx="4" fill="var(--nova-lid, #12151c)" />
+                    <rect class="nova-lid-fill" x="128" y="22" width="26" height="14" rx="4" fill="var(--nova-lid, #12151c)" />
+                  </g>
+
+                  <!-- Warrior / Focused Eyebrows -->
+                  <g id="warriorBrowsGroup" class="hidden">
+                    <path class="nova-brow-stroke" d="M 85 22 L 112 28" stroke="var(--nova-lid, #12151c)" stroke-width="5" stroke-linecap="round" />
+                    <path class="nova-brow-stroke" d="M 155 22 L 128 28" stroke="var(--nova-lid, #12151c)" stroke-width="5" stroke-linecap="round" />
+                  </g>
+                </g>
+
+                <!-- ARC EYES GROUP (Happy / Khushu / Petting Arcs) -->
+                <g id="arcEyesGroup" class="hidden">
+                  <path id="arcLeft" class="sclera-glow" d="M 89 42 Q 99 26 109 42" stroke="var(--nova-eye, #ffffff)" stroke-width="5" fill="none" stroke-linecap="round" />
+                  <path id="arcRight" class="sclera-glow" d="M 131 42 Q 141 26 151 42" stroke="var(--nova-eye, #ffffff)" stroke-width="5" fill="none" stroke-linecap="round" />
+                </g>
+
+                <!-- Mouth & Yawn Shapes -->
+                <path id="robotMouth" class="hidden nova-mouth-stroke" d="M 114 52 Q 120 58 126 52" stroke="var(--nova-eye, #ffffff)" stroke-width="2.5" fill="none" stroke-linecap="round" />
+                <ellipse id="robotYawnMouth" class="hidden nova-mouth-fill" cx="120" cy="54" rx="4.5" ry="6" fill="var(--nova-eye, #ffffff)" />
+                <text id="sleepZzzText" x="165" y="24" class="hidden">zZz</text>
+              </g>
+
+              <!-- LAYER B: Contextual Outfits & Smart Props -->
+              <g id="contextualPropsLayer">
+                <!-- PROP 1: PRAYER TAQIYAH & RUG (Pre-Adhan) -->
+                <g id="propPrayerGroup" class="hidden">
+                  <rect x="68" y="64" width="104" height="7" rx="3.5" fill="url(#rugGrad)" stroke="#facc15" stroke-width="1" />
+                  <path d="M 85 64 L 92 59 L 99 64 M 141 64 L 148 59 L 155 64" stroke="#facc15" stroke-width="1.2" fill="none" />
+                  <path d="M 86 21 C 86 8, 154 8, 154 21 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2" />
+                  <path d="M 92 18 Q 120 13 148 18" stroke="#eab308" stroke-width="1.3" stroke-dasharray="3 2" fill="none" />
+                </g>
+
+                <!-- PROP 2: WARRIOR HEADBAND & MINI LAPTOP (Focus) -->
+                <g id="propWarriorGroup" class="hidden">
+                  <path d="M 76 16 Q 120 19 164 16 L 164 22 Q 120 25 76 22 Z" fill="#ef4444" />
+                  <circle cx="120" cy="19.5" r="3.5" fill="#fde047" />
+                  <path d="M 163 18 Q 178 13 184 20 Q 175 23 163 21" fill="#dc2626" />
+                  <path d="M 163 21 Q 176 24 181 30 Q 171 29 163 22" fill="#b91c1c" />
+                  <rect x="103" y="54" width="34" height="19" rx="3" fill="#334155" stroke="#94a3b8" stroke-width="1" />
+                  <circle cx="120" cy="63.5" r="2.5" fill="#38bdf8" />
+                  <rect x="97" y="72" width="46" height="3" rx="1.5" fill="#64748b" />
+                </g>
+
+                <!-- PROP 3: HOT STEAMING MUG (20-20-20 & Water) -->
+                <g id="propCoffeeGroup" class="hidden">
+                  <g transform="translate(166, 34)">
+                    <path class="steam-line-1" d="M 8 -2 Q 5 -8 9 -13" stroke="#94a3b8" stroke-width="1.6" fill="none" stroke-linecap="round" />
+                    <path class="steam-line-2" d="M 14 0 Q 17 -7 13 -12" stroke="#94a3b8" stroke-width="1.6" fill="none" stroke-linecap="round" />
+                    <path class="steam-line-3" d="M 20 -2 Q 17 -8 21 -13" stroke="#94a3b8" stroke-width="1.6" fill="none" stroke-linecap="round" />
+                    <path d="M 24 6 C 30 6, 30 16, 24 16" stroke="#f59e0b" stroke-width="2.5" fill="none" />
+                    <rect x="4" y="2" width="21" height="19" rx="4" fill="#f59e0b" stroke="#fef3c7" stroke-width="1.2" />
+                    <ellipse cx="14.5" cy="3" rx="9" ry="2" fill="#78350f" />
+                  </g>
+                </g>
+
+                <!-- PROP 4: CUTE UMBRELLA & RAIN (Rainy Weather) -->
+                <g id="propUmbrellaGroup" class="hidden">
+                  <line class="rain-1" x1="52" y1="14" x2="49" y2="22" stroke="#38bdf8" stroke-width="1.6" stroke-linecap="round" />
+                  <line class="rain-2" x1="188" y1="12" x2="185" y2="20" stroke="#38bdf8" stroke-width="1.6" stroke-linecap="round" />
+                  <line class="rain-3" x1="66" y1="24" x2="63" y2="32" stroke="#38bdf8" stroke-width="1.6" stroke-linecap="round" />
+                  <g transform="translate(152, 4)">
+                    <path d="M 2 22 C 2 5, 42 5, 42 22 Q 32 19 22 22 Q 12 19 2 22 Z" fill="url(#umbrellaGrad)" stroke="#cbd5e1" stroke-width="1" />
+                    <path d="M 22 22 L 22 38 C 22 43, 15 43, 15 38" stroke="#f59e0b" stroke-width="2.2" fill="none" stroke-linecap="round" />
+                  </g>
                 </g>
               </g>
-
-              <!-- ARC EYES GROUP (Happy / Khushu / Petting Arcs) -->
-              <g id="arcEyesGroup" class="hidden">
-                <path id="arcLeft" class="sclera-glow" d="M 89 42 Q 99 26 109 42" stroke="#ffffff" stroke-width="5" fill="none" stroke-linecap="round" />
-                <path id="arcRight" class="sclera-glow" d="M 131 42 Q 141 26 151 42" stroke="#ffffff" stroke-width="5" fill="none" stroke-linecap="round" />
-              </g>
-
-              <!-- Mouth & Yawn Shapes -->
-              <path id="robotMouth" class="hidden" d="M 114 52 Q 120 58 126 52" stroke="#ffffff" stroke-width="2.5" fill="none" stroke-linecap="round" />
-              <ellipse id="robotYawnMouth" class="hidden" cx="120" cy="54" rx="4.5" ry="6" fill="#ffffff" />
-              <text id="sleepZzzText" x="165" y="24" class="hidden font-en text-[11px] font-bold fill-sky-300">zZz</text>
             </g>
           </svg>
         </div>
@@ -250,8 +256,8 @@
             <span class="notif-dot">•</span>
             <span class="notif-time" id="notif-time">now</span>
           </div>
-          <div class="notif-title" id="notif-title">Ada Okafor</div>
-          <div class="notif-msg" id="notif-msg">Are we still on for 8? I'll bring the slides.</div>
+          <div class="notif-title" id="notif-title" dir="auto">Ada Okafor</div>
+          <div class="notif-msg" id="notif-msg" dir="auto">Are we still on for 8? I'll bring the slides.</div>
         </div>
         <button class="notif-x" id="notif-close" aria-label="Close" title="Close"><svg class="s" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
         <div class="notif-bar" aria-hidden="true"><b id="notif-progress-bar"></b></div>
@@ -496,34 +502,39 @@
               </div>
             </div>
 
-            <!-- Quick Utilities & Recording Tools Section (User Request: "ركن التسجيل ضيفه ف ركن التطبيقات .. تحت مسمي tools") -->
+            <!-- Quick Utilities & Recording Tools Section -->
             <div class="apps-tools-section" id="apps-tools-section">
               <div class="apps-tools-header">
-                <span class="apps-tools-title">🛠️ الأدوات (Tools)</span>
-                <span class="apps-tools-sub">المسجل والمساعدات السريعة</span>
+                <span class="apps-tools-title" id="apps-tools-title">أدوات سريعة · Quick Tools</span>
+                <span class="apps-tools-sub" id="apps-tools-sub">Alt+Space بحث وتشغيل فوري</span>
               </div>
               <div class="apps-tools-grid">
-                <button type="button" class="tool-tile" id="tool-btn-record" title="مسجل الملاحظات والاجتماعات (Voice Recorder & Notes)">
-                  <span class="tool-ico rec-ico">🎙️</span>
-                  <span class="tool-lbl">تسجيل الملاحظات</span>
+                <button type="button" class="tool-tile" id="tool-btn-record" title="Voice & Notes Recorder">
+                  <span class="tool-ico rec-ico"><svg viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v4M8 21h8"/></svg></span>
+                  <span class="tool-lbl" data-tool-lbl="record">مسجل</span>
                 </button>
-                <button type="button" class="tool-tile" id="tool-btn-screenshot" title="لقطة شاشة وحفظ للمكتبة (Instant Screenshot)">
-                  <span class="tool-ico shot-ico">📸</span>
-                  <span class="tool-lbl">لقطة شاشة</span>
+                <button type="button" class="tool-tile" id="tool-btn-screenshot" title="Instant Screenshot">
+                  <span class="tool-ico shot-ico"><svg viewBox="0 0 24 24"><path d="M4 7h3l2-2h6l2 2h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z"/><circle cx="12" cy="13" r="3.5"/></svg></span>
+                  <span class="tool-lbl" data-tool-lbl="screenshot">لقطة</span>
                 </button>
-                <button type="button" class="tool-tile" id="tool-btn-color" title="منتقي الألوان ونسخ الكود (Color Picker)">
-                  <span class="tool-ico color-ico">🎨</span>
-                  <span class="tool-lbl">منتقي الألوان</span>
+                <button type="button" class="tool-tile" id="tool-btn-snip-delay" title="Delayed Screenshot (3s)">
+                  <span class="tool-ico delay-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 1.5M9.5 3h5"/></svg></span>
+                  <span class="tool-lbl" data-tool-lbl="snip_delay">مؤجل 3ث</span>
                 </button>
-                <button type="button" class="tool-tile" id="tool-btn-calc" title="حاسبة سريعة (Calculator)">
-                  <span class="tool-ico calc-ico">🧮</span>
-                  <span class="tool-lbl">الحاسبة</span>
+                <button type="button" class="tool-tile" id="tool-btn-color" title="Screen Color Picker">
+                  <span class="tool-ico color-ico"><svg viewBox="0 0 24 24"><path d="m19 5-4-4-2 2 4 4 2-2ZM15 7 5 17v4h4L19 11"/></svg></span>
+                  <span class="tool-lbl" data-tool-lbl="color">ألوان</span>
                 </button>
-                <button type="button" class="tool-tile" id="tool-btn-terminal" title="موجه الأوامر (Command Prompt / Terminal)">
-                  <span class="tool-ico term-ico">💻</span>
-                  <span class="tool-lbl">الطرفية</span>
+                <button type="button" class="tool-tile" id="tool-btn-calc" title="Calculator">
+                  <span class="tool-ico calc-ico"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M8 6h8v4H8zM9 14h.01M12 14h.01M15 14h.01M9 18h.01M12 18h.01M15 18h.01"/></svg></span>
+                  <span class="tool-lbl" data-tool-lbl="calc">حاسبة</span>
+                </button>
+                <button type="button" class="tool-tile" id="tool-btn-terminal" title="Terminal / PowerShell">
+                  <span class="tool-ico term-ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="m7 9 3 3-3 3M13 15h4"/></svg></span>
+                  <span class="tool-lbl" data-tool-lbl="terminal">طرفية</span>
                 </button>
               </div>
+              <div id="apps-color-history" class="apps-color-history" hidden></div>
             </div>
 
             <!-- Live Search Results Grid (when searching) -->

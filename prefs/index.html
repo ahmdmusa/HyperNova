@@ -51,9 +51,9 @@
                 <b data-i18n="lang_select_lbl">اختيار لغة الواجهة والخط</b>
                 <small data-i18n="lang_select_sub">الخط الأميري الأصيل للعربية، أو خط Inter العصري للإنجليزية</small>
               </div>
-              <div class="seg" role="radiogroup">
-                <button role="radio" id="btn-lang-ar" class="sel" data-i18n="lang_ar">العربية (الأميري)</button>
-                <button role="radio" id="btn-lang-en" data-i18n="lang_en">English (Inter)</button>
+              <div class="seg seg-lang" role="radiogroup">
+                <button role="radio" id="btn-lang-ar" class="sel" data-i18n="lang_ar">العربية</button>
+                <button role="radio" id="btn-lang-en" data-i18n="lang_en">English</button>
               </div>
             </div>
           </div>
@@ -110,6 +110,17 @@
               <div class="seg" role="radiogroup" aria-label="Orientation">
                 <button role="radio" data-orient="h" data-i18n="orient_h">أفقي</button>
                 <button role="radio" data-orient="v" data-i18n="orient_v">رأسي</button>
+              </div>
+            </div>
+            <div class="row">
+              <div class="txt">
+                <b data-i18n="topbar_slot_lbl">موضع الشريط العلوي (Top Taskbar)</b>
+                <small data-i18n="topbar_slot_sub">تثبيت الجزيرة فوق شريط المهام العلوي: المنتصف (1) أو يميناً قبل الساعة (2)</small>
+              </div>
+              <div class="seg" role="radiogroup" id="seg-topbar-slot">
+                <button role="radio" data-topbar-slot="auto" data-i18n="topbar_auto">تلقائي</button>
+                <button role="radio" data-topbar-slot="top-center" data-i18n="topbar_center">مكان 1 · منتصف</button>
+                <button role="radio" data-topbar-slot="top-right" data-i18n="topbar_right">مكان 2 · قبل الساعة</button>
               </div>
             </div>
             <label class="row"><div class="txt"><b data-i18n="addr_island">الدمج في شريط المتصفح</b><small data-i18n="addr_island_sub">في الثلث الأيمن دون تغطية التبويبات</small></div><input type="checkbox" class="sw" data-feature="addrIsland"></label>
@@ -258,24 +269,28 @@
 
         <!-- Nova Emotion Matrix & Outfits Studio -->
         <div class="group">
-          <h2>🎭 استوديو المشاعر والأزياء الذكية (Matrix 2.0 & Props)</h2>
+          <h2 data-i18n="nova_studio_title">🎭 استوديو المشاعر والأزياء التفاعلي</h2>
           <div class="card" style="padding: 14px;">
-            <p style="font-size: 11.5px; color: var(--text-2); margin-top: 0; margin-bottom: 10px;">
-              اختر أي حالة من الـ 16 أو الأزياء الأربعة لمعاينتها والتفاعل معها حياً على الروبوت نوفا:
+            <p data-i18n="nova_studio_sub" style="font-size: 12px; color: var(--text-2); margin-top: 0; margin-bottom: 12px;">
+              اختر أي حالة من الحالات الـ 16 أو الأزياء الأربعة لمعاينتها والتفاعل معها حياً على الروبوت نوفا:
             </p>
-            <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;">
-              <button type="button" class="pill small nova-test-btn" data-st="idle">1. هدوء (Idle)</button>
-              <button type="button" class="pill small nova-test-btn" data-st="thinking">2. تفكير (Thinking)</button>
-              <button type="button" class="pill small nova-test-btn" data-st="celebrate">3. احتفال (Celebrate)</button>
-              <button type="button" class="pill small nova-test-btn" data-st="sleepy">4. نعاس (Sleepy)</button>
-              <button type="button" class="pill small nova-test-btn" data-st="khushu">5. سكينة (Khushu)</button>
-              <button type="button" class="pill small nova-test-btn" data-st="petting">6. مداعبة (Petting)</button>
-              <button type="button" class="pill small nova-test-btn" data-st="pre_prayer">7. طاقية وسجادة (Prayer)</button>
-              <button type="button" class="pill small nova-test-btn" data-st="warrior">8. عصابة المحارب (Warrior)</button>
-              <button type="button" class="pill small nova-test-btn" data-st="coffee_break">9. كوب ساخن (Coffee)</button>
-              <button type="button" class="pill small nova-test-btn" data-st="rainy">10. مظلة ومطر (Umbrella)</button>
-              <button type="button" class="pill small nova-test-btn" data-st="listening_sway">11. تمايل صوتي (Sway)</button>
-              <button type="button" class="pill small nova-test-btn" data-st="welcome">12. غمزة ترحيب (Wink)</button>
+            <div class="nova-studio-grid">
+              <button type="button" class="pill small nova-test-btn" data-st="idle" data-i18n="nova_st_idle">1. هدوء</button>
+              <button type="button" class="pill small nova-test-btn" data-st="thinking" data-i18n="nova_st_thinking">2. تفكير</button>
+              <button type="button" class="pill small nova-test-btn" data-st="celebrate" data-i18n="nova_st_celebrate">3. احتفال</button>
+              <button type="button" class="pill small nova-test-btn" data-st="sleepy" data-i18n="nova_st_sleepy">4. نعاس</button>
+              <button type="button" class="pill small nova-test-btn" data-st="khushu" data-i18n="nova_st_khushu">5. سكينة</button>
+              <button type="button" class="pill small nova-test-btn" data-st="petting" data-i18n="nova_st_petting">6. مداعبة</button>
+              <button type="button" class="pill small nova-test-btn" data-st="pre_prayer" data-i18n="nova_st_pre_prayer">7. طاقية وسجادة</button>
+              <button type="button" class="pill small nova-test-btn" data-st="warrior" data-i18n="nova_st_warrior">8. عصابة المحارب</button>
+              <button type="button" class="pill small nova-test-btn" data-st="coffee_break" data-i18n="nova_st_coffee_break">9. كوب ساخن</button>
+              <button type="button" class="pill small nova-test-btn" data-st="rainy" data-i18n="nova_st_rainy">10. مظلة ومطر</button>
+              <button type="button" class="pill small nova-test-btn" data-st="listening_sway" data-i18n="nova_st_listening_sway">11. تمايل صوتي</button>
+              <button type="button" class="pill small nova-test-btn" data-st="welcome" data-i18n="nova_st_welcome">12. غمزة ترحيب</button>
+              <button type="button" class="pill small nova-test-btn" data-st="meeting" data-i18n="nova_st_meeting">13. اجتماع</button>
+              <button type="button" class="pill small nova-test-btn" data-st="surprised" data-i18n="nova_st_surprised">14. دهشة</button>
+              <button type="button" class="pill small nova-test-btn" data-st="breathing" data-i18n="nova_st_breathing">15. تنفس</button>
+              <button type="button" class="pill small nova-test-btn" data-st="deep_sleep" data-i18n="nova_st_deep_sleep">16. نوم عميق</button>
             </div>
             <label class="row"><b data-i18n="audio_sway">التمايل مع الصوت والقرآن الكريم</b><input type="checkbox" class="sw" data-feature="audioSway"></label>
             <label class="row"><b data-i18n="smart_props">الأزياء والإكسسوارات التلقائية (الصلاة، التركيز، المطر)</b><input type="checkbox" class="sw" data-feature="smartProps"></label>
@@ -343,17 +358,18 @@
                 <small data-i18n="adhan_voice_sub">سماع تكبيرتي الإحرام (الله أكبر، الله أكبر) بصوت خاشع ومريح</small>
               </div>
               <div class="adhan-voice-picker" style="display:flex; align-items:center; gap:8px;">
-                <select id="pref-adhan-voice" class="adhan-select" data-feature="adhanVoice" style="height:32px; font-size:12px; border-radius:8px; padding:0 8px; background:#1c1f28; border:1px solid rgba(255,255,255,0.14); color:#f4f4f5; color-scheme:dark;">
+                <select id="pref-adhan-voice" class="adhan-select" data-feature="adhanVoice">
+                  <option value="mukhtasar">تكبير أذان مختصر (أبو إيفاء السلوم) · الافتراضي</option>
+                  <option value="ali">تكبير أذان (عيد علي)</option>
                   <option value="abdulbasit">الشيخ عبد الباسط عبد الصمد</option>
                   <option value="refaat">الشيخ محمد رفعت (أذان زمان)</option>
                   <option value="banna">الشيخ محمود علي البنا (القاهرة)</option>
                   <option value="makkah">أذان الحرم المكي (علي أحمد ملا)</option>
                   <option value="madinah">أذان المسجد النبوي الشريف</option>
                   <option value="aqsa">أذان المسجد الأقصى المبارك</option>
-                  <option value="alafasy">الشيخ مشاري راشد العفاسي</option>
                   <option value="nafees">الشيخ أحمد النفيس (خاشع)</option>
                 </select>
-                <button type="button" id="btn-preview-adhan" class="mini-btn" style="padding:4px 10px; font-size:11px; border-radius:8px; cursor:pointer;" title="معاينة التكبيرتين">🔊 معاينة</button>
+                <button type="button" id="btn-preview-adhan" class="mini-btn" title="معاينة التكبيرتين">🔊 معاينة</button>
               </div>
             </div>
             <label class="row"><b data-i18n="hanafi_asr">حساب صلاة العصر على المذهب الحنفي</b><input type="checkbox" class="sw" data-feature="asrHanafi"></label>
@@ -372,8 +388,8 @@
                 <small data-i18n="cache_mgr_sub">حجم البيانات المخزنة محلياً لتسريع التلاوة أوفلاين</small>
               </div>
               <div style="display:flex; align-items:center; gap:8px;">
-                <span id="cache-size-display" style="font-size:11px; font-weight:700; color:var(--text-2); background:rgba(255,255,255,0.06); padding:4px 10px; border-radius:6px;">0.00 ميجابايت</span>
-                <button type="button" id="btn-clear-cache" class="mini-btn" style="padding:4px 12px; font-size:11px; border-radius:8px; cursor:pointer;" title="مسح الكاش" data-i18n="btn_clear_cache">مسح الكاش</button>
+                <span id="cache-size-display">0.00 ميجابايت</span>
+                <button type="button" id="btn-clear-cache" class="mini-btn" title="مسح الكاش" data-i18n="btn_clear_cache">مسح الكاش</button>
               </div>
             </div>
           </div>
@@ -430,6 +446,19 @@
       <!-- ALERTS & PRIVACY -->
       <section id="alerts" class="page">
         <h1 data-i18n="alerts_title">التنبيهات والخصوصية</h1>
+        <div class="group">
+          <h2 data-i18n="notifs_group">إشعارات الويندوز والجزيرة التفاعلية</h2>
+          <div class="card">
+            <label class="row"><div class="txt"><b data-i18n="island_notifs_lbl">استلام إشعارات التطبيقات داخل الجزيرة</b><small data-i18n="island_notifs_sub">عرض رسائل واتساب ولقطة الشاشة والتنبيهات في شريط الجزيرة مباشرة</small></div><input type="checkbox" class="sw" data-feature="islandNotifications"></label>
+            <label class="row sub" data-needs="islandNotifications"><div class="txt"><b data-i18n="replace_win_notifs_lbl">إلغاء بانر إشعارات ويندوز الأصلي (الجزيرة فقط)</b><small data-i18n="replace_win_notifs_sub">إخفاء نوافذ الإشعارات المنبثقة لنظام ويندوز حتى تتولاها الجزيرة وحدها دون تكرار</small></div><input type="checkbox" class="sw" data-feature="replaceWindowsNotifications"></label>
+            <label class="row sub" data-needs="islandNotifications"><div class="txt"><b data-i18n="notif_sound_lbl">نغمة إشعار لطيفة (Gentle Chime)</b><small data-i18n="notif_sound_sub">تشغيل نغمة مريحة وخافتة عند ظهور إشعار جديد في الجزيرة</small></div><input type="checkbox" class="sw" data-feature="notifSound"></label>
+            <div class="row sub" data-needs="islandNotifications">
+              <div class="txt"><b data-i18n="notif_duration_lbl">مدة بقاء الإشعار تلقائياً</b><small data-i18n="notif_duration_sub">الوقت بالثواني قبل اختفاء شريط الإشعار والعودة للوضع السابق</small></div>
+              <div class="stepper" data-num="notifDuration" data-steps="3,5,6,8,10,15,20,30" data-unit="sec"><button data-dir="-1" aria-label="Less">−</button><output></output><button data-dir="1" aria-label="More">+</button></div>
+            </div>
+          </div>
+          <div class="actions"><button type="button" class="btn accent" id="btn-test-notif" data-i18n="btn_test_notif">تجربة إشعار الجزيرة التفاعلي</button></div>
+        </div>
         <div class="group">
           <h2 data-i18n="alerts_group">تنبيهات النظام والشاشة</h2>
           <div class="card">
@@ -618,9 +647,10 @@
         <div class="group">
           <h2 data-i18n="shortcuts_group">اختصارات لوحة المفاتيح والتركيز</h2>
           <div class="card">
-            <div class="row"><div class="txt"><b data-i18n="sc_focus">فتح شريط التركيز والمهام</b></div><span class="val"><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>F</kbd></span></div>
-            <div class="row"><div class="txt"><b data-i18n="sc_island">فتح / إغلاق الجزيرة</b></div><span class="val"><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>I</kbd></span></div>
-            <div class="row"><div class="txt"><b data-i18n="sc_esc">إخفاء الجزيرة السريع</b></div><span class="val"><kbd>Esc</kbd></span></div>
+            <div class="row"><div class="txt"><b data-i18n="sc_spotlight">البحث السريع عن التطبيقات والأدوات (Spotlight)</b></div><span class="val" dir="ltr"><kbd>Alt</kbd> + <kbd>Space</kbd></span></div>
+            <div class="row"><div class="txt"><b data-i18n="sc_focus">فتح شريط التركيز والمهام</b></div><span class="val" dir="ltr"><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>F</kbd></span></div>
+            <div class="row"><div class="txt"><b data-i18n="sc_island">فتح / إغلاق الجزيرة</b></div><span class="val" dir="ltr"><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>I</kbd></span></div>
+            <div class="row"><div class="txt"><b data-i18n="sc_esc">إخفاء الجزيرة السريع</b></div><span class="val" dir="ltr"><kbd>Esc</kbd></span></div>
           </div>
         </div>
       </section>
@@ -637,29 +667,10 @@
                   <span class="about-publisher-sub" data-i18n="about_publisher">Developed &amp; Published by <b>Ahmed Musa (@ahmdmusa)</b></span>
                 </div>
               </div>
-              <span class="about-ver-badge">v2.1.2 · Open Source</span>
-            </div>
-
-            <div class="about-ack-card">
-              <div class="about-ack-header">
-                <svg class="about-ack-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="18" cy="18" r="3"/>
-                  <circle cx="6" cy="6" r="3"/>
-                  <path d="M6 9v12"/>
-                  <path d="M18 9a9 9 0 0 0-9 9"/>
-                </svg>
-                <b class="about-ack-title" data-i18n="about_ack_title">إسناد وتاريخ المصدر المفتوح (Acknowledgement)</b>
-              </div>
-              <p class="about-ack-desc" id="about-ack-desc">
-                بدأ هذا المشروع كفكرة أولية وتفريعة (Fork) من مشروع <a href="https://github.com/NOVA-TECH-KIT/nova-island" target="_blank" class="about-ack-link">Nova Island</a> المفتوح المصدر، وتمت إعادة هندسته وتوسعته وتطويره بالكامل ليصبح <b>HyperNova</b>.
-              </p>
+              <span id="about-ver-badge" class="about-ver-badge">v2.1.3 · Open Source</span>
             </div>
 
             <div class="about-actions-grid">
-              <a href="https://github.com/ahmdmusa/HyperNova/releases/latest" target="_blank" class="btn-download" id="btn-download-link" title="تحميل مباشر لمعالج التثبيت">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                <span data-i18n="about_btn_download">تحميل مباشر (Installer)</span>
-              </a>
               <a href="https://github.com/ahmdmusa/HyperNova" target="_blank" class="btn-github" id="btn-github-link" title="صفحة المشروع والتحديثات على GitHub">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" stroke="none"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
                 <span data-i18n="about_btn_github">GitHub والتحديثات</span>
@@ -668,9 +679,9 @@
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
                 <span data-i18n="about_btn_coffee">Buy Me a Coffee</span>
               </a>
-              <a href="https://ipn.eg/S/ahmdmusa/instapay/2yqQQN" target="_blank" class="btn-instapay" id="btn-instapay-link" title="دعم عبر InstaPay: ahmdmusa@instapay">
+              <a href="https://ipn.eg/S/ahmdmusa/instapay/2yqQQN" target="_blank" class="btn-instapay" id="btn-instapay-link" title="دعم عبر InstaPay Egypt: ahmdmusa@instapay">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                <span>InstaPay (ahmdmusa)</span>
+                <span data-i18n="about_btn_instapay">InstaPay Egypt (ahmdmusa)</span>
               </a>
             </div>
           </div>

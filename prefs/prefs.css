@@ -137,7 +137,10 @@ html[dir="ltr"] .about-ack-card,
   gap: 10px !important;
   margin-top: 14px;
 }
-.btn-coffee, .btn-github, .btn-instapay, .btn-download {
+#btn-github-link {
+  grid-column: 1 / -1;
+}
+.btn-coffee, .btn-github, .btn-instapay {
   height: 40px !important;
   padding: 0 10px !important;
   border-radius: 10px !important;
@@ -184,23 +187,25 @@ html[dir="ltr"] .about-ack-card,
   transform: translateY(-1px) !important;
 }
 
-/* Local authentic Amiri Font */
+/* Local authentic Amiri Font (Arabic script ranges only so Latin/digits stay crisp sans-serif) */
 @font-face {
   font-family: 'Amiri';
   src: url('../fonts/Amiri-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F, U+061C;
 }
 @font-face {
   font-family: 'Amiri';
   src: url('../fonts/Amiri-Bold.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F, U+061C;
 }
 
 :root {
-  --font-ar: "Amiri", "Cairo", "Traditional Arabic", serif;
-  --font-en: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --font-ar: "Amiri", "Cairo", "Traditional Arabic", "Segoe UI Variable Text", "Segoe UI", sans-serif;
+  --font-en: "Segoe UI Variable Text", "Segoe UI", -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif;
   --font: var(--font-ar);
 
   --bg: #101016;
@@ -394,7 +399,7 @@ input { font: inherit; color: inherit; }
   overflow-y: auto;
   padding: 22px 28px 40px;
 }
-.page { display: none; }
+.page { display: none; max-width: 820px; width: 100%; margin: 0 auto; }
 .page.on { display: block; }
 
 .page h1 {
@@ -409,9 +414,16 @@ input { font: inherit; color: inherit; }
   font-size: 11.5px;
   font-weight: 700;
   color: var(--text-3);
+  margin: 0 0 8px 4px;
+}
+html[dir="ltr"] .group h2 {
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  margin: 0 0 8px 4px;
+}
+html[dir="rtl"] .group h2 {
+  letter-spacing: 0;
+  text-transform: none;
+  margin: 0 4px 8px 0;
 }
 
 .card {
@@ -470,6 +482,8 @@ input { font: inherit; color: inherit; }
 
 .seg {
   display: inline-flex;
+  flex-shrink: 0;
+  white-space: nowrap;
   background: rgba(0, 0, 0, .3);
   padding: 2px;
   border-radius: 8px;
@@ -480,6 +494,7 @@ input { font: inherit; color: inherit; }
   border-radius: 6px;
   font-size: 12px;
   font-weight: 500;
+  white-space: nowrap;
   color: var(--text-2);
   transition: background .15s, color .15s;
 }
@@ -487,6 +502,16 @@ input { font: inherit; color: inherit; }
   background: rgba(255, 255, 255, .14);
   color: #fff;
   font-weight: 600;
+}
+.seg.seg-lang {
+  padding: 2px;
+  border-radius: 99px;
+}
+.seg.seg-lang button {
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  line-height: 1.35;
 }
 
 .chips {
@@ -1270,17 +1295,23 @@ body.theme-light .btn-github {
   color: #ffffff !important;
 }
 
-/* Island Sizing Selector Cards */
+/* Island Sizing Selector Cards (Compact) */
 .island-size-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-top: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+@media (max-width: 680px) {
+  .island-size-grid {
+    grid-template-columns: 1fr;
+  }
 }
 .size-card {
   position: relative;
   cursor: pointer;
   display: flex;
+  min-width: 0;
 }
 .size-card input {
   position: absolute;
@@ -1289,13 +1320,14 @@ body.theme-light .btn-github {
 }
 .size-card-box {
   flex: 1;
+  min-width: 0;
   background: var(--panel);
   border: 1px solid var(--stroke);
-  border-radius: 14px;
-  padding: 12px 14px;
+  border-radius: 11px;
+  padding: 8px 11px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 3px;
   transition: all 0.2s ease;
 }
 .size-card:hover .size-card-box {
@@ -1305,35 +1337,46 @@ body.theme-light .btn-github {
 .size-card input:checked + .size-card-box {
   background: rgba(111, 140, 255, 0.14);
   border-color: var(--accent);
-  box-shadow: 0 0 16px rgba(111, 140, 255, 0.25);
+  box-shadow: 0 0 14px rgba(111, 140, 255, 0.22);
 }
 .size-card-top {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 7px;
+  min-width: 0;
+}
+.size-card-top b {
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 .size-badge {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 6px;
+  padding: 1px 6px;
+  border-radius: 5px;
   background: rgba(255, 255, 255, 0.1);
   color: var(--text-2);
+  flex-shrink: 0;
 }
 .size-badge.default {
   background: rgba(48, 209, 88, 0.15);
   color: #34d399;
 }
 .size-dims {
-  font-family: monospace;
-  font-size: 12px;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 11px;
   font-weight: 600;
   color: var(--accent);
 }
 .size-card-box small {
-  font-size: 11px;
+  font-size: 10.5px;
   color: var(--text-3);
-  line-height: 1.4;
+  line-height: 1.3;
 }
 
 
@@ -1388,3 +1431,206 @@ body.theme-light .btn-github {
 .badge-purple { background: linear-gradient(135deg, #a855f7, #9333ea); }
 .badge-slate { background: linear-gradient(135deg, #64748b, #475569); }
 .side a:hover .nav-badge { transform: scale(1.08); }
+
+/* ---- Companion Studio Grid, Mini Buttons, Selects, Actions & KBD ---- */
+.nova-studio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(154px, 1fr));
+  gap: 7px;
+  margin-bottom: 14px;
+}
+.pill.small.nova-test-btn {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 7px 10px;
+  border-radius: 10px;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: start;
+  color: var(--text-1);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  transition: background .15s, border-color .15s, transform .12s, box-shadow .15s;
+}
+.pill.small.nova-test-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(111, 140, 255, 0.45);
+  transform: translateY(-1px);
+}
+.pill.small.nova-test-btn.active {
+  background: rgba(111, 140, 255, 0.22);
+  border-color: var(--accent);
+  color: #ffffff;
+  box-shadow: 0 0 0 1px rgba(111, 140, 255, 0.35), 0 4px 12px rgba(111, 140, 255, 0.24);
+}
+.mini-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--text-1);
+  transition: background .15s, border-color .15s, transform .08s;
+}
+.mini-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+.mini-btn:active { transform: scale(0.97); }
+.adhan-select {
+  height: 32px;
+  font-size: 12px;
+  border-radius: 8px;
+  padding: 0 10px;
+  background: #1c1f28;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #f4f4f5;
+  color-scheme: dark;
+}
+#cache-size-display {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-2);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-variant-numeric: tabular-nums;
+}
+.actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.row kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-family: ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: var(--text-1);
+}
+
+/* AI BYOK card normalized styling */
+.ai-byok-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 12px;
+  padding: 16px;
+}
+.ai-byok-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+.ai-byok-title { font-size: 14px; color: var(--text-1); display: flex; align-items: center; gap: 6px; }
+.ai-byok-sub { color: var(--text-2); font-size: 11.5px; display: block; margin-top: 2px; }
+.ai-byok-badge { font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 600; }
+.ai-byok-grid-row { display: grid; grid-template-columns: 140px 1fr; gap: 10px; align-items: center; }
+.ai-byok-grid-row label { font-size: 12px; color: var(--text-2); }
+.ai-byok-input {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-1);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  outline: none;
+  width: 100%;
+}
+.ai-byok-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 4px; }
+.ai-byok-btn-save { background: #8b5cf6; color: #fff; border: none; border-radius: 8px; padding: 7px 14px; font-size: 12px; font-weight: 600; }
+.ai-byok-btn-test { background: rgba(255, 255, 255, 0.09); color: var(--text-1); border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 8px; padding: 7px 14px; font-size: 12px; }
+.ai-byok-btn-del { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; padding: 7px 12px; font-size: 12px; }
+.ai-byok-sec {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  padding: 6px 10px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px; font-size: 11px; color: var(--text-2);
+}
+
+/* OLED & Light theme overrides for new controls */
+html[data-theme="black"] .pill.small.nova-test-btn,
+body.theme-black .pill.small.nova-test-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+html[data-theme="light"] .pill.small.nova-test-btn,
+body.theme-light .pill.small.nova-test-btn {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.10) !important;
+  color: #1D1D1F !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+html[data-theme="light"] .pill.small.nova-test-btn:hover,
+body.theme-light .pill.small.nova-test-btn:hover {
+  background: #eef4ff !important;
+  border-color: rgba(0, 113, 227, 0.45) !important;
+}
+html[data-theme="light"] .pill.small.nova-test-btn.active,
+body.theme-light .pill.small.nova-test-btn.active {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(0, 113, 227, 0.28) !important;
+}
+html[data-theme="light"] .mini-btn,
+body.theme-light .mini-btn {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  color: #1D1D1F !important;
+}
+html[data-theme="light"] .mini-btn:hover,
+body.theme-light .mini-btn:hover {
+  background: rgba(0, 0, 0, 0.09) !important;
+}
+html[data-theme="light"] .adhan-select,
+body.theme-light .adhan-select {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.14) !important;
+  color: #1D1D1F !important;
+  color-scheme: light !important;
+}
+html[data-theme="light"] #cache-size-display,
+body.theme-light #cache-size-display {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 0, 0, 0.10) !important;
+  color: #48484A !important;
+}
+html[data-theme="light"] .row kbd,
+body.theme-light .row kbd {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.16) !important;
+  color: #1D1D1F !important;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+}
+html[data-theme="light"] .ai-byok-sec,
+body.theme-light .ai-byok-sec {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  color: #48484A !important;
+}
+html[data-theme="light"] .ai-byok-btn-del,
+body.theme-light .ai-byok-btn-del {
+  background: rgba(220, 38, 38, 0.08) !important;
+  color: #dc2626 !important;
+  border-color: rgba(220, 38, 38, 0.25) !important;
+}

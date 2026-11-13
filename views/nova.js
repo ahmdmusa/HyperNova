@@ -131,7 +131,7 @@
     const count = kind === 'confetti' ? 34 : 14;
     const colors = ['#38bdf8', '#facc15', '#34d399', '#fb7185', '#c084fc', '#f43f5e'];
     const originX = fxCanvas.width / 2;
-    const originY = 40;
+    const originY = fxCanvas.height * 0.52;
 
     for (let i = 0; i < count; i++) {
       particles.push({
@@ -191,19 +191,41 @@
     }
   }
 
+  const STAGE_STATES = new Set([
+    'celebrate', 'petting', 'sleepy', 'sleep', 'welcome', 'thinking', 'khushu',
+    'listening_sway', 'quran', 'surprised', 'breathing', 'deep_sleep', 'meeting',
+    'pre_prayer', 'warrior', 'coffee_break', 'care', 'rainy',
+  ]);
+  let welcomeTimer = null;
+
+  function updateStageClass() {
+    const activeStage = islandEl.classList.contains('eyes') && (currentProp !== 'none' || STAGE_STATES.has(currentState));
+    const changed = islandEl.classList.contains('nova-stage') !== activeStage;
+    islandEl.classList.toggle('nova-stage', activeStage);
+    return changed;
+  }
+
   // Visibility toggle
   function apply() {
-    const show = feat('novaEyes') && !anchor.vertical && !state.hover && lastMode === 'idle';
-    const changed = islandEl.classList.contains('eyes') !== !!show;
+    const previewing = Date.now() < (window.state?.novaPreviewUntil || 0);
+    const show = (feat('novaEyes') || previewing) && !anchor.vertical && (!state.hover || previewing) && lastMode === 'idle';
+    const eyesChanged = islandEl.classList.contains('eyes') !== !!show;
     islandEl.classList.toggle('eyes', !!show);
-    if (changed && typeof positionIsland === 'function') {
+    const stageChanged = updateStageClass();
+    if ((eyesChanged || stageChanged) && typeof positionIsland === 'function') {
       positionIsland();
     }
   }
 
   // Contextual Props Switcher
-  function setContextualProp(propName) {
-    currentProp = propName || 'none';
+  let _bypassSmartProps = false;
+  let ambientProp = 'none';
+  function setContextualProp(propName, force = false) {
+    let next = propName || 'none';
+    if (!force && !_bypassSmartProps && next !== 'none' && typeof feat === 'function' && feat('smartProps') === false) {
+      next = 'none';
+    }
+    currentProp = next;
     if (propPrayer) propPrayer.classList.toggle('hidden', currentProp !== 'prayer');
     if (propWarrior) propWarrior.classList.toggle('hidden', currentProp !== 'warrior');
     if (propCoffee) propCoffee.classList.toggle('hidden', currentProp !== 'coffee');
@@ -211,12 +233,18 @@
   }
 
   // 16 Emotional & Physical States Matrix
-  function setState(stateName, durationMs = 0) {
+  function setState(stateName, durationMs = 0, forcePreview = false) {
     clearTimeout(stateTimer);
+    clearTimeout(welcomeTimer);
     currentState = stateName || 'idle';
+    _bypassSmartProps = !!forcePreview;
 
-    // Reset all sub-layers
+    // Reset all sub-layers & contextual props before applying target state
+    setContextualProp('none', true);
     islandEl.classList.remove('aura-khushu', 'aura-thinking', 'aura-warrior', 'aura-meeting', 'anim-celebrate');
+    if (currentState !== 'listening_sway' && currentState !== 'quran' && !(typeof isQuranPlaying === 'function' && isQuranPlaying())) {
+      toggleAudioSway(false);
+    }
     openEyesGroup?.classList.remove('hidden');
     arcEyesGroup?.classList.add('hidden');
     sleepyEyelidsGroup?.classList.add('hidden');
@@ -302,9 +330,10 @@
         runPhysicsLoop();
         break;
 
+      case 'quran':
       case 'listening_sway':
         islandEl.classList.add('aura-khushu');
-        toggleAudioSway(true);
+        toggleAudioSway(true, _bypassSmartProps);
         break;
 
       case 'welcome':
@@ -318,10 +347,11 @@
         cheeksLayer?.classList.remove('hidden');
         robotMouth?.classList.remove('hidden');
         window.audioHaptics?.playCrystalChime?.(0.2);
-        setTimeout(() => {
+        welcomeTimer = setTimeout(() => {
           scleraLeft?.classList.remove('hidden');
           pupilLeft?.classList.remove('hidden');
           catchlightLeft?.classList.remove('hidden');
+          if (currentState === 'welcome') arcEyesGroup?.classList.add('hidden');
         }, 1200);
         break;
 
@@ -349,29 +379,65 @@
 
       case 'idle':
       default:
-        setContextualProp('none');
+        setContextualProp(ambientProp);
         break;
     }
 
+    apply();
+
     if (durationMs > 0) {
       stateTimer = setTimeout(() => {
+        if (window.state) window.state.novaPreviewUntil = 0;
         setState(getDefaultState());
+        if (typeof render === 'function') render();
       }, durationMs);
     }
   }
 
+  let lastUserActivitySec = 0;
   function getDefaultState() {
     if (window.notchMeetings?.getState()?.inMeeting) return 'meeting';
-    if (window.state?.focusMode) return 'warrior';
+    if (window.state?.focusMode && (typeof feat !== 'function' || feat('novaFocus') !== false)) return 'warrior';
     if (typeof isQuranPlaying === 'function' && isQuranPlaying()) return 'khushu';
+    if (window.state?.media?.playing && typeof feat === 'function' && feat('audioSway')) return 'listening_sway';
+
+    const idleSec = (typeof window.state?.idleSeconds === 'number') ? window.state.idleSeconds : lastUserActivitySec;
+    if (idleSec >= 600) return 'deep_sleep';
+    if (idleSec >= 180) return 'sleepy';
+
     const h = new Date().getHours();
     if (h >= 0 && h < 5) return 'sleepy';
     return 'idle';
   }
 
+  // Activity tracking & Sleep wake-up loop via media updates
+  bridge.onMedia?.((m) => {
+    if (m && typeof m.idle === 'number') {
+      const prevIdle = lastUserActivitySec;
+      lastUserActivitySec = m.idle;
+      if (window.state) window.state.idleSeconds = m.idle;
+
+      if (prevIdle >= 180 && m.idle < 3 && (currentState === 'deep_sleep' || currentState === 'sleepy')) {
+        setState('welcome', 4500);
+        return;
+      }
+
+      if (!stateTimer && ['idle', 'sleepy', 'deep_sleep'].includes(currentState)) {
+        const target = getDefaultState();
+        if (target !== currentState) {
+          setState(target);
+        }
+      }
+    }
+  });
+
   // Audio-Reactive Sway Toggle
-  function toggleAudioSway(enable) {
-    isAudioSwayActive = enable !== undefined ? !!enable : !isAudioSwayActive;
+  function toggleAudioSway(enable, force = false) {
+    let next = enable !== undefined ? !!enable : !isAudioSwayActive;
+    if (next && !force && typeof feat === 'function' && feat('audioSway') === false) {
+      next = false;
+    }
+    isAudioSwayActive = next;
     if (robotSwayGroup) {
       robotSwayGroup.classList.toggle('robot-rig-sway', isAudioSwayActive);
     }
@@ -379,8 +445,15 @@
 
   // Export Global APIs
   window.setNovaState = setState;
+  window.getNovaState = () => currentState;
+  window.getNovaDefaultState = getDefaultState;
   window.setNovaMood = setState; // Backward compatibility
   window.setNovaProp = setContextualProp;
+  window.setNovaAmbientProp = (p) => {
+    ambientProp = p || 'none';
+    if (currentState === 'idle') setContextualProp(ambientProp);
+  };
+  window.getNovaProp = () => currentProp;
   window.toggleNovaAudioSway = toggleAudioSway;
   window.spawnNovaParticles = spawnParticles;
 
@@ -413,7 +486,7 @@
 
   // Natural organic blinking every 4.2s
   function blink() {
-    if (['khushu', 'sleepy', 'sleep', 'deep_sleep', 'celebrate', 'petting'].includes(currentState)) return;
+    if (['khushu', 'sleepy', 'sleep', 'deep_sleep', 'celebrate', 'petting', 'welcome'].includes(currentState)) return;
     if (!scleraLeft || !scleraRight) return;
 
     scleraLeft.setAttribute('height', '4');
@@ -471,7 +544,8 @@
     lastPetX = e.clientX;
     lastPetTime = now;
 
-    if (Math.abs(dx) > 3) {
+    if (Math.abs(dx) > 4) {
+      window.__novaPettingLockUntil = now + 950;
       const dir = dx > 0 ? 1 : -1;
       if (dir !== lastDirection) {
         petDirectionChanges++;
@@ -479,9 +553,12 @@
       }
     }
 
-    if (petDirectionChanges >= 3) {
+    if (petDirectionChanges >= 2) {
       petDirectionChanges = 0;
-      setState('petting', 3000);
+      window.__novaPettingLockUntil = now + 3200;
+      if (window.state) window.state.novaPreviewUntil = now + 3100;
+      setState('petting', 3000, true);
+      if (typeof render === 'function') render();
     }
   }
 
@@ -515,7 +592,13 @@
   }
 
   bridge.onHover(apply);
-  window.addEventListener('island:features', apply);
+  window.addEventListener('island:features', () => {
+    apply();
+    if (typeof feat === 'function') {
+      if (feat('audioSway') === false) toggleAudioSway(false);
+      if (feat('smartProps') === false) setContextualProp('none');
+    }
+  });
   window.addEventListener('island:mode', apply);
 
   // Sync with focus mode and Quran radio

@@ -20,6 +20,8 @@ const DEFAULTS = {
   mediaTitle: true,
   trackPeek: true,
   // notifications
+  notifDuration: 6, // seconds before island notification auto-dismisses
+  notifSound: true, // gentle notification sound toggle
   kbdToast: true,
   capsToast: true,
   hudVolume: true,
@@ -61,7 +63,7 @@ const DEFAULTS = {
   meetings: true,
   // reminders: dhikr, du'a, Qur'an
   reminders: true,
-  adhanVoice: 'abdulbasit',
+  adhanVoice: 'mukhtasar',
   adhanAutoResume: true,
   remindAyah: true,
   remindDhikr: true,
@@ -93,10 +95,13 @@ const DEFAULTS = {
   audioSway: true,
   smartProps: true,
   islandNotifications: true,
+  replaceWindowsNotifications: true,
+  topBarSlot: 'auto', // 'auto' | 'top-center' (Spot 1) | 'top-right' (Spot 2 before tray)
 };
 
 // number settings and their allowed range
 const RANGES = {
+  notifDuration: [2, 30],
   remindEvery: [1, 240], remindFor: [5, 300], tasbeehPerHour: [0, 60], dailyAdhkarQuota: [1, 30], dailyAyatQuota: [1, 20], quietFrom: [0, 1439], quietTo: [0, 1439],
   focusMin: [5, 120], breakMin: [1, 60], longBreakMin: [5, 60], hijriAdjust: [-2, 2], waterEvery: [15, 240], waterGoal: [4, 16],
 };
@@ -123,11 +128,15 @@ function pick(obj) {
       if (v === 'dark' || v === 'light' || v === 'black') out[k] = v;
     } else if (k === 'islandStyle') {
       if (v === 'pill' || v === 'line' || v === 'notch') out[k] = v;
+    } else if (k === 'topBarSlot') {
+      if (v === 'auto' || v === 'top-center' || v === 'top-right') out[k] = v;
     } else if (k === 'glassOpacity') {
       if (Number.isFinite(v)) out[k] = Math.min(Math.max(Math.round(v), 0), 120);
+    } else if (k === 'adhanVoice') {
+      const mapped = v === 'alafasy' ? 'mukhtasar' : v;
+      if (['mukhtasar', 'ali', 'abdulbasit', 'refaat', 'banna', 'makkah', 'madinah', 'aqsa', 'nafees'].includes(mapped)) out[k] = mapped;
     } else if (k === 'skipTaskbar') {
       if (typeof v === 'boolean') out[k] = v;
-      if (v === 'flash' || v === 'pro') out[k] = v;
     } else if (typeof v === 'boolean') out[k] = v;
   }
   return out;

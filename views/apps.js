@@ -306,6 +306,9 @@
   const liveClear = $('#apps-live-clear');
   const searchResults = $('#apps-search-results');
   const toolsSection = $('#apps-tools-section');
+  const colorHistoryEl = $('#apps-color-history');
+  let selectedIdx = 0;
+  let pickedColors = [];
 
   async function ensureCatalog() {
     if (!catalog && bridge.apps?.all) {
@@ -314,10 +317,122 @@
     return catalog || [];
   }
 
+  const TOOL_SVGS = {
+    record: '<svg viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v4M8 21h8"/></svg>',
+    screenshot: '<svg viewBox="0 0 24 24"><path d="M4 7h3l2-2h6l2 2h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+    snip_delay: '<svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 1.5M9.5 3h5"/></svg>',
+    color: '<svg viewBox="0 0 24 24"><path d="m19 5-4-4-2 2 4 4 2-2ZM15 7 5 17v4h4L19 11"/></svg>',
+    calc: '<svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M8 6h8v4H8zM9 14h.01M12 14h.01M15 14h.01M9 18h.01M12 18h.01M15 18h.01"/></svg>',
+    terminal: '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="m7 9 3 3-3 3M13 15h4"/></svg>',
+  };
+
+  const QUICK_TOOLS = [
+    { id: 'record', btnId: '#tool-btn-record', shortAr: 'مسجل', shortEn: 'Rec', nameAr: 'مسجل الصوت والملاحظات', nameEn: 'Voice & Notes Recorder', keys: 'record notes voice mic recorder تسجيل صوت ملاحظات ريكوردر' },
+    { id: 'screenshot', btnId: '#tool-btn-screenshot', shortAr: 'لقطة', shortEn: 'Shot', nameAr: 'لقطة شاشة فورية', nameEn: 'Instant Screenshot', keys: 'screenshot capture snip screen لقطة شاشة تصوير' },
+    { id: 'snip_delay', btnId: '#tool-btn-snip-delay', shortAr: 'مؤجل 3ث', shortEn: '3s Snip', nameAr: 'لقطة شاشة مؤجلة (3ث)', nameEn: 'Delayed Snip (3s)', keys: 'delay timer snip 3s screenshot لقطة مؤجلة مؤقت' },
+    { id: 'color', btnId: '#tool-btn-color', shortAr: 'ألوان', shortEn: 'Color', nameAr: 'لاقط الألوان', nameEn: 'Color Picker', keys: 'color picker hex rgb eyedropper الوان لون قطارة' },
+    { id: 'calc', btnId: '#tool-btn-calc', shortAr: 'حاسبة', shortEn: 'Calc', nameAr: 'الحاسبة', nameEn: 'Calculator', keys: 'calc calculator math حاسبة حساب' },
+    { id: 'terminal', btnId: '#tool-btn-terminal', shortAr: 'طرفية', shortEn: 'Term', nameAr: 'الطرفية (PowerShell)', nameEn: 'Terminal / PowerShell', keys: 'terminal powershell cmd wt shell طرفية اوامر' },
+  ];
+
+  // Safe recursive-descent arithmetic evaluator (no eval / no Function)
+  function evalSafeMath(raw) {
+    const cleaned = String(raw || '').trim().replace(/^=\s*/, '').replace(/[,_\s]+/g, '');
+    if (!cleaned || cleaned.length > 80 || !/[+\-*/%^()]/.test(cleaned)) return null;
+    if (!/^[0-9.+\-*/%^()]+$/.test(cleaned)) return null;
+    let pos = 0;
+    const peek = () => cleaned[pos];
+    const eat = (c) => (cleaned[pos] === c ? (pos++, true) : false);
+    function parseExpr() {
+      let left = parseTerm();
+      while (peek() === '+' || peek() === '-') {
+        const op = cleaned[pos++];
+        const right = parseTerm();
+        left = op === '+' ? left + right : left - right;
+      }
+      return left;
+    }
+    function parseTerm() {
+      let left = parsePower();
+      while (peek() === '*' || peek() === '/' || peek() === '%') {
+        const op = cleaned[pos++];
+        const right = parsePower();
+        if ((op === '/' || op === '%') && right === 0) throw new Error('div0');
+        left = op === '*' ? left * right : op === '/' ? left / right : left % right;
+      }
+      return left;
+    }
+    function parsePower() {
+      const base = parseFactor();
+      if (eat('^')) return Math.pow(base, parsePower());
+      return base;
+    }
+    function parseFactor() {
+      if (eat('+')) return parseFactor();
+      if (eat('-')) return -parseFactor();
+      if (eat('(')) {
+        const v = parseExpr();
+        if (!eat(')')) throw new Error('paren');
+        return v;
+      }
+      const start = pos;
+      let dots = 0;
+      while (pos < cleaned.length && ((cleaned[pos] >= '0' && cleaned[pos] <= '9') || cleaned[pos] === '.')) {
+        if (cleaned[pos] === '.') dots++;
+        pos++;
+      }
+      if (pos === start || dots > 1) throw new Error('num');
+      const num = parseFloat(cleaned.slice(start, pos));
+      if (!Number.isFinite(num)) throw new Error('nan');
+      return num;
+    }
+    try {
+      const val = parseExpr();
+      if (pos !== cleaned.length || !Number.isFinite(val)) return null;
+      return Math.round(val * 1e8) / 1e8;
+    } catch {
+      return null;
+    }
+  }
+
+  function applyToolsLocale() {
+    const ar = isAr();
+    if (liveSearch) {
+      liveSearch.placeholder = ar
+        ? 'ابحث عن تطبيق، أداة، أو اكتب عملية حسابية (مثال: 250*1.14)...'
+        : 'Search apps, quick tools, or calculate math (e.g. 250*1.14)...';
+    }
+    const tEl = $('#apps-tools-title');
+    const sEl = $('#apps-tools-sub');
+    if (tEl) tEl.textContent = ar ? 'أدوات سريعة · Tools' : 'Quick Tools';
+    if (sEl) sEl.textContent = ar ? 'Alt+Space بحث فوري' : 'Alt+Space Spotlight';
+    QUICK_TOOLS.forEach((t) => {
+      const lbl = document.querySelector(`[data-tool-lbl="${t.id}"]`);
+      if (lbl) lbl.textContent = ar ? t.shortAr : t.shortEn;
+      const btn = $(t.btnId);
+      if (btn) btn.title = ar ? t.nameAr : t.nameEn;
+    });
+  }
+  applyToolsLocale();
+  window.addEventListener('island:features', applyToolsLocale);
+
+  function updateResultHighlight() {
+    const items = [...(searchResults?.querySelectorAll('.live-app-item') || [])];
+    if (!items.length) { selectedIdx = 0; return; }
+    selectedIdx = Math.max(0, Math.min(selectedIdx, items.length - 1));
+    items.forEach((el, idx) => el.classList.toggle('selected', idx === selectedIdx));
+    items[selectedIdx]?.scrollIntoView?.({ block: 'nearest' });
+  }
+
+  let searchSeq = 0;
+
   async function onLiveSearch() {
-    const q = (liveSearch?.value || '').trim().toLowerCase();
+    const seq = ++searchSeq;
+    const raw = liveSearch?.value || '';
+    const q = raw.trim().toLowerCase();
     if (!liveSearch) return;
     liveClear.hidden = !q;
+    selectedIdx = 0;
 
     if (!q) {
       searchResults.hidden = true;
@@ -331,12 +446,64 @@
     grid.hidden = true;
     searchResults.hidden = false;
 
-    const allApps = await ensureCatalog();
-    const matched = allApps.filter((a) => a.name.toLowerCase().includes(q)).slice(0, 30);
+    const mathVal = evalSafeMath(raw);
+    const matchedTools = QUICK_TOOLS.filter((t) => t.keys.includes(q) || t.nameAr.toLowerCase().includes(q) || t.nameEn.toLowerCase().includes(q));
     const ar = isAr();
 
     searchResults.innerHTML = '';
-    if (!matched.length) {
+
+    if (mathVal !== null) {
+      const card = document.createElement('div');
+      card.id = 'spotlight-math-card';
+      card.className = 'live-app-item live-math-item';
+      const valStr = String(mathVal);
+      card.innerHTML = `
+        <span class="live-app-ico live-math-ico">=</span>
+        <div class="live-app-info">
+          <div class="live-app-name" dir="ltr">= ${esc(valStr)}</div>
+          <div class="live-app-sub">${ar ? 'اضغط Enter أو انقر لنسخ الناتج' : 'Press Enter or click to copy result'}</div>
+        </div>
+        <span class="live-app-arrow">⌘C</span>
+      `;
+      card.addEventListener('click', () => {
+        bridge.copyText?.(valStr);
+        window.audioHaptics?.playWoodTap?.();
+        if (typeof showToast === 'function') {
+          showToast('copied', ar ? 'تم نسخ الناتج' : 'Result Copied', valStr, 0, 2000);
+        }
+        window.collapseIsland?.();
+      });
+      searchResults.appendChild(card);
+    }
+
+    matchedTools.forEach((t) => {
+      const item = document.createElement('div');
+      item.className = 'live-app-item';
+      item.innerHTML = `
+        <span class="live-app-ico live-tool-svg">${TOOL_SVGS[t.id] || ''}</span>
+        <div class="live-app-info">
+          <div class="live-app-name">${esc(ar ? t.nameAr : t.nameEn)}</div>
+          <div class="live-app-sub">${ar ? 'أداة سريعة' : 'Quick Tool'}</div>
+        </div>
+        <span class="live-app-arrow">→</span>
+      `;
+      item.addEventListener('click', () => {
+        liveSearch.value = '';
+        onLiveSearch();
+        $(t.btnId)?.click();
+      });
+      searchResults.appendChild(item);
+    });
+
+    if (mathVal !== null || matchedTools.length) {
+      updateResultHighlight();
+    }
+
+    const allApps = await ensureCatalog();
+    if (seq !== searchSeq) return;
+    const matched = allApps.filter((a) => a.name.toLowerCase().includes(q)).slice(0, 30);
+
+    if (mathVal === null && !matchedTools.length && !matched.length) {
       searchResults.innerHTML = `<div class="apps-empty">${ar ? 'لا توجد نتائج مطابقة' : 'No matching applications found'}</div>`;
       return;
     }
@@ -357,7 +524,10 @@
         const img = document.createElement('img');
         img.src = a.icon;
         img.alt = '';
-        img.onerror = () => applyFallback(icoSpan, a.name);
+        img.onerror = () => {
+          icoSpan.textContent = '';
+          applyFallback(icoSpan, a.name);
+        };
         icoSpan.appendChild(img);
       } else {
         applyFallback(icoSpan, a.name);
@@ -371,38 +541,163 @@
       });
       searchResults.appendChild(item);
     });
+
+    updateResultHighlight();
   }
 
   liveSearch?.addEventListener('input', onLiveSearch);
+  liveSearch?.addEventListener('keydown', (e) => {
+    const items = searchResults?.querySelectorAll('.live-app-item');
+    if (e.key === 'ArrowDown' && items?.length) {
+      e.preventDefault();
+      selectedIdx = (selectedIdx + 1) % items.length;
+      updateResultHighlight();
+    } else if (e.key === 'ArrowUp' && items?.length) {
+      e.preventDefault();
+      selectedIdx = (selectedIdx - 1 + items.length) % items.length;
+      updateResultHighlight();
+    } else if (e.key === 'Enter') {
+      const active = items?.[selectedIdx] || items?.[0];
+      if (active) {
+        e.preventDefault();
+        active.click();
+      }
+    } else if (e.key === 'Escape') {
+      if (liveSearch.value) {
+        e.preventDefault();
+        e.stopPropagation();
+        liveSearch.value = '';
+        onLiveSearch();
+      } else {
+        window.collapseIsland?.();
+      }
+    }
+  });
   liveSearch?.addEventListener('pointerdown', () => {
-    bridge.focusInput(true);
-    setTimeout(() => liveSearch.focus(), 60);
+    bridge.focusInput?.(true);
+    setTimeout(() => liveSearch.focus({ preventScroll: true }), 40);
   });
   liveClear?.addEventListener('click', () => {
     liveSearch.value = '';
     onLiveSearch();
-    liveSearch.focus();
+    liveSearch.focus({ preventScroll: true });
   });
 
-  // ---------- Quick Tools (User Request: "ركن التسجيل ضيفه ف ركن التطبيقات .. تحت مسمي tools") ----------
+  window.addEventListener('island:spotlight', () => {
+    applyToolsLocale();
+    if (liveSearch) {
+      liveSearch.value = '';
+      onLiveSearch();
+      setTimeout(() => {
+        bridge.focusInput?.(true);
+        liveSearch.focus({ preventScroll: true });
+        liveSearch.select?.();
+      }, 45);
+    }
+  });
+
+  function renderColorSwatches() {
+    if (!colorHistoryEl) return;
+    if (!pickedColors.length) { colorHistoryEl.hidden = true; return; }
+    colorHistoryEl.hidden = false;
+    colorHistoryEl.innerHTML = pickedColors.map((hex) => (
+      `<button type="button" class="color-swatch-chip" data-hex="${esc(hex)}" title="Copy ${esc(hex)}">` +
+      `<i style="background:${esc(hex)}"></i><span dir="ltr">${esc(hex)}</span></button>`
+    )).join('');
+    colorHistoryEl.querySelectorAll('.color-swatch-chip').forEach((b) => {
+      b.addEventListener('click', () => {
+        bridge.copyText?.(b.dataset.hex);
+        window.audioHaptics?.playWoodTap?.();
+        if (typeof showToast === 'function') {
+          showToast('copied', isAr() ? 'تم نسخ اللون' : 'Color Copied', b.dataset.hex, 0, 2000);
+        }
+      });
+    });
+  }
+
+  // ---------- Quick Tools ----------
   $('#tool-btn-record')?.addEventListener('click', () => {
+    window.collapseIsland?.();
     if (window.notchMeetings) {
-      window.notchMeetings.start('تسجيل ملاحظات سريع');
+      window.notchMeetings.start(isAr() ? 'تسجيل ملاحظات' : 'Voice Note');
       window.notchMeetings.toggleDrawer(true);
     }
   });
-  $('#tool-btn-screenshot')?.addEventListener('click', () => {
+  $('#tool-btn-screenshot')?.addEventListener('click', async () => {
+    window.collapseIsland?.();
+    try {
+      const res = await bridge.captureScreenshot?.();
+      if (res && res.ok) {
+        window.showIslandNotification?.({
+          app: 'Screenshot',
+          title: isAr() ? '📸 تم التقاط الشاشة وحفظها' : '📸 Screenshot Captured',
+          message: res.name || (isAr() ? 'تمت الإضافة للرف الذكي والحافظة' : 'Saved to Shelf & Clipboard'),
+          ms: 4500,
+        });
+        return;
+      }
+    } catch {}
     bridge.shotToShelf?.();
   });
-  $('#tool-btn-color')?.addEventListener('click', () => {
-    if (typeof window.showToast === 'function') {
-      window.showToast('clip', '🎨 منتقي الألوان', 'انسخ كود أي لون HEX/RGB من الحافظة ليظهر تلقائياً');
+  $('#tool-btn-snip-delay')?.addEventListener('click', async () => {
+    window.collapseIsland?.();
+    const ar = isAr();
+    for (let s = 3; s >= 1; s--) {
+      if (typeof showToast === 'function') {
+        showToast('snip', ar ? '📸 تصوير بعد...' : '📸 Capturing in...', `${s}s`, 0, 950);
+      }
+      await new Promise((r) => setTimeout(r, 950));
     }
+    window.closeToast?.();
+    await new Promise((r) => setTimeout(r, 150));
+    try {
+      const res = await bridge.captureScreenshot?.();
+      if (res && res.ok) {
+        window.showIslandNotification?.({
+          app: 'Screenshot',
+          title: ar ? '⏱️ تم التقاط اللقطة المؤجلة' : '⏱️ Delayed Snip Captured',
+          message: res.name || (ar ? 'تمت الإضافة للرف الذكي والحافظة' : 'Saved to Shelf & Clipboard'),
+          ms: 4500,
+        });
+        return;
+      }
+    } catch {}
+    bridge.shotToShelf?.();
+  });
+  $('#tool-btn-color')?.addEventListener('click', async () => {
+    if (typeof window.EyeDropper === 'function') {
+      try {
+        const res = await new window.EyeDropper().open();
+        if (res?.sRGBHex) {
+          const hex = res.sRGBHex.toUpperCase();
+          bridge.copyText?.(hex);
+          pickedColors = [hex, ...pickedColors.filter((c) => c !== hex)].slice(0, 5);
+          renderColorSwatches();
+          window.showIslandNotification?.({
+            app: 'Color Picker',
+            title: isAr() ? `🎨 تم نسخ اللون ${hex}` : `🎨 Copied ${hex}`,
+            message: isAr() ? 'تم حفظ كود اللون HEX في الحافظة والأدوات' : 'HEX color copied to clipboard & recent swatches',
+            ms: 4000,
+          });
+          return;
+        }
+      } catch {
+        return;
+      }
+    }
+    window.showIslandNotification?.({
+      app: 'Color Picker',
+      title: isAr() ? '🎨 منتقي الألوان' : '🎨 Color Picker',
+      message: isAr() ? 'انسخ كود أي لون HEX/RGB من الحافظة ليظهر تلقائياً' : 'Copy any HEX/RGB color to preview it in the Island',
+      ms: 4500,
+    });
   });
   $('#tool-btn-calc')?.addEventListener('click', () => {
-    try { bridge.apps.launch('calc'); } catch {}
+    bridge.launchTool?.('calc');
+    window.collapseIsland?.();
   });
   $('#tool-btn-terminal')?.addEventListener('click', () => {
-    try { bridge.apps.launch('powershell'); } catch {}
+    bridge.launchTool?.('terminal');
+    window.collapseIsland?.();
   });
 })();

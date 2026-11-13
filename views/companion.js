@@ -137,10 +137,10 @@
     const list = ar ? CARE_AR : CARE_EN;
     const [title, text] = list[careIdx++ % list.length];
 
-    window.setNovaMood?.('care', 15000);
+    const isBreathing = title.includes('4-4-4') || title.includes('Breathing');
+    window.setNovaMood?.(isBreathing ? 'breathing' : 'care', 15000);
     window.audioHaptics?.playWaterDrop(0.26);
 
-    const isBreathing = title.includes('4-4-4') || title.includes('Breathing');
     const rhythmHtml = isBreathing
       ? `<div class="bb-rhythm" style="margin-top:5px; font-size:10.5px; color:#38bdf8; font-weight:600;">🌬️ ${ar ? 'شهيق (٤ث) ⬅️ حبس (٤ث) ➡️ زفير (٤ث) ⏸️ راحة (٤ث)' : 'Inhale (4s) ⬅️ Hold (4s) ➡️ Exhale (4s) ⏸️ Rest (4s)'}</div>`
       : '';
@@ -156,7 +156,7 @@
 
   // Pre-Adhan mindful notification (10 minutes before next prayer)
   function checkPreAdhan() {
-    if (!feat('prayerAlerts') || !feat('tabPrayer')) return;
+    if (!feat('prayerAlerts') || !feat('tabPrayer') || feat('novaPrayer') === false) return;
     const pr = window.nextPrayerObj?.();
     if (!pr || !pr.target) return;
     const diffMs = pr.target - Date.now();
@@ -172,7 +172,7 @@
         ? `اقترب أذان ${pr.name} (متبقي ١٠ دقائق) — استعد وأرح عينيك.`
         : `Approaching ${pr.name} prayer in 10 minutes — prepare and rest your eyes.`;
       
-      window.setNovaMood?.('khushu', 8000);
+      window.setNovaState?.('pre_prayer', 10000);
       window.audioHaptics?.playWoodTap();
       if (typeof showToast === 'function') {
         showToast('prayer', ar ? '🕌 اقتربت الصلاة' : '🕌 Prayer Approaching', msg, 0, 7000);

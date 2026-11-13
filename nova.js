@@ -31,15 +31,7 @@ ai.register(ipcMain);
 
 // Keep our own windows (the mini player) out of Windows' media sessions, so the island and
 // the per-app commands keep targeting the browser tab rather than the mini player.
-// Ensure Windows 11 AppContainer permissions for sandboxed renderer
-if (process.platform === 'win32') {
-  try {
-    const installDir = path.dirname(process.execPath);
-    if (installDir.toLowerCase().includes('programs')) {
-      require('child_process').exec(`icacls "${installDir}" /grant *S-1-15-2-1:(OI)(CI)(RX) /T`, { windowsHide: true }, () => {});
-    }
-  } catch {}
-}
+// AppContainer ACL is applied during installation in build/installer.nsh (avoid heavy boot-time icacls /T scan)
 
 app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling,AudioServiceSandbox,AudioServiceOutOfProcess,CalculateNativeWinOcclusion,SpareRendererForSitePerProcess');
 app.commandLine.appendSwitch('ignore-gpu-blocklist');
@@ -68,7 +60,7 @@ let prefs = Object.assign(
 // The island's position is an "anchor": the top-center of the collapsed pill, in screen
 // coordinates. The window (always fully on screen) follows it, and the renderer places the
 // island inside the window so it expands toward the free space near screen edges.
-const PILL_HALF_W = 120;   // half of the widest collapsed pill (keep in sync with style.css)
+const PILL_HALF_W = 150;   // half of the widest collapsed pill (keep in sync with style.css)
 const PILL_H = 34;
 const FLOAT_TOP = 8;       // gap above a floating island inside the window
 const SNAP_PX = 28;        // distance from the top edge that docks the island
@@ -166,10 +158,22 @@ function layoutAddressBar() {
   }
 }
 
+function topBarTrayReserve(bounds) {
+  return clamp(Math.round(bounds.width * 0.175), 245, 315);
+}
+
+function computeTopBarSlotY(display) {
+  const b = display.bounds;
+  const wa = display.workArea;
+  const topBarH = wa.y - b.y;
+  return topBarH >= 24 ? b.y + Math.max(2, Math.round((topBarH - PILL_H) / 2)) : b.y + FLOAT_TOP;
+}
+
 function layout() {
   if (!win || !anchor) return;
+  const slot = !drag ? (features.get().topBarSlot || 'auto') : 'auto';
   // not while the user drags the island somewhere else
-  if (omni && !drag) {
+  if (omni && !drag && slot === 'auto') {
     layoutAddressBar();
     return;
   }
@@ -178,11 +182,25 @@ function layout() {
   const wa = display.workArea;
   let wx;
   let wy;
+  let rightEdge = null;
   if (prefs.vertical) {
     anchor.x = prefs.side === 'left' ? b.x : b.x + b.width;
     anchor.y = clamp(anchor.y, wa.y + V_PILL_HALF_H, wa.y + wa.height - V_PILL_HALF_H);
     wx = prefs.side === 'left' ? b.x : b.x + b.width - WIN_W;
     wy = Math.round(clamp(anchor.y - WIN_H / 2, wa.y, wa.y + wa.height - WIN_H));
+  } else if (slot === 'top-center') {
+    anchor.x = b.x + b.width / 2;
+    anchor.y = computeTopBarSlotY(display);
+    prefs.docked = false;
+    wx = Math.round(clamp(anchor.x - WIN_W / 2, b.x, b.x + b.width - WIN_W));
+    wy = Math.round(b.y);
+  } else if (slot === 'top-right') {
+    rightEdge = b.x + b.width - topBarTrayReserve(b);
+    anchor.x = rightEdge - PILL_HALF_W;
+    anchor.y = computeTopBarSlotY(display);
+    prefs.docked = false;
+    wx = Math.round(clamp(rightEdge + 16 - WIN_W, b.x, b.x + b.width - WIN_W));
+    wy = Math.round(b.y);
   } else {
     anchor.x = clamp(anchor.x, b.x + PILL_HALF_W, b.x + b.width - PILL_HALF_W);
     anchor.y = prefs.docked ? b.y : clamp(anchor.y, b.y, wa.y + wa.height - PILL_H - 6);
@@ -196,9 +214,12 @@ function layout() {
   const msg = {
     x: Math.round(anchor.x - wx),
     y: Math.round(anchor.y - wy),
-    docked: !prefs.vertical && prefs.docked,
+    docked: !prefs.vertical && slot === 'auto' && prefs.docked,
     vertical: prefs.vertical,
     side: prefs.side,
+    slot: prefs.vertical ? 'auto' : slot,
+    rightEdge: rightEdge !== null ? Math.round(rightEdge - wx) : null,
+    topBarH: (wa.y - b.y >= 24) ? (wa.y - b.y) : 0,
   };
   const key = JSON.stringify(msg);
   if (key !== lastLayout) {
@@ -222,6 +243,7 @@ function savePosition() {
 function resetPosition() {
   prefs.docked = false;
   prefs.vertical = false;
+  if ((features.get().topBarSlot || 'auto') !== 'auto') features.set({ topBarSlot: 'auto' });
   anchor = defaultAnchor();
   layout();
   savePosition();
@@ -233,6 +255,7 @@ function setVertical(on) {
   if (!anchor || on === prefs.vertical) return;
   const b = screen.getDisplayNearestPoint({ x: Math.round(anchor.x), y: Math.round(anchor.y) }).bounds;
   if (on) {
+    if ((features.get().topBarSlot || 'auto') !== 'auto') features.set({ topBarSlot: 'auto' });
     prefs.side = anchor.x < b.x + b.width / 2 ? 'left' : 'right';
     anchor = { x: anchor.x, y: anchor.y + V_PILL_HALF_H };
   } else {
@@ -276,7 +299,9 @@ function followCursor() {
   if (docked) {
     next.y = b.y;
     const center = b.x + b.width / 2;
+    const traySpotX = b.x + b.width - topBarTrayReserve(b) - PILL_HALF_W;
     if (Math.abs(next.x - center) < CENTER_SNAP_PX) next.x = center;
+    else if (Math.abs(next.x - traySpotX) < CENTER_SNAP_PX) next.x = traySpotX;
   }
   prefs.docked = docked;
   anchor = next;
@@ -287,6 +312,7 @@ ipcMain.on('drag-end', () => {
   if (!drag) return;
   clearInterval(drag.timer);
   drag = null;
+  if ((features.get().topBarSlot || 'auto') !== 'auto') features.set({ topBarSlot: 'auto' });
   savePosition();
   captureBackdrop(); // refresh the glass for the new spot right away
   // don't pop the island open right after a move; re-arm when the cursor leaves
@@ -300,6 +326,7 @@ function updateVisibility() {
   if (shouldShow && !win.isVisible()) {
     win.show();
     win.setSkipTaskbar(features.get().skipTaskbar !== false);
+    ensureIslandTopmost();
   }
   if (!shouldShow && win.isVisible()) win.hide();
   send('visibility', shouldShow);
@@ -317,8 +344,33 @@ function getDummyParent() {
       frame: false,
       transparent: true,
     });
+    dummyParent.setAlwaysOnTop(true, 'screen-saver');
   }
   return dummyParent;
+}
+
+function getIslandNativeHwnd() {
+  if (!win || win.isDestroyed()) return '';
+  try {
+    const hBuf = win.getNativeWindowHandle();
+    return process.arch === 'x64' ? hBuf.readBigInt64LE(0).toString() : hBuf.readInt32LE(0).toString();
+  } catch (e) {
+    return '';
+  }
+}
+
+function sendIslandHwnd() {
+  const hwnd = getIslandNativeHwnd();
+  if (hwnd) mediaWrite(`island-hwnd ${hwnd}`);
+}
+
+function ensureIslandTopmost() {
+  if (win && !win.isDestroyed()) {
+    try {
+      win.setAlwaysOnTop(true, 'screen-saver');
+      mediaWrite('pin-topmost');
+    } catch {}
+  }
 }
 
 function createWindow() {
@@ -345,10 +397,18 @@ function createWindow() {
       nodeIntegration: false,
     },
   });
-  win.setAlwaysOnTop(true);
+  win.setAlwaysOnTop(true, 'screen-saver');
   win.setVisibleOnAllWorkspaces(true);
   win.setContentProtection(false);
   placeWindow();
+
+  win.on('blur', ensureIslandTopmost);
+  win.on('focus', ensureIslandTopmost);
+  win.on('show', () => {
+    ensureIslandTopmost();
+    sendIslandHwnd();
+  });
+
   win.webContents.on('preload-error', (_e, p, err) => console.error('[preload-error]', p, err));
   win.webContents.on('console-message', (e, level, message, line, source) => {
     // Electron 35+ passes one event object with string levels; older versions passed arguments
@@ -368,6 +428,8 @@ function createWindow() {
   });
   win.once('ready-to-show', () => {
     win.show();
+    ensureIslandTopmost();
+    sendIslandHwnd();
     log.info('Window shown via ready-to-show');
   });
 }
@@ -386,8 +448,27 @@ function bridgeStatus() {
   return { state: fresh ? 'ok' : bridge.state === 'starting' ? 'starting' : 'failed', detail: bridge.detail, engine: bridge.engine };
 }
 
+function syncHelperNotificationPolicy() {
+  const f = features.get();
+  const islandOn = f.islandNotifications !== false;
+  const replaceOn = islandOn && f.replaceWindowsNotifications !== false;
+  if (!islandOn) mediaWrite('notif-capture-off');
+  else if (replaceOn) mediaWrite('notif-replace-on');
+  else {
+    mediaWrite('notif-replace-off');
+    mediaWrite('notif-capture-on');
+  }
+}
+
+const recentNotifs = new Map();
+
 function startMedia() {
   media = spawn(HELPER(), [], { windowsHide: true });
+  setTimeout(() => {
+    syncHelperNotificationPolicy();
+    sendIslandHwnd();
+  }, 200);
+  let syncedOnce = false;
   let buffer = '';
   media.on('error', (err) => {
     console.error('[media] failed to start:', err.message);
@@ -411,9 +492,35 @@ function startMedia() {
         const data = JSON.parse(line);
         bridge.lastLine = Date.now();
         bridge.state = 'ok';
+        if (!syncedOnce) {
+          syncedOnce = true;
+          syncHelperNotificationPolicy();
+          sendIslandHwnd();
+        }
         if (data.error) console.error('[media]', data.error);
         if (typeof data.clip === 'number') onClipboardSeq(data.clip, !!data.clipPriv);
         if ('omni' in data) onOmni(data.omni);
+        if (data.notif && typeof data.notif === 'object') {
+          const f = features.get();
+          if (f.islandNotifications !== false) {
+            const k = `${data.notif.app || ''}|${data.notif.title || ''}|${data.notif.message || ''}`;
+            const now = Date.now();
+            if (now - (recentNotifs.get(k) || 0) > 2000) {
+              recentNotifs.set(k, now);
+              if (recentNotifs.size > 40) recentNotifs.clear();
+              ensureIslandTopmost();
+              send('island-notification', {
+                app: data.notif.app || 'Windows',
+                title: data.notif.title || 'Notification',
+                message: data.notif.message || '',
+                icon: data.notif.icon || '',
+                appColor: '#0A84FF',
+                id: data.notif.id,
+                aumid: data.notif.aumid || '',
+              });
+            }
+          }
+        }
         if (deepFocusActive && (data.fgTitle || data.omni || data.fgProc)) {
           const rawProc = (data.fgProc || '').replace(/\.exe$/i, '').trim();
           const proc = rawProc.toLowerCase();
@@ -526,6 +633,43 @@ ipcMain.on('shot-to-shelf', async () => {
   }
 });
 
+ipcMain.handle('capture-screenshot', async () => {
+  if (process.platform !== 'win32') return { ok: false, error: 'unsupported' };
+  const dir = path.join(app.getPath('pictures'), 'Nova Island');
+  const pad = (n) => String(n).padStart(2, '0');
+  const d = new Date();
+  const file = path.join(dir, `Screenshot ${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}.png`);
+  let hid = false;
+  try {
+    fs.mkdirSync(dir, { recursive: true });
+    if (win && !win.isDestroyed()) {
+      win.setOpacity(0);
+      hid = true;
+      await new Promise((r) => setTimeout(r, 90));
+    }
+    const psCmd = `Add-Type -AssemblyName System.Windows.Forms,System.Drawing; $b=[System.Windows.Forms.Screen]::PrimaryScreen.Bounds; $bmp=New-Object System.Drawing.Bitmap($b.Width,$b.Height); $g=[System.Drawing.Graphics]::FromImage($bmp); $g.CopyFromScreen($b.Location,[System.Drawing.Point]::Empty,$b.Size); $bmp.Save('${file.replace(/'/g, "''")}',[System.Drawing.Imaging.ImageFormat]::Png); $g.Dispose(); $bmp.Dispose();`;
+    await new Promise((resolve, reject) => {
+      const ps = spawn('powershell.exe', ['-NoProfile', '-NonInteractive', '-WindowStyle', 'Hidden', '-Command', psCmd], { windowsHide: true });
+      ps.on('error', reject);
+      ps.on('exit', (code) => (code === 0 && fs.existsSync(file) ? resolve() : reject(new Error(`exit ${code}`))));
+    });
+    const img = nativeImage.createFromPath(file);
+    if (!img.isEmpty()) {
+      lastShot = img;
+      try { clipboard.writeImage(img); } catch {}
+    }
+    shelf.add([file]);
+    send('shelf', await shelf.list());
+    send('shot-saved', { name: path.basename(file) });
+    return { ok: true, name: path.basename(file), path: file };
+  } catch (err) {
+    console.error('[capture-screenshot]', err.message);
+    return { ok: false, error: err.message };
+  } finally {
+    if (hid && win && !win.isDestroyed()) win.setOpacity(1);
+  }
+});
+
 const MEDIA_CMD = /^(toggle|next|prev|mute|seek \d+(\.\d+)?|vol [01](\.\d+)?|bright \d{1,3})$/;
 ipcMain.on('media-cmd', (_e, cmd) => {
   if (media && typeof cmd === 'string' && MEDIA_CMD.test(cmd)) media.stdin.write(cmd + '\n');
@@ -626,6 +770,14 @@ let inside = false;
 let active = false;
 let enteredAt = 0;
 let suppressUntilLeave = false;
+let interactiveMode = false;
+
+ipcMain.on('interactive-mode', (_e, on) => {
+  interactiveMode = !!on;
+  if (interactiveMode && inside && !suppressUntilLeave) {
+    setActive(true);
+  }
+});
 
 ipcMain.on('island-rect', (_e, r) => {
   const resized = r.width !== islandRect.width || r.height !== islandRect.height;
@@ -692,7 +844,7 @@ function pollCursor() {
   if (!now) {
     suppressUntilLeave = false;
     setActive(false);
-  } else if (!active && !suppressUntilLeave && Date.now() - enteredAt >= HOVER_INTENT_MS) {
+  } else if (!active && !suppressUntilLeave && (interactiveMode || Date.now() - enteredAt >= HOVER_INTENT_MS)) {
     setActive(true);
   }
 }
@@ -846,6 +998,29 @@ function appMenu() {
       ],
     },
     {
+      label: isAr ? 'الموضع في الشريط العلوي (Taskbar)' : 'Top Taskbar Slot',
+      submenu: [
+        {
+          label: isAr ? 'تلقائي / سحب حر (Auto)' : 'Auto / Free Drag',
+          type: 'radio',
+          checked: (features.get().topBarSlot || 'auto') === 'auto',
+          click: () => features.set({ topBarSlot: 'auto' }),
+        },
+        {
+          label: isAr ? 'مكان 1: المنتصف فوق الشريط' : 'Spot 1: Top Center',
+          type: 'radio',
+          checked: features.get().topBarSlot === 'top-center',
+          click: () => features.set({ topBarSlot: 'top-center' }),
+        },
+        {
+          label: isAr ? 'مكان 2: اليمين قبل الأيقونات' : 'Spot 2: Top Right (Before Tray)',
+          type: 'radio',
+          checked: features.get().topBarSlot === 'top-right',
+          click: () => features.set({ topBarSlot: 'top-right' }),
+        },
+      ],
+    },
+    {
       label: isAr ? 'الوضع الرأسي (تثبيت جانبي)' : 'Vertical (dock left / right)',
       type: 'checkbox',
       checked: prefs.vertical,
@@ -859,6 +1034,18 @@ function appMenu() {
       click: (item) => { setStartWithWindows(item.checked); notifyGeneral(); },
     },
     { label: isAr ? 'توسيع / طي   Ctrl+Alt+I' : 'Expand / collapse   Ctrl+Alt+I', click: () => send('toggle') },
+    {
+      label: isAr ? 'البحث السريع (Spotlight)   Alt+Space' : 'Quick Search (Spotlight)   Alt+Space',
+      click: () => {
+        if (win && !win.isDestroyed()) {
+          if (!win.isVisible()) win.show();
+          focusInputActive = true;
+          win.setFocusable(true);
+          win.focus();
+          send('open-spotlight');
+        }
+      },
+    },
     { label: isAr ? 'الإعدادات…' : 'Settings…', click: () => prefsWindow.open() },
     { type: 'separator' },
     { label: isAr ? 'خروج' : 'Quit', click: () => app.quit() },
@@ -967,6 +1154,117 @@ ipcMain.on('features-set', (_e, patch) => features.set(patch));
 ipcMain.on('features-reset', () => features.reset());
 ipcMain.on('reminder-preview', () => send('reminder-now'));
 ipcMain.on('adhan-preview', (_e, voice) => send('adhan-preview', voice));
+ipcMain.on('focus-mode-active', (_e, active) => {
+  if (!active && focusInputActive) {
+    focusInputActive = false;
+    if (win && !win.isDestroyed() && win.isFocusable()) win.setFocusable(false);
+  }
+});
+ipcMain.on('test-nova-state', (_e, st) => {
+  if (typeof st === 'string' && st.length < 40) send('nova-state', st);
+});
+ipcMain.on('test-island-notification', (_e, payload) => {
+  if (payload && typeof payload === 'object') {
+    ensureIslandTopmost();
+    send('island-notification', payload);
+  }
+});
+ipcMain.on('activate-notification', async (_e, payload) => {
+  if (!payload || typeof payload !== 'object') return;
+  interactiveMode = false;
+  suppressUntilLeave = true;
+  setActive(false);
+  if (!focusInputActive && win && !win.isDestroyed() && win.isFocusable()) {
+    win.setFocusable(false);
+  }
+  const aumid = typeof payload.aumid === 'string' ? payload.aumid.trim() : '';
+  const appName = typeof payload.app === 'string' ? payload.app.trim() : '';
+  try {
+    if (aumid) {
+      if (/\.exe$/i.test(aumid) || aumid.includes('\\') || aumid.includes('/')) {
+        await shell.openPath(aumid);
+        return;
+      }
+      spawn('explorer.exe', [`shell:AppsFolder\\${aumid}`], { detached: true, stdio: 'ignore' }).unref();
+      return;
+    }
+    if (appName) {
+      const catalog = apps && typeof apps.all === 'function' ? await apps.all() : [];
+      const low = appName.toLowerCase();
+      const found = catalog.find((a) => (a.name || '').toLowerCase() === low)
+        || catalog.find((a) => {
+          const n = (a.name || '').toLowerCase();
+          return n && (n.includes(low) || low.includes(n));
+        });
+      if (found && typeof apps.launch === 'function') {
+        apps.launch(found.id);
+        return;
+      }
+      if (payload.test || low === 'hypernova') {
+        prefsWindow.open?.();
+      }
+    }
+  } catch (err) {
+    console.warn('activate-notification error:', err);
+  }
+});
+
+function recordingsDir() {
+  const dir = path.join(app.getPath('documents'), 'HyperNova Recordings');
+  fs.mkdirSync(dir, { recursive: true });
+  return dir;
+}
+
+ipcMain.handle('save-recording', (_e, payload) => {
+  try {
+    const p = payload && typeof payload === 'object' ? payload : {};
+    const dir = recordingsDir();
+    const d = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    const stamp = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}_${pad(d.getHours())}-${pad(d.getMinutes())}-${pad(d.getSeconds())}`;
+    const files = [];
+    let audioPath = '';
+    let notesPath = '';
+    if (typeof p.audioBase64 === 'string' && p.audioBase64.length > 0) {
+      const ext = p.ext === 'wav' ? 'wav' : 'webm';
+      audioPath = path.join(dir, `hypernova-${stamp}.${ext}`);
+      fs.writeFileSync(audioPath, Buffer.from(p.audioBase64, 'base64'));
+      files.push(audioPath);
+    }
+    if (typeof p.notes === 'string' && p.notes.trim().length > 0) {
+      notesPath = path.join(dir, `hypernova-${stamp}-notes.md`);
+      const hdr = (p.title ? `# ${p.title}\n\n` : `# Recording Notes (${stamp})\n\n`);
+      fs.writeFileSync(notesPath, hdr + p.notes.trim() + '\n', 'utf8');
+      files.push(notesPath);
+    }
+    if (files.length > 0) shelf.add(files);
+    return { ok: files.length > 0, dir, audioPath, notesPath, files };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
+});
+
+ipcMain.on('open-recordings-dir', () => {
+  try { shell.openPath(recordingsDir()); } catch {}
+});
+ipcMain.on('launch-system-tool', (_e, tool) => {
+  if (process.platform !== 'win32') return;
+  try {
+    if (tool === 'calc') {
+      spawn('calc.exe', [], { detached: true, stdio: 'ignore', windowsHide: false }).unref();
+    } else if (tool === 'terminal') {
+      const wt = spawn('wt.exe', [], { detached: true, stdio: 'ignore', windowsHide: false });
+      wt.on('error', () => {
+        try {
+          spawn('cmd.exe', ['/c', 'start', '""', 'powershell.exe'], { detached: true, stdio: 'ignore', windowsHide: true }).unref();
+        } catch {}
+      });
+      wt.unref();
+    }
+  } catch (err) {
+    console.error('[launch-system-tool]', err.message);
+  }
+});
 ipcMain.handle('general-get', () => generalState());
 // Settings > Support: the page names a link, main holds the addresses
 const SUPPORT_LINKS = {
@@ -1048,11 +1346,26 @@ ipcMain.on('general-set', (_e, key, value) => {
 });
 let prayerCalc = `${features.get().asrHanafi}|${features.get().hijriAdjust}`;
 let autoUpdate = features.get().autoUpdate;
+let currentTopBarSlot = features.get().topBarSlot || 'auto';
 features.onChange((f) => {
   if (!f.addrIsland && omni) {
     omni = null;
     omniKey = '';
     layout();
+  }
+  const nextSlot = f.topBarSlot || 'auto';
+  if (nextSlot !== currentTopBarSlot) {
+    currentTopBarSlot = nextSlot;
+    if (nextSlot !== 'auto' && prefs.vertical) {
+      prefs.vertical = false;
+      notifyGeneral();
+    }
+    layout();
+    savePosition();
+    if (win && !win.isDestroyed()) {
+      ensureIslandTopmost();
+      sendIslandHwnd();
+    }
   }
   const calc = `${f.asrHanafi}|${f.hijriAdjust}`;
   if (calc !== prayerCalc) {
@@ -1060,9 +1373,9 @@ features.onChange((f) => {
     prayer.refresh();
   }
   send('features', f);
-  if (win && !win.isDestroyed()) win.setSkipTaskbar(f.skipTaskbar !== false);
   prefsWindow.send('features', f);
   if (win && !win.isDestroyed()) win.setSkipTaskbar(f.skipTaskbar !== false);
+  syncHelperNotificationPolicy();
   downloads.setEnabled(f.downloads);
   privacy.setEnabled(f.privacyDots);
   network.setEnabled(f.netToasts);
@@ -1170,7 +1483,33 @@ app.whenReady().then(() => {
     }
     send('focus-toggle');
   });
-  console.log(`[shortcut] Registration results - Ctrl+Alt+I: ${okI}, Ctrl+Alt+F: ${okF}`);
+  const okSpot = globalShortcut.register('Alt+Space', () => {
+    console.log('[shortcut] Alt+Space fired');
+    if (userHidden) { userHidden = false; updateVisibility(); notifyGeneral(); }
+    if (win && !win.isDestroyed()) {
+      if (!win.isVisible()) win.show();
+      focusInputActive = true;
+      win.setFocusable(true);
+      try { app.focus({ steal: true }); } catch {}
+      win.focus();
+    }
+    send('open-spotlight');
+  });
+  if (!okSpot) {
+    console.warn('[shortcut] Alt+Space taken by another app; registering Ctrl+Alt+Space fallback');
+    globalShortcut.register('CommandOrControl+Alt+Space', () => {
+      if (userHidden) { userHidden = false; updateVisibility(); notifyGeneral(); }
+      if (win && !win.isDestroyed()) {
+        if (!win.isVisible()) win.show();
+        focusInputActive = true;
+        win.setFocusable(true);
+        try { app.focus({ steal: true }); } catch {}
+        win.focus();
+      }
+      send('open-spotlight');
+    });
+  }
+  console.log(`[shortcut] Registration results - Ctrl+Alt+I: ${okI}, Ctrl+Alt+S: ${okS}, Ctrl+Alt+F: ${okF}, Alt+Space: ${okSpot}`);
   screen.on('display-metrics-changed', () => layout());
   screen.on('display-added', () => layout());
   screen.on('display-removed', () => layout());
@@ -1180,7 +1519,12 @@ app.whenReady().then(() => {
 app.on('before-quit', () => {
   quitting = true;
   globalShortcut.unregisterAll();
-  if (media) media.kill();
+  if (media && !media.killed) {
+    mediaWrite('notif-capture-off');
+    try { if (media.stdin && media.stdin.writable) media.stdin.end(); } catch {}
+    const k = setTimeout(() => { try { media.kill(); } catch {} }, 350);
+    if (k.unref) k.unref();
+  }
 });
 
 app.on('window-all-closed', (e) => {

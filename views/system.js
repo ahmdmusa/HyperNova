@@ -52,6 +52,14 @@
       const s = pill.querySelector('svg'); if (s) s.innerHTML = info.svg;
       const b = pill.querySelector('b'); if (b) b.textContent = `${w.temp}°`;
     }
+    const isRainy = kind === 'rain' || kind === 'storm';
+    if (isRainy) {
+      window.setNovaAmbientProp?.('umbrella');
+      window.setNovaProp?.('umbrella');
+    } else if (window.getNovaProp?.() === 'umbrella') {
+      window.setNovaAmbientProp?.('none');
+      window.setNovaProp?.('none');
+    }
   }
 
   function meter(bar, val, v) {

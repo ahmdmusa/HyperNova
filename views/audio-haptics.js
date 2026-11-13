@@ -62,7 +62,9 @@
           osc.type = 'sine';
           osc.frequency.setValueAtTime(freq, t);
 
-          gain.gain.setValueAtTime(volume / (idx + 1), t);
+          // 15ms linear attack envelope ramp to eliminate click/pop
+          gain.gain.setValueAtTime(0.0001, t);
+          gain.gain.linearRampToValueAtTime(volume / (idx + 1), t + 0.015);
           gain.gain.exponentialRampToValueAtTime(0.0001, t + 1.8);
 
           osc.connect(gain);
@@ -70,6 +72,47 @@
 
           osc.start(t);
           osc.stop(t + 1.85);
+        });
+      } catch {}
+    }
+
+    // Gentle acoustic notification chime (warm D5 + A5 harmonic blend, 20ms attack ramp, 1400Hz lowpass filter, ~1.2s smooth decay)
+    playGentleChime(volume = 0.18) {
+      try {
+        if (typeof feat === 'function') {
+          if (feat('audioHaptics') === false) return;
+          if (feat('notifSound') === false) return;
+        }
+        this.init();
+        if (!this.ctx) return;
+        const t = this.ctx.currentTime;
+        const notes = [
+          { freq: 587.33, gainMul: 1.0, decay: 1.2 }, // D5 warm root
+          { freq: 880.00, gainMul: 0.55, decay: 1.0 } // A5 warm fifth overtone
+        ];
+
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(1400, t);
+        filter.Q.setValueAtTime(1.0, t);
+        filter.connect(this.ctx.destination);
+
+        notes.forEach(({ freq, gainMul, decay }) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, t);
+
+          // 20ms linear attack envelope ramp eliminating initial click/pop
+          gain.gain.setValueAtTime(0.0001, t);
+          gain.gain.linearRampToValueAtTime(volume * gainMul, t + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, t + decay);
+
+          osc.connect(gain);
+          gain.connect(filter);
+
+          osc.start(t);
+          osc.stop(t + decay + 0.05);
         });
       } catch {}
     }

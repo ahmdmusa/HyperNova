@@ -31,6 +31,8 @@ const state = {
   reminderUntil: 0, // a dhikr / du'a / verse card is on screen until then (views/reminders.js)
   reminderSize: [500, 140],
   sceneUntil: 0, // the island is a character (views/scene.js) until then
+  novaPreviewUntil: 0, // live Companion Studio preview override
+  meeting: { active: false, drawer: false },
   focusMode: false,
 };
 const feat = (key) => state.features[key] !== false;
@@ -38,6 +40,7 @@ const feat = (key) => state.features[key] !== false;
 // Good news: sparkles fly out of the island's edges.
 function celebrate(colors = ['#ffd479', '#30d158', '#8ab4ff', '#ff6b9d']) {
   if (!feat('celebrate') || anchor.vertical) return;
+  window.setNovaState?.('celebrate', 3500);
   const r = island.getBoundingClientRect();
   const cx = r.left + r.width / 2;
   const cy = r.top + r.height / 2;
@@ -67,16 +70,25 @@ function note(icon, text) {
 let internalDrag = false; // set by the shelf while dragging a file out
 
 // Liquid glass dynamic specular reflection tracking
+let _liqRaf = 0;
+let _liqEv = null;
 window.addEventListener('mousemove', (e) => {
   if (typeof feat === 'function' && feat('liquidGlass') === false) return;
-  const islandEl = document.getElementById('island');
-  if (!islandEl) return;
-  const rect = islandEl.getBoundingClientRect();
-  const x = ((e.clientX - rect.left) / Math.max(1, rect.width)) * 100;
-  const y = ((e.clientY - rect.top) / Math.max(1, rect.height)) * 100;
-  islandEl.style.setProperty('--liquid-x', `${Math.max(0, Math.min(100, x)).toFixed(1)}%`);
-  islandEl.style.setProperty('--liquid-y', `${Math.max(0, Math.min(100, y)).toFixed(1)}%`);
-});
+  if (lastMode !== 'expanded' && lastMode !== 'focus' && lastMode !== 'notification' && !state.hover) return;
+  _liqEv = e;
+  if (_liqRaf) return;
+  _liqRaf = requestAnimationFrame(() => {
+    _liqRaf = 0;
+    const ev = _liqEv;
+    const islandEl = document.getElementById('island');
+    if (!ev || !islandEl) return;
+    const rect = islandEl.getBoundingClientRect();
+    const x = ((ev.clientX - rect.left) / Math.max(1, rect.width)) * 100;
+    const y = ((ev.clientY - rect.top) / Math.max(1, rect.height)) * 100;
+    islandEl.style.setProperty('--liquid-x', `${Math.max(0, Math.min(100, x)).toFixed(1)}%`);
+    islandEl.style.setProperty('--liquid-y', `${Math.max(0, Math.min(100, y)).toFixed(1)}%`);
+  });
+}, { passive: true });
 
 const fmt = (sec) => {
   sec = Math.max(0, Math.floor(sec));
@@ -86,7 +98,7 @@ const fmt = (sec) => {
 };
 
 // ---------------- mode ----------------
-const SIZE = { idle: 1, compact: 2, toast: 3, peek: 4, reminder: 4, scene: 4, focus: 5, expanded: 6 };
+const SIZE = { idle: 1, meeting: 2, compact: 2, toast: 3, peek: 4, reminder: 4, scene: 4, notification: 4, focus: 5, expanded: 6 };
 
 function timerActive() {
   return state.timer.running || state.timer.remaining > 0;
@@ -129,6 +141,8 @@ function currentMode() {
   const now = Date.now();
   // NeuroFocus Command Bar & Single-Step Capsule
   if (state.focusMode && !anchor.vertical) return 'focus';
+  // Live iOS/Dynamic-Island Notification Banner
+  if (state.notificationActive && !anchor.vertical) return 'notification';
   // a character scene (adhan, water, focus) owns the island until it ends or is closed
   if (state.sceneUntil > now && !anchor.vertical) return 'scene';
   // a toast with a button (Join) stays under the cursor so it can be clicked
@@ -137,23 +151,40 @@ function currentMode() {
   if (state.reminderUntil > now && !state.pinned && !state.dragging) {
     return state.toast && now < state.toastUntil ? 'toast' : 'reminder';
   }
+  // Live Companion Studio / petting stage preview
+  if (state.novaPreviewUntil > now && !anchor.vertical) return 'idle';
+  // Meeting HUD + Recorder Drawer owns drawer state & compact strip
+  if (state.meeting?.active && state.meeting?.drawer && !anchor.vertical) return 'meeting';
   if (!state.moving && (state.hover || state.pinned || state.dragging)) return 'expanded';
   if (state.toast && now < state.toastUntil) return 'toast';
   if (now < state.peekUntil && !state.mediaFront) return 'peek';
+  if (state.meeting?.active && !anchor.vertical) return 'meeting';
   if (compactKind()) return 'compact';
   return 'idle';
 }
 
 let lastMode = '';
 function render() {
+  const clipEl = $('.clip');
+  if (clipEl && (clipEl.scrollTop !== 0 || clipEl.scrollLeft !== 0)) {
+    clipEl.scrollTop = 0;
+    clipEl.scrollLeft = 0;
+  }
   const mode = currentMode();
+  island.classList.toggle('meeting-drawer', mode === 'meeting' && !!state.meeting?.drawer);
   if (mode !== lastMode) {
     island.classList.toggle('shrinking', !!lastMode && SIZE[mode] < SIZE[lastMode]);
-    island.classList.remove('idle', 'compact', 'toast', 'peek', 'reminder', 'scene', 'expanded', 'focus');
+    island.classList.remove('idle', 'meeting', 'compact', 'toast', 'peek', 'reminder', 'scene', 'notification', 'expanded', 'focus');
     island.classList.add(mode);
     const prev = lastMode;
     lastMode = mode;
+    bridge.setInteractiveMode?.(
+      mode === 'notification' || mode === 'reminder' || mode === 'focus' || mode === 'scene'
+      || (mode === 'meeting' && !!state.meeting?.drawer)
+      || (mode === 'toast' && !!state.toastAction)
+    );
     if (typeof positionIsland === 'function') positionIsland();
+    if (mode === 'expanded' && typeof placeSegThumb === 'function') setTimeout(placeSegThumb, 40);
     if (typeof wake === 'function') wake();
     window.dispatchEvent(new CustomEvent('island:mode', { detail: { mode, prev } }));
   }
@@ -200,18 +231,22 @@ function setCompactTitle(text) {
 }
 function fitCompactTitle() {
   const box = $('.c-title');
-  box.classList.remove('scroll');
+  if (!box) return;
+  box.classList.remove('scroll', 'rtl');
   clearTimeout(fitTimer);
   // measure once the pill has finished morphing to its width
   fitTimer = setTimeout(() => {
     const span = $('#c-title');
+    if (!span || lastMode !== 'compact') return;
     const over = span.scrollWidth - box.clientWidth;
-    if (over <= 2 || lastMode !== 'compact') return;
-    box.style.setProperty('--dist', `${-over - 12}px`);
+    const hasRtl = /[\u0600-\u06FF]/.test(span.textContent || '');
+    box.style.textAlign = over > 2 ? 'left' : 'center';
+    if (over <= 2) return;
+    box.classList.toggle('rtl', hasRtl);
+    box.style.setProperty('--dist', `${-over - 10}px`);
     box.style.setProperty('--dur', `${Math.max(5, over / 22 + 3)}s`);
-    box.classList.remove('rtl');
     box.classList.add('scroll');
-  }, 560);
+  }, 480);
 }
 window.addEventListener('island:mode', (e) => {
   if (e.detail.mode === 'compact') fitCompactTitle();
@@ -222,6 +257,8 @@ let hoverTimer = null;
 bridge.onHover((v) => {
   clearTimeout(hoverTimer);
   if (v) {
+    if (state.notificationActive) return;
+    if (Date.now() < (window.__novaPettingLockUntil || 0)) return;
     state.hover = true;
     render();
   } else {
@@ -262,7 +299,7 @@ bridge.onFocusToggle?.(() => {
 });
 
 // ---------------- drag to move (docks when dropped at the top edge) ----------------
-const NO_DRAG = 'button, input, .slider, .file, .app, .pick, .picker, .clip-item, .shelf-items';
+const NO_DRAG = 'button, input, .slider, .file, .app, .pick, .picker, .clip-item, .shelf-items, .l-notification';
 let press = null;
 let justMoved = false;
 
@@ -314,28 +351,35 @@ island.addEventListener('click', (e) => {
 // on it, then pushed back inside the window, so near the bottom or the sides the island
 // opens upward / inward instead of off screen. Sizes mirror style.css.
 const SIZE_DIMS = {
-  s: { expanded: [520, 260], idle: [220, 30], compact: [280, 30] },
-  m: { expanded: [640, 335], idle: [236, 32], compact: [300, 32] },
-  l: { expanded: [780, 420], idle: [260, 36], compact: [330, 36] }
+  s: { expanded: [520, 260], idle: [252, 30], compact: [280, 32] },
+  m: { expanded: [640, 335], idle: [272, 32], compact: [300, 34] },
+  l: { expanded: [780, 420], idle: [298, 36], compact: [330, 36] }
 };
 const DIMS = {
-  idle: [236, 32], compact: [300, 32], toast: [340, 34], peek: [400, 78], focus: [620, 76], expanded: [640, 335],
+  idle: [272, 32], meeting: [380, 36], compact: [300, 34], toast: [340, 34], peek: [400, 78], notification: [420, 82], focus: [620, 76], expanded: [640, 335],
 };
-const COMPACT_WIDE = 380; // compact with a title (media / download)
+const COMPACT_WIDE = 420; // compact with a title (media / download / quran)
+const SIZE_EYES_COMPACT = { s: [112, 30], m: [118, 34], l: [130, 36] };
+const SIZE_EYES_STAGE = { s: [196, 66], m: [224, 74], l: [252, 82] };
 const VDIMS = { ...DIMS, idle: [44, 244], compact: [44, 136], toast: [44, 168] };
 let anchor = { x: window.innerWidth / 2, y: 8, docked: false, vertical: false, side: 'right' };
 
 function positionIsland() {
   let [w, h] = (anchor.vertical ? VDIMS : DIMS)[lastMode] || DIMS.idle;
-  if (lastMode === 'idle' && !anchor.vertical && island.classList.contains('eyes')) {
+  if (lastMode === 'idle' && !anchor.vertical && island.classList.contains('eyes') && !island.classList.contains('show-slide')) {
     const currentSize = state.features?.islandSize || 'm';
-    w = currentSize === 's' ? 100 : currentSize === 'l' ? 124 : 112;
+    const stage = island.classList.contains('nova-stage');
+    [w, h] = (stage ? SIZE_EYES_STAGE : SIZE_EYES_COMPACT)[currentSize]
+      || (stage ? SIZE_EYES_STAGE.m : SIZE_EYES_COMPACT.m);
   }
   const currentIslandStyle = state.features?.islandStyle || 'pill';
   if (lastMode === 'idle' && !anchor.vertical && !anchor.addr) {
     if (currentIslandStyle === 'line') {
       [w, h] = [140, 5];
     }
+  }
+  if (lastMode === 'meeting' && !anchor.vertical) {
+    [w, h] = state.meeting?.drawer ? [440, 290] : [380, 36];
   }
   if (lastMode === 'compact' && !anchor.vertical && island.classList.contains('c-wide')) w = COMPACT_WIDE;
   if (lastMode === 'reminder') [w, h] = state.reminderSize;
@@ -350,7 +394,10 @@ function positionIsland() {
   if (lastMode === 'scene') {
     // the body on the right, the card on its left: [card 430][gap 22][body 64], kept inside the window
     const CW = 516;
-    const left = Math.min(Math.max(anchor.x - CW / 2, 8), window.innerWidth - CW - 8);
+    const rawLeft = anchor.slot === 'top-right' && Number.isFinite(anchor.rightEdge)
+      ? anchor.rightEdge - CW
+      : anchor.x - CW / 2;
+    const left = Math.min(Math.max(rawLeft, 8), window.innerWidth - CW - 8);
     const top = anchor.docked ? 30 : Math.min(Math.max(anchor.y + 22, 10), window.innerHeight - 130);
     island.style.setProperty('--x', `${Math.round(left + CW - 64)}px`);
     island.style.setProperty('--y', `${Math.round(top)}px`);
@@ -370,10 +417,16 @@ function positionIsland() {
     x = anchor.side === 'left' ? 0 : W - w;
     y = clamp(anchor.y - h / 2, 4, H - h - 4);
   } else {
-    x = clamp(anchor.x - w / 2, 4, W - w - 4);
+    if (anchor.slot === 'top-right' && Number.isFinite(anchor.rightEdge)) {
+      x = clamp(anchor.rightEdge - w, 4, W - w - 4);
+    } else {
+      x = clamp(anchor.x - w / 2, 4, W - w - 4);
+    }
     y = anchor.docked ? 0 : clamp(anchor.y, 0, H - h - 6);
-    if (currentIslandStyle === 'notch' || (currentIslandStyle === 'line' && lastMode === 'idle')) {
+    if (currentIslandStyle === 'notch' || (currentIslandStyle === 'line' && lastMode === 'idle' && (!anchor.slot || anchor.slot === 'auto'))) {
       y = 0;
+    } else if (anchor.topBarH >= 24 && (anchor.slot === 'top-center' || anchor.slot === 'top-right') && (lastMode === 'idle' || lastMode === 'compact') && currentIslandStyle !== 'line') {
+      y = Math.max(1, Math.round((anchor.topBarH - h) / 2));
     }
   }
   island.style.setProperty('--x', `${Math.round(x)}px`);
@@ -393,6 +446,8 @@ bridge.onAnchor((a) => {
   island.classList.toggle('vertical', !!a.vertical);
   island.classList.toggle('side-left', !!a.vertical && a.side === 'left');
   island.classList.toggle('side-right', !!a.vertical && a.side === 'right');
+  island.classList.toggle('slot-top-right', !a.vertical && a.slot === 'top-right');
+  island.classList.toggle('slot-top-center', !a.vertical && a.slot === 'top-center');
   positionIsland();
 });
 
@@ -463,7 +518,6 @@ function frame() {
     fadeFrames--;
   }
   if (lastMode === 'expanded') {
-    placeSegThumb();
     tickProgress();
   }
   if (fadeFrames > 0 || lastMode === 'expanded' || state.moving || performance.now() < awakeUntil) {
@@ -560,8 +614,8 @@ function tickClock() {
 
   // Sync other views if present
   if ($('#i-time')) $('#i-time').innerHTML = `<span class="i-digits">${hour12}:${minutes}</span> <span class="i-meridian">${ampm}</span>`;
-    const isArLang = document.documentElement.lang === 'ar' || document.documentElement.dir === 'rtl';
-  const idleDateStr = d.toLocaleDateString(isArLang ? 'ar-EG' : 'en-US', {
+  const isArLang = state.features?.appLang ? state.features.appLang === 'ar' : (document.documentElement.lang === 'ar' || document.documentElement.dir === 'rtl');
+  const idleDateStr = d.toLocaleDateString(isArLang ? 'ar-EG-u-nu-latn' : 'en-US', {
     weekday: 'short',
     month: 'short',
     day: 'numeric'
@@ -588,12 +642,29 @@ function resetSlideTimer() {
 resetSlideTimer();
 
 // Shows the n-th slide among those turned on; with all of them off the clock stays.
+// If novaEyes is enabled and rotation is active, gracefully rotates between Nova and info slides
+let slideStep = 0;
 function showSlide(n) {
   const all = [...$$('.info-slide')];
   let slides = all.filter((s) => !s.hidden && !s.classList.contains('off'));
   if (!slides.length) slides = [all[0]];
-  infoSlide = n % slides.length;
-  all.forEach((s) => s.classList.toggle('on', s === slides[infoSlide]));
+
+  const hasEyes = feat('novaEyes') && !anchor.vertical;
+  if (hasEyes && slides.length > 0) {
+    slideStep = n % (slides.length + 1);
+    if (slideStep === 0) {
+      island.classList.remove('show-slide');
+    } else {
+      island.classList.add('show-slide');
+      infoSlide = (slideStep - 1) % slides.length;
+      all.forEach((s) => s.classList.toggle('on', s === slides[infoSlide]));
+    }
+  } else {
+    island.classList.remove('show-slide');
+    infoSlide = n % slides.length;
+    all.forEach((s) => s.classList.toggle('on', s === slides[infoSlide]));
+  }
+  if (typeof positionIsland === 'function') positionIsland();
 }
 
 bridge.onStats((s) => {
@@ -1412,6 +1483,7 @@ function applyFeatures(f) {
   document.documentElement.dir = appLang === 'ar' ? 'rtl' : 'ltr';
   $$('[data-feat]').forEach((el) => el.classList.toggle('off', !feat(el.dataset.feat)));
   if ($('.info-slide.on')?.classList.contains('off')) showSlide(0);
+  if (typeof tickClock === 'function') tickClock();
   resetSlideTimer();
   refreshTabs();
   render();
@@ -1442,13 +1514,16 @@ window.addEventListener('blur', () => {
 let notifTimer = null;
 let notifEndTime = 0;
 let notifTotalMs = 0;
+let activeNotifPayload = null;
 window.showIslandNotification = (n) => {
+  activeNotifPayload = n;
   const notifEl = document.getElementById('island-notification');
   if (!notifEl) return;
   const appEl = document.getElementById('notif-app');
   const timeEl = document.getElementById('notif-time');
   const titleEl = document.getElementById('notif-title');
   const msgEl = document.getElementById('notif-msg');
+  const avatarBox = document.getElementById('notif-avatar');
   const avatarText = document.getElementById('notif-avatar-text');
   const avatarImg = document.getElementById('notif-avatar-img');
   const bar = document.getElementById('notif-progress-bar');
@@ -1458,16 +1533,21 @@ window.showIslandNotification = (n) => {
   if (titleEl) titleEl.textContent = n.title || '';
   if (msgEl) msgEl.textContent = n.message || '';
   if (avatarText) avatarText.textContent = (n.app || 'M')[0].toUpperCase();
-  if (avatarImg && n.icon && n.icon.startsWith('http')) {
+  const hasImg = !!(avatarImg && n.icon && /^https?:|^data:image\//i.test(n.icon));
+  avatarBox?.classList.toggle('has-icon', hasImg);
+  if (hasImg) {
     avatarImg.src = n.icon;
     avatarImg.style.display = 'block';
     if (avatarText) avatarText.style.display = 'none';
+  } else {
+    if (avatarImg) avatarImg.style.display = 'none';
+    if (avatarText) avatarText.style.display = 'flex';
   }
+  if (bar) bar.style.width = '100%';
 
-  notifTotalMs = n.ms || 6000;
+  notifTotalMs = n.ms || (state.features?.notifDuration || 6) * 1000;
   notifEndTime = Date.now() + notifTotalMs;
   state.notificationActive = true;
-  island.classList.add('notification');
   render();
   positionIsland();
 
@@ -1481,20 +1561,45 @@ window.showIslandNotification = (n) => {
   }, 100);
 
   window.setNovaState?.('surprised', 1500);
-  window.audioHaptics?.playCrystalChime?.(0.18);
+  if (feat('notifSound')) {
+    window.audioHaptics?.playGentleChime?.(0.18);
+  }
 };
 
 window.closeIslandNotification = () => {
   clearInterval(notifTimer);
   state.notificationActive = false;
+  state.hover = false;
   island.classList.remove('notification');
   render();
   positionIsland();
 };
 
+window.setMeetingUIState = (active, drawer) => {
+  state.meeting = { active: !!active, drawer: !!drawer };
+  if (active && drawer) state.hover = false;
+  render();
+  positionIsland();
+};
+
+bridge.onNovaState?.((st) => {
+  const isResetIdle = !st || st === 'idle';
+  state.novaPreviewUntil = Date.now() + (isResetIdle ? 3200 : 6200);
+  if (typeof window.setNovaState === 'function') window.setNovaState(st, isResetIdle ? 3000 : 6000, true);
+  render();
+});
+bridge.onNotification?.((payload) => window.showIslandNotification?.(payload));
+
 document.getElementById('notif-close')?.addEventListener('click', (e) => {
   e.stopPropagation();
   window.closeIslandNotification();
+});
+document.getElementById('island-notification')?.addEventListener('click', (e) => {
+  if (e.target.closest('#notif-close')) return;
+  if (activeNotifPayload) {
+    bridge.activateNotification?.(activeNotifPayload);
+    window.closeIslandNotification();
+  }
 });
 document.getElementById('island-notification')?.addEventListener('mouseenter', () => {
   notifEndTime = Date.now() + notifTotalMs; // pause countdown while hovered
@@ -1511,7 +1616,7 @@ document.addEventListener('pointerdown', (e) => {
   const isInput = e.target.closest('input, textarea, [contenteditable="true"]');
   if (isInput) {
     bridge.focusInput?.(true);
-    setTimeout(() => isInput.focus(), 25);
+    setTimeout(() => isInput.focus({ preventScroll: true }), 25);
   }
 }, true);
 
@@ -1532,6 +1637,7 @@ window.collapseIsland = () => {
   state.pinned = false;
   state.hover = false;
   state.focusMode = false;
+  state.novaPreviewUntil = 0;
   render();
   bridge.focusInput?.(false);
 };
@@ -1542,6 +1648,11 @@ window.closeQuranPopovers = () => {
 window.closeActivePopup = () => {
   if (state.notificationActive) {
     window.closeIslandNotification();
+    return true;
+  }
+  if (state.meeting?.drawer) {
+    window.notchMeetings?.toggleDrawer?.(false);
+    bridge.focusInput?.(false);
     return true;
   }
   if (document.getElementById('qr-popover-reciters') || document.getElementById('qr-popover-surahs')) {
@@ -1567,6 +1678,22 @@ window.closeActivePopup = () => {
   }
   return false;
 };
+
+bridge.onOpenSpotlight?.(() => {
+  if (lastMode === 'expanded' && state.tab === 'apps' && state.pinned) {
+    window.collapseIsland();
+    return;
+  }
+  state.hover = false;
+  state.pinned = true;
+  state.focusMode = false;
+  state.notificationActive = false;
+  state.novaPreviewUntil = 0;
+  selectTab('apps');
+  render();
+  positionIsland();
+  window.dispatchEvent(new Event('island:spotlight'));
+});
 window.closeCard = window.closeReminder;
 window.dismissReminder = window.closeReminder;
 window.dismissToast = window.closeToast;

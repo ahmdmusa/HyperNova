@@ -1,14 +1,15 @@
 
-  // Verified 8 Direct CDN Muezzins MP3 Dataset (Archive.org & AlAdhan CDN)
+  // Verified 9 Direct Offline & CDN Muezzins MP3 Dataset (Local & Archive.org)
   // Exact silence-aligned durations so the opening Takbeers are 100% complete with no cut-off
   const ADHAN_MUEZZINS = [
+    { id: 'mukhtasar', name: 'تكبير أذان مختصر (أبو إيفاء السلوم)', url: 'sounds/takbeer_mukhtasar.mp3', startSec: 0, takbirDurationSec: 6.5 },
+    { id: 'ali', name: 'تكبير أذان (عيد علي)', url: 'sounds/takbeer_ali.mp3', startSec: 0, takbirDurationSec: 14.6 },
     { id: 'abdulbasit', name: 'الشيخ عبد الباسط عبد الصمد', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/042--.mp3', startSec: 0, takbirDurationSec: 27 },
     { id: 'refaat', name: 'الشيخ محمد رفعت (أذان زمان)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/042--.mp3', startSec: 0, takbirDurationSec: 27 },
     { id: 'banna', name: 'الشيخ محمود علي البنا (القاهرة)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/043--.mp3', startSec: 0, takbirDurationSec: 27 },
     { id: 'makkah', name: 'أذان الحرم المكي (علي أحمد ملا)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/019--1.mp3', startSec: 0, takbirDurationSec: 29.5 },
     { id: 'madinah', name: 'أذان المسجد النبوي الشريف', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/018-.mp3', startSec: 0, takbirDurationSec: 40 },
     { id: 'aqsa', name: 'أذان المسجد الأقصى المبارك', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/007--.mp3', startSec: 0, takbirDurationSec: 34 },
-    { id: 'alafasy', name: 'الشيخ مشاري راشد العفاسي', url: 'https://cdn.aladhan.com/audio/adhans/a9.mp3', startSec: 0, takbirDurationSec: 41 },
     { id: 'nafees', name: 'الشيخ أحمد النفيس (خاشع)', url: 'https://cdn.aladhan.com/audio/adhans/a9.mp3', startSec: 0, takbirDurationSec: 41 }
   ];
   window.ADHAN_MUEZZINS = ADHAN_MUEZZINS;
@@ -77,7 +78,8 @@
       activeIslandAdhanAudio = audio;
 
       const targetDuration = muezzin.takbirDurationSec || 30;
-      const fadeStart = Math.max(0, targetDuration - 2.0);
+      const fadeDuration = targetDuration <= 8 ? 0.6 : 1.5;
+      const fadeStart = Math.max(0, targetDuration - fadeDuration);
 
       audio.addEventListener('loadedmetadata', () => {
         if (muezzin.startSec) audio.currentTime = muezzin.startSec;
@@ -91,6 +93,10 @@
           audio.pause();
           activeIslandAdhanAudio = null;
         }
+      });
+      audio.addEventListener('ended', () => {
+        audio.pause();
+        activeIslandAdhanAudio = null;
       });
       audio.addEventListener('error', () => {
         activeIslandAdhanAudio = null;
@@ -164,24 +170,25 @@
   const fired = new Set(); // reminders already shown this run
 
   const MUEZZIN_SHORT = {
+    mukhtasar: 'مختصر (أبو إيفاء)',
+    ali: 'عيد علي',
     abdulbasit: 'عبد الباسط',
     refaat: 'محمد رفعت',
     banna: 'محمود البنا',
     makkah: 'الحرم المكي',
     madinah: 'المسجد النبوي',
     aqsa: 'الأقصى',
-    alafasy: 'العفاسي',
     nafees: 'أحمد النفيس'
   };
 
   // the bell and the Settings window share one switch (prayerAlerts) + shows active Muezzin
   let alertsOn = true;
-  let currentMuezzinId = 'abdulbasit';
+  let currentMuezzinId = 'mukhtasar';
   const showBell = () => {
     if (!bell) return;
     bell.classList.toggle('on', alertsOn);
     const lbl = document.getElementById('pr-muezzin-lbl');
-    if (lbl) lbl.textContent = MUEZZIN_SHORT[currentMuezzinId] || 'عبد الباسط';
+    if (lbl) lbl.textContent = MUEZZIN_SHORT[currentMuezzinId] || 'مختصر (أبو إيفاء)';
   };
   showBell();
   window.addEventListener('island:features', (e) => {

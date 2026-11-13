@@ -34,6 +34,7 @@
     },
     "files": [
       "**/*",
+      "sounds/**/*",
       "build/icon.png",
       "build/icon.ico",
       "!promo/**",

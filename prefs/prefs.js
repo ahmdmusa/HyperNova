@@ -26,11 +26,9 @@ const I18N = {
     nav_about: 'حول المشروع (About)',
     about_tech_specs: 'المواصفات التقنية والمصادر',
     about_publisher: 'تطوير ونشر المهندس أحمد موسى (@ahmdmusa)',
-    about_ack_title: 'إسناد وتاريخ المصدر المفتوح (Acknowledgement)',
-    about_ack_desc: 'بدأ هذا المشروع كفكرة أولية وتفريعة (Fork) من مشروع <a href="https://github.com/NOVA-TECH-KIT/nova-island" target="_blank" class="about-ack-link">Nova Island</a> المفتوح المصدر، وتمت إعادة هندسته وتوسعته وتطويره بالكامل ليصبح <b>HyperNova</b>.',
-    about_btn_download: 'تحميل مباشر (Installer)',
-    about_btn_github: 'مستودع GitHub',
+    about_btn_github: 'مستودع GitHub والتحديثات',
     about_btn_coffee: 'Buy Me a Coffee',
+    about_btn_instapay: 'InstaPay Egypt (ahmdmusa)',
     about_spec_publisher: 'الناشر والمطور',
     about_spec_publisher_sub: 'Ahmed Musa · github.com/ahmdmusa',
     about_spec_license: 'الترخيص البرمجي',
@@ -67,8 +65,8 @@ const I18N = {
     lang_group: 'لغة التطبيق والواجهة',
     lang_select_lbl: 'اختيار لغة الواجهة والخط',
     lang_select_sub: 'الخط الأميري الأصيل للعربية، أو خط Inter العصري للإنجليزية',
-    lang_ar: 'العربية (الأميري)',
-    lang_en: 'English (Inter)',
+    lang_ar: 'العربية',
+    lang_en: 'English',
     theme_group: 'لون الأيقونات والتطبيق المميز',
     theme_accent_lbl: 'اللون المميز للأيقونات والطقس',
     theme_accent_sub: 'تخصيص لون أيقونة الطقس واللمسات الجمالية (أزرق سماوي، أحمر داكن، إلخ)',
@@ -86,6 +84,11 @@ const I18N = {
     orientation: 'اتجاه العرض',
     orient_h: 'أفقي',
     orient_v: 'رأسي',
+    topbar_slot_lbl: 'موضع الشريط العلوي (Top Taskbar)',
+    topbar_slot_sub: 'تثبيت الجزيرة فوق شريط المهام العلوي: المنتصف (1) أو يميناً قبل الساعة (2)',
+    topbar_auto: 'تلقائي',
+    topbar_center: 'مكان 1 · منتصف',
+    topbar_right: 'مكان 2 · قبل الساعة',
     addr_island: 'الدمج في شريط المتصفح',
     addr_island_sub: 'في الثلث الأيمن دون تغطية التبويبات',
     hide_fullscreen: 'الإخفاء التلقائي عند ملء الشاشة',
@@ -120,6 +123,26 @@ const I18N = {
 
     // Companion Page
     companion_title: 'الرفيق الذكي',
+    nova_studio_title: '🎭 استوديو المشاعر والأزياء التفاعلي',
+    nova_studio_sub: 'اختر أي حالة من الحالات الـ 16 أو الأزياء الأربعة لمعاينتها والتفاعل معها حياً على الروبوت نوفا:',
+    nova_st_idle: '1. هدوء',
+    nova_st_thinking: '2. تفكير',
+    nova_st_celebrate: '3. احتفال',
+    nova_st_sleepy: '4. نعاس',
+    nova_st_khushu: '5. سكينة',
+    nova_st_petting: '6. مداعبة',
+    nova_st_pre_prayer: '7. طاقية وسجادة',
+    nova_st_warrior: '8. عصابة المحارب',
+    nova_st_coffee_break: '9. كوب ساخن',
+    nova_st_rainy: '10. مظلة ومطر',
+    nova_st_listening_sway: '11. تمايل صوتي',
+    nova_st_welcome: '12. غمزة ترحيب',
+    nova_st_meeting: '13. اجتماع',
+    nova_st_surprised: '14. دهشة',
+    nova_st_breathing: '15. تنفس',
+    nova_st_deep_sleep: '16. نوم عميق',
+    audio_sway: 'التمايل مع الصوت والقرآن الكريم',
+    smart_props: 'الأزياء والإكسسوارات التلقائية (الصلاة، التركيز، المطر)',
     nova_title: 'الروبوت المساعد نوفا',
     nova_eyes: 'تعبيرات الأعين التفاعلية',
     nova_prayer: 'التفاعل عند دخول وقت الصلاة',
@@ -181,6 +204,16 @@ const I18N = {
 
     // Alerts Page
     alerts_title: 'التنبيهات والخصوصية',
+    notifs_group: 'إشعارات الويندوز والجزيرة التفاعلية',
+    island_notifs_lbl: 'استلام إشعارات التطبيقات داخل الجزيرة',
+    island_notifs_sub: 'عرض رسائل التطبيقات ولقطة الشاشة والتنبيهات في شريط الجزيرة مباشرة',
+    replace_win_notifs_lbl: 'إلغاء بانر إشعارات ويندوز الأصلي (الجزيرة فقط)',
+    replace_win_notifs_sub: 'إخفاء نوافذ الإشعارات المنبثقة لنظام ويندوز حتى تتولاها الجزيرة وحدها دون تكرار',
+    notif_sound_lbl: 'نغمة إشعار لطيفة (Gentle Chime)',
+    notif_sound_sub: 'تشغيل نغمة مريحة وخافتة عند ظهور إشعار جديد في الجزيرة',
+    notif_duration_lbl: 'مدة بقاء الإشعار تلقائياً',
+    notif_duration_sub: 'الوقت بالثواني قبل اختفاء شريط الإشعار والعودة للوضع السابق',
+    btn_test_notif: 'تجربة إشعار الجزيرة التفاعلي',
     alerts_group: 'تنبيهات النظام والشاشة',
     alert_volume: 'إشعار تغيير مستوى الصوت',
     alert_brightness: 'إشعار تغيير مستوى السطوع',
@@ -253,6 +286,7 @@ const I18N = {
     ai_micro_lbl: 'تفكيك فائق الصغر لخطوات ADHD',
     ai_micro_sub: 'تقسيم المهام لخطوات فائقة البساطة (2-5 دقائق) لمنع التسويف والشلل الذهني',
     shortcuts_group: 'اختصارات لوحة المفاتيح والتركيز',
+    sc_spotlight: 'البحث السريع عن التطبيقات والأدوات (Spotlight)',
     sc_island: 'فتح / إغلاق الجزيرة',
     sc_focus: 'فتح شريط التركيز والمهام',
     sc_esc: 'إخفاء الجزيرة السريع',
@@ -279,11 +313,9 @@ const I18N = {
     nav_about: 'About HyperNova',
     about_tech_specs: 'Technical Specs & Credits',
     about_publisher: 'Developed & Published by Ahmed Musa (@ahmdmusa)',
-    about_ack_title: 'Open Source Acknowledgement & Upstream',
-    about_ack_desc: 'Originally conceived as an initial concept and open-source fork of <a href="https://github.com/NOVA-TECH-KIT/nova-island" target="_blank" class="about-ack-link">Nova Island</a>, and subsequently redesigned, engineered, and expanded as <b>HyperNova</b>.',
-    about_btn_download: 'Direct Download (.exe)',
     about_btn_github: 'GitHub Repository',
     about_btn_coffee: 'Buy Me a Coffee',
+    about_btn_instapay: 'InstaPay Egypt (ahmdmusa)',
     about_spec_publisher: 'Publisher & Author',
     about_spec_publisher_sub: 'Ahmed Musa · github.com/ahmdmusa',
     about_spec_license: 'Open Source License',
@@ -320,8 +352,8 @@ const I18N = {
     lang_group: 'Interface Language & Fonts',
     lang_select_lbl: 'Interface Language & Typography',
     lang_select_sub: 'Amiri calligraphy for Arabic, or modern Inter font for English',
-    lang_ar: 'Arabic (Amiri)',
-    lang_en: 'English (Inter)',
+    lang_ar: 'Arabic',
+    lang_en: 'English',
     theme_group: 'Theme & Accent Color',
     theme_accent_lbl: 'Signature Accent Color',
     theme_accent_sub: 'Customize the weather and app accent tint (Sky Blue, Crimson Red, etc.)',
@@ -339,6 +371,11 @@ const I18N = {
     orientation: 'Orientation',
     orient_h: 'Horizontal',
     orient_v: 'Vertical',
+    topbar_slot_lbl: 'Top Taskbar Slot',
+    topbar_slot_sub: 'Pin above a top taskbar: Spot 1 (center) or Spot 2 (left of tray)',
+    topbar_auto: 'Auto',
+    topbar_center: 'Spot 1 · Center',
+    topbar_right: 'Spot 2 · Pre-Tray',
     addr_island: 'Browser address bar',
     addr_island_sub: 'Right third, never over tabs',
     hide_fullscreen: 'Hide in full screen',
@@ -373,6 +410,26 @@ const I18N = {
 
     // Companion Page
     companion_title: 'Companion',
+    nova_studio_title: '🎭 Interactive Companion Studio · Matrix 2.0 & Props',
+    nova_studio_sub: 'Pick any of the 16 live emotional states or 4 smart outfits to preview and interact directly on Nova:',
+    nova_st_idle: '1. Idle',
+    nova_st_thinking: '2. Thinking',
+    nova_st_celebrate: '3. Celebrate',
+    nova_st_sleepy: '4. Sleepy',
+    nova_st_khushu: '5. Khushu',
+    nova_st_petting: '6. Petting',
+    nova_st_pre_prayer: '7. Prayer Cap & Mat',
+    nova_st_warrior: '8. Warrior Headband',
+    nova_st_coffee_break: '9. Coffee Mug',
+    nova_st_rainy: '10. Rain Umbrella',
+    nova_st_listening_sway: '11. Audio Sway',
+    nova_st_welcome: '12. Welcome Wink',
+    nova_st_meeting: '13. Meeting',
+    nova_st_surprised: '14. Surprised',
+    nova_st_breathing: '15. Breathing',
+    nova_st_deep_sleep: '16. Deep Sleep',
+    audio_sway: 'Sway to audio & Quran recitation',
+    smart_props: 'Automatic smart outfits (Prayer, Focus, Rain)',
     nova_title: 'Nova AI Robot',
     nova_eyes: 'Interactive robot eyes',
     nova_prayer: 'Prayer / Adhan reaction',
@@ -434,6 +491,16 @@ const I18N = {
 
     // Alerts Page
     alerts_title: 'Alerts & Privacy',
+    notifs_group: 'Windows & Island Live Notifications',
+    island_notifs_lbl: 'Forward OS app notifications into the Island',
+    island_notifs_sub: 'Show system & messaging alerts directly inside the floating Dynamic Island banner',
+    replace_win_notifs_lbl: 'Hide native Windows toast popups (Island only)',
+    replace_win_notifs_sub: 'Suppress Windows notification banners so only HyperNova displays them without duplicates',
+    notif_sound_lbl: 'Gentle notification sound (Chime)',
+    notif_sound_sub: 'Play a discreet, pleasant chime when an Island notification arrives',
+    notif_duration_lbl: 'Auto-dismiss notification delay',
+    notif_duration_sub: 'Number of seconds before the notification banner automatically closes',
+    btn_test_notif: 'Preview Island Notification',
     alerts_group: 'System Alerts & HUD',
     alert_volume: 'Volume HUD notification',
     alert_brightness: 'Brightness HUD notification',
@@ -506,6 +573,7 @@ const I18N = {
     ai_micro_lbl: 'Micro-step ADHD Decomposition',
     ai_micro_sub: 'Split assignments into 2-5m micro-steps to defeat procrastination',
     shortcuts_group: 'Focus Keyboard Shortcuts',
+    sc_spotlight: 'Quick App & Tools Spotlight Search',
     sc_island: 'Toggle Island',
     sc_focus: 'Toggle NeuroFocus Bar',
     sc_esc: 'Quick Hide Island',
@@ -659,10 +727,6 @@ $$('.stepper').forEach((st) => st.addEventListener('click', (e) => {
   if (next == null) return;
   features[st.dataset.num] = next;
   showSteppers();
-  // AI model selector
-  const aiModel = features.aiModel || 'flash';
-  $('#btn-model-flash')?.classList.toggle('sel', aiModel === 'flash');
-  $('#btn-model-pro')?.classList.toggle('sel', aiModel === 'pro');
 
   api.setFeatures({ [st.dataset.num]: next });
   saved('saved');
@@ -681,6 +745,10 @@ function showFeatures(f) {
   $$('input[name="islandStyle"]').forEach((r) => {
     r.checked = (r.value === currentIslandStyle);
   });
+  const currentTopBarSlot = features.topBarSlot || 'auto';
+  $$('[data-topbar-slot]').forEach((b) => {
+    b.classList.toggle('sel', b.dataset.topbarSlot === currentTopBarSlot);
+  });
   $$('[data-feature]').forEach((el) => {
     if (el.tagName === 'SELECT') {
       if (features[el.dataset.feature]) el.value = features[el.dataset.feature];
@@ -690,10 +758,6 @@ function showFeatures(f) {
   });
   $$('[data-needs]').forEach((el) => el.classList.toggle('off', !el.dataset.needs.split(' ').every((k) => features[k])));
   showSteppers();
-  // AI model selector
-  const aiModel = features.aiModel || 'flash';
-  $('#btn-model-flash')?.classList.toggle('sel', aiModel === 'flash');
-  $('#btn-model-pro')?.classList.toggle('sel', aiModel === 'pro');
 
     applyPrefsTheme(features.islandTheme || 'dark');
     if (features.glassOpacity && $('#pref-glass-slider')) {
@@ -733,7 +797,11 @@ function showGeneral(g) {
   g = g || {};
   $$('[data-general]').forEach((el) => { el.checked = !!g[el.dataset.general]; });
   $$('[data-orient]').forEach((b) => b.classList.toggle('sel', (b.dataset.orient === 'v') === !!g.vertical));
-  if (g.version) $('#version').textContent = currentLang === 'ar' ? `الإصدار ${g.version}` : `Version ${g.version}`;
+  if (g.version) {
+    $('#version').textContent = currentLang === 'ar' ? `الإصدار ${g.version}` : `Version ${g.version}`;
+    const aboutBadge = $('#about-ver-badge');
+    if (aboutBadge) aboutBadge.textContent = `v${g.version} · Open Source`;
+  }
 }
 
 $$('[data-general]').forEach((el) => el.addEventListener('change', () => {
@@ -786,17 +854,8 @@ function applyLanguage(lang) {
     }
   });
 
-  const ackDesc = $('#about-ack-desc');
-  if (ackDesc && t.about_ack_desc) {
-    ackDesc.innerHTML = t.about_ack_desc;
-  }
-
   // Re-render steppers with localized unit strings
   showSteppers();
-  // AI model selector
-  const aiModel = features.aiModel || 'flash';
-  $('#btn-model-flash')?.classList.toggle('sel', aiModel === 'flash');
-  $('#btn-model-pro')?.classList.toggle('sel', aiModel === 'pro');
 
 
   // Update dynamic badges / version
@@ -854,6 +913,16 @@ $$('input[name="islandStyle"]').forEach((r) => {
       api.setFeatures({ islandStyle: r.value });
       saved(currentLang === 'ar' ? 'تم تحديث نمط الجزيرة' : 'Island Style Updated');
     }
+  });
+});
+
+// Top Taskbar Slot selection (Auto | Spot 1 Center | Spot 2 Right before Tray)
+$$('[data-topbar-slot]').forEach((b) => {
+  b.addEventListener('click', () => {
+    const slot = b.dataset.topbarSlot;
+    api.setFeatures({ topBarSlot: slot });
+    $$('[data-topbar-slot]').forEach((btn) => btn.classList.toggle('sel', btn === b));
+    saved('saved');
   });
 });
 
@@ -1257,13 +1326,14 @@ setInterval(showBridge, 5000);
 // Verified 8 Direct CDN Muezzins MP3 Dataset (Archive.org & AlAdhan CDN)
 // Exact silence-aligned durations so the opening Takbeers are 100% complete with no cut-off
 const ADHAN_MUEZZINS = [
+  { id: 'mukhtasar', name: 'تكبير أذان مختصر (أبو إيفاء السلوم)', url: '../sounds/takbeer_mukhtasar.mp3', startSec: 0, takbirDurationSec: 6.5 },
+  { id: 'ali', name: 'تكبير أذان (عيد علي)', url: '../sounds/takbeer_ali.mp3', startSec: 0, takbirDurationSec: 14.6 },
   { id: 'abdulbasit', name: 'الشيخ عبد الباسط عبد الصمد', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/042--.mp3', startSec: 0, takbirDurationSec: 27 },
   { id: 'refaat', name: 'الشيخ محمد رفعت (أذان زمان)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/042--.mp3', startSec: 0, takbirDurationSec: 27 },
   { id: 'banna', name: 'الشيخ محمود علي البنا (القاهرة)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/043--.mp3', startSec: 0, takbirDurationSec: 27 },
   { id: 'makkah', name: 'أذان الحرم المكي (علي أحمد ملا)', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/019--1.mp3', startSec: 0, takbirDurationSec: 29.5 },
   { id: 'madinah', name: 'أذان المسجد النبوي الشريف', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/018-.mp3', startSec: 0, takbirDurationSec: 40 },
   { id: 'aqsa', name: 'أذان المسجد الأقصى المبارك', url: 'https://archive.org/download/90---azan---90---azan--many----sound----mp3---alazan/007--.mp3', startSec: 0, takbirDurationSec: 34 },
-  { id: 'alafasy', name: 'الشيخ مشاري راشد العفاسي', url: 'https://cdn.aladhan.com/audio/adhans/a9.mp3', startSec: 0, takbirDurationSec: 41 },
   { id: 'nafees', name: 'الشيخ أحمد النفيس (خاشع)', url: 'https://cdn.aladhan.com/audio/adhans/a9.mp3', startSec: 0, takbirDurationSec: 41 }
 ];
 
@@ -1378,7 +1448,7 @@ if (adhanVoiceSelect) {
 const btnPreviewAdhan = document.getElementById('btn-preview-adhan');
 if (btnPreviewAdhan) {
   btnPreviewAdhan.addEventListener('click', () => {
-    const v = adhanVoiceSelect ? adhanVoiceSelect.value : 'abdulbasit';
+    const v = adhanVoiceSelect ? adhanVoiceSelect.value : 'mukhtasar';
     playAdhanTakbeers(v);
   });
 }
@@ -1436,6 +1506,20 @@ document.querySelectorAll('.nova-test-btn').forEach((btn) => {
     const st = btn.dataset.st;
     document.querySelectorAll('.nova-test-btn').forEach((b) => b.classList.remove('active'));
     btn.classList.add('active');
+    api.testNovaState?.(st);
     saved(currentLang === 'ar' ? `تم تفعيل: ${btn.textContent}` : `Applied: ${btn.textContent}`);
   });
+});
+
+// Notification Banner Live Test
+document.getElementById('btn-test-notif')?.addEventListener('click', () => {
+  api.testNotification?.({
+    app: 'HyperNova',
+    test: true,
+    time: currentLang === 'ar' ? 'الآن' : 'now',
+    title: currentLang === 'ar' ? 'معاينة إشعار الجزيرة' : 'HyperNova Notification',
+    message: currentLang === 'ar' ? 'تم تفعيل الإشعارات التفاعلية داخل الجزيرة بنجاح.' : 'Dynamic Island notification banner is active and working.',
+    ms: 5000,
+  });
+  saved(currentLang === 'ar' ? 'تم إرسال إشعار تجريبي للجزيرة' : 'Test notification sent to Island');
 });

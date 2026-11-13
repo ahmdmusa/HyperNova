@@ -35,9 +35,15 @@ debug_*.js
 run_*.js
 verify_*.js
 update_*.py
+update_*.js
 apply_*.py
 apply_*.js
 capture_*.js
+mock_preload.js
+TEST_READY.md
+test_audit_plan.md
+scratch/
+.agents/
 
 # Promo & Internal assets
 promo/src/out/

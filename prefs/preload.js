@@ -13,6 +13,8 @@ contextBridge.exposeInMainWorld('prefs', {
   window: (action) => ipcRenderer.send('prefs-window', action),
   previewReminder: () => ipcRenderer.send('reminder-preview'),
   previewAdhan: (voice) => ipcRenderer.send('adhan-preview', voice),
+  testNovaState: (state) => ipcRenderer.send('test-nova-state', state),
+  testNotification: (payload) => ipcRenderer.send('test-island-notification', payload),
   bridgeStatus: () => ipcRenderer.invoke('bridge-status'),
   openLog: () => ipcRenderer.send('open-log'),
   copyReport: () => ipcRenderer.invoke('copy-report'),

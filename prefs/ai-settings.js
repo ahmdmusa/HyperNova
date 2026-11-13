@@ -55,18 +55,18 @@
     }
 
     container.innerHTML = `
-      <div class="ai-byok-card" style="display:flex; flex-direction:column; gap:14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.09); border-radius:12px; padding:16px;">
+      <div class="ai-byok-card">
         <!-- Header & Status Badge -->
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <div class="ai-byok-head">
           <div>
-            <b style="font-size:14px; color:#f8fafc; display:flex; align-items:center; gap:6px;">
+            <b class="ai-byok-title">
               <span>🤖</span> محرك الذكاء الاصطناعي (Bring Your Own Key)
             </b>
-            <small style="color:#94a3b8; font-size:11px; display:block; margin-top:2px;">
+            <small class="ai-byok-sub">
               استخدم مفتاحك الخاص مجاناً لتفكيك المهام لخطوات مجهرية تناسب ADHD دون مشاركة بياناتك.
             </small>
           </div>
-          <span id="ai-status-badge" style="font-size:11px; padding:4px 10px; border-radius:20px; font-weight:600;">
+          <span id="ai-status-badge" class="ai-byok-badge">
             ${currentConfig.hasKey 
               ? (currentConfig.isEncrypted ? '🔒 مفتاحك مشفر محلياً' : '⚠️ مفتاح مؤقت بالذاكرة') 
               : '⚪ لم يتم إدخال مفتاح'}
@@ -74,9 +74,9 @@
         </div>
 
         <!-- Provider Selection -->
-        <div style="display:grid; grid-template-columns: 140px 1fr; gap:10px; align-items:center;">
-          <label style="font-size:12px; color:#cbd5e1;">مزود الخدمة:</label>
-          <select id="ai-select-provider" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#fff; border-radius:8px; padding:6px 10px; font-size:12px; outline:none;">
+        <div class="ai-byok-grid-row">
+          <label>مزود الخدمة:</label>
+          <select id="ai-select-provider" class="ai-byok-input">
             <option value="gemini" ${currentConfig.provider === 'gemini' ? 'selected' : ''}>Google Gemini (سريع ومجاني)</option>
             <option value="openai" ${currentConfig.provider === 'openai' ? 'selected' : ''}>OpenAI (ChatGPT)</option>
             <option value="ollama" ${currentConfig.provider === 'ollama' ? 'selected' : ''}>Ollama (محلي على جهازك)</option>
@@ -84,35 +84,35 @@
         </div>
 
         <!-- Model Name -->
-        <div style="display:grid; grid-template-columns: 140px 1fr; gap:10px; align-items:center;">
-          <label style="font-size:12px; color:#cbd5e1;">اسم النموذج (Model):</label>
-          <input type="text" id="ai-input-model" value="${currentConfig.model || ''}" placeholder="gemini-1.5-flash" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#fff; border-radius:8px; padding:6px 10px; font-size:12px; outline:none; direction:ltr;">
+        <div class="ai-byok-grid-row">
+          <label>اسم النموذج (Model):</label>
+          <input type="text" id="ai-input-model" class="ai-byok-input" value="${currentConfig.model || ''}" placeholder="gemini-1.5-flash" style="direction:ltr;">
         </div>
 
         <!-- Custom Endpoint (Ollama / Proxy) -->
-        <div id="ai-endpoint-row" style="display:${currentConfig.provider === 'ollama' ? 'grid' : 'none'}; grid-template-columns: 140px 1fr; gap:10px; align-items:center;">
-          <label style="font-size:12px; color:#cbd5e1;">عنوان الخادم المحلي:</label>
-          <input type="text" id="ai-input-endpoint" value="${currentConfig.customEndpoint || ''}" placeholder="http://127.0.0.1:11434" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#fff; border-radius:8px; padding:6px 10px; font-size:12px; outline:none; direction:ltr;">
+        <div id="ai-endpoint-row" class="ai-byok-grid-row" style="display:${currentConfig.provider === 'ollama' ? 'grid' : 'none'};">
+          <label>عنوان الخادم المحلي:</label>
+          <input type="text" id="ai-input-endpoint" class="ai-byok-input" value="${currentConfig.customEndpoint || ''}" placeholder="http://127.0.0.1:11434" style="direction:ltr;">
         </div>
 
         <!-- API Key Input -->
-        <div id="ai-key-row" style="display:${currentConfig.provider === 'ollama' ? 'none' : 'grid'}; grid-template-columns: 140px 1fr; gap:10px; align-items:center;">
-          <label style="font-size:12px; color:#cbd5e1;">مفتاح API الخاص بك:</label>
-          <div style="position:relative; display:flex; align-items:center;">
-            <input type="password" id="ai-input-key" placeholder="${currentConfig.hasKey ? '•••••••••••••••• (محفوظ بأمان)' : 'أدخل مفتاحك (AIza... أو sk-...)'}" style="width:100%; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#fff; border-radius:8px; padding:6px 36px 6px 10px; font-size:12px; outline:none; direction:ltr;">
-            <button type="button" id="ai-btn-toggle-key" style="position:absolute; right:8px; background:none; border:none; color:#94a3b8; cursor:pointer; font-size:14px;" title="إظهار/إخفاء">👁️</button>
+        <div id="ai-key-row" class="ai-byok-grid-row" style="display:${currentConfig.provider === 'ollama' ? 'none' : 'grid'};">
+          <label>مفتاح API الخاص بك:</label>
+          <div style="position:relative; display:flex; align-items:center;" dir="ltr">
+            <input type="password" id="ai-input-key" class="ai-byok-input" placeholder="${currentConfig.hasKey ? '•••••••••••••••• (محفوظ بأمان)' : 'أدخل مفتاحك (AIza... أو sk-...)'}" style="padding-right:36px; direction:ltr;">
+            <button type="button" id="ai-btn-toggle-key" style="position:absolute; right:8px; background:none; border:none; color:var(--text-2); cursor:pointer; font-size:14px;" title="إظهار/إخفاء">👁️</button>
           </div>
         </div>
 
         <!-- Action Buttons -->
-        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:4px;">
-          <button type="button" id="ai-btn-save" style="background:#8b5cf6; color:#fff; border:none; border-radius:8px; padding:7px 14px; font-size:12px; font-weight:600; cursor:pointer;">
+        <div class="ai-byok-actions">
+          <button type="button" id="ai-btn-save" class="ai-byok-btn-save">
             💾 حفظ الإعدادات
           </button>
-          <button type="button" id="ai-btn-test" style="background:rgba(255,255,255,0.09); color:#e2e8f0; border:1px solid rgba(255,255,255,0.18); border-radius:8px; padding:7px 14px; font-size:12px; cursor:pointer;">
+          <button type="button" id="ai-btn-test" class="ai-byok-btn-test">
             ⚡ اختبار الاتصال
           </button>
-          <button type="button" id="ai-btn-delete" style="background:rgba(239,68,68,0.15); color:#fca5a5; border:1px solid rgba(239,68,68,0.3); border-radius:8px; padding:7px 12px; font-size:12px; cursor:pointer;" ${currentConfig.hasKey ? '' : 'disabled'}>
+          <button type="button" id="ai-btn-delete" class="ai-byok-btn-del" ${currentConfig.hasKey ? '' : 'disabled'}>
             🗑️ مسح المفتاح
           </button>
         </div>
@@ -121,11 +121,11 @@
         <div id="ai-feedback-msg" style="display:none; font-size:12px; padding:8px 12px; border-radius:8px;"></div>
 
         <!-- Compact Security & Key Links -->
-        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; padding:6px 10px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:8px; font-size:11px; color:var(--text-2, #94a3b8);">
+        <div class="ai-byok-sec">
           <span>🔒 <b>تشفير محلي (DPAPI)</b> · مفتاحك لا يغادر جهازك</span>
           <div style="display:flex; gap:12px;">
-            <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#38bdf8; text-decoration:none; font-size:10.5px;">🔗 مفتاح Gemini</a>
-            <a href="https://platform.openai.com/api-keys" target="_blank" style="color:#38bdf8; text-decoration:none; font-size:10.5px;">🔗 مفتاح OpenAI</a>
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--accent); text-decoration:none; font-size:10.5px;">🔗 مفتاح Gemini</a>
+            <a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--accent); text-decoration:none; font-size:10.5px;">🔗 مفتاح OpenAI</a>
           </div>
         </div>
       </div>
@@ -148,21 +148,21 @@
     function updateBadgeStyle(cfg) {
       if (cfg.hasKey) {
         if (cfg.isEncrypted) {
-          badge.style.background = 'rgba(16, 185, 129, 0.2)';
-          badge.style.color = '#34d399';
+          badge.style.background = 'rgba(16, 185, 129, 0.18)';
+          badge.style.color = '#10b981';
           badge.style.border = '1px solid rgba(16, 185, 129, 0.4)';
           badge.textContent = '🔒 مفتاحك مشفر محلياً';
         } else {
-          badge.style.background = 'rgba(245, 158, 11, 0.2)';
-          badge.style.color = '#fbbf24';
+          badge.style.background = 'rgba(245, 158, 11, 0.18)';
+          badge.style.color = '#d97706';
           badge.style.border = '1px solid rgba(245, 158, 11, 0.4)';
           badge.textContent = '⚠️ جلسة مؤقتة (ذاكرة فقط)';
         }
         btnDelete.disabled = false;
       } else {
-        badge.style.background = 'rgba(255, 255, 255, 0.08)';
-        badge.style.color = '#94a3b8';
-        badge.style.border = '1px solid rgba(255, 255, 255, 0.15)';
+        badge.style.background = 'var(--pill)';
+        badge.style.color = 'var(--sub)';
+        badge.style.border = '1px solid var(--line)';
         badge.textContent = '⚪ لم يتم إدخال مفتاح';
         btnDelete.disabled = true;
       }

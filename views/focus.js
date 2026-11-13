@@ -200,7 +200,9 @@
     // 1. Try secure BYOK AI Bridge via Electron Main process
     if (bridge?.ai?.breakdown) {
       try {
+        window.setNovaState?.('thinking');
         const res = await bridge.ai.breakdown(title);
+        window.setNovaState?.(typeof window.getNovaDefaultState === 'function' ? window.getNovaDefaultState() : 'warrior');
         if (res && res.ok && Array.isArray(res.data) && res.data.length > 0) {
           return {
             id: 'task_' + Date.now(),
@@ -1305,7 +1307,7 @@
     if (typeof state !== 'undefined') state.focusMode = false;
     bridge?.setFocusMode?.(false);
     bridge?.focusInput?.(false);
-    window.setNovaMood?.('idle');
+    window.setNovaMood?.(typeof window.getNovaDefaultState === 'function' ? window.getNovaDefaultState() : 'idle');
     if (typeof render === 'function') render();
     if (typeof positionIsland === 'function') positionIsland();
     window.dispatchEvent(new CustomEvent('island:focus', { detail: { active: false } }));

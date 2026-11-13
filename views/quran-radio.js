@@ -133,15 +133,6 @@
       radioUrl: 'https://backup.qurango.net/radio/tarateel'
     },
     {
-      id: 'alafasy',
-      name: 'مشاري راشد العفاسي',
-      shortName: 'العفاسي',
-      country: 'الكويت',
-      style: 'مرتل • 128kbps',
-      subfolder: 'Alafasy_128kbps',
-      radioUrl: 'https://backup.qurango.net/radio/mishary_alafasi'
-    },
-    {
       id: 'sudais',
       name: 'عبد الرحمن السديس',
       shortName: 'السديس (الحرم)',
@@ -316,6 +307,9 @@
     if (saved) {
       state = { ...state, ...JSON.parse(saved) };
       state.isPlaying = false; // Always start paused on boot
+      if (state.reciterId === 'alafasy' || !QURAN_RECITERS.some(r => r.id === state.reciterId)) {
+        state.reciterId = 'husary';
+      }
     }
   } catch (e) {
     console.warn('[quran-radio] parse state error:', e);
@@ -591,6 +585,7 @@
       await primaryAudio.play();
       state.isPlaying = true;
       window.setNovaMood?.('quran');
+      window.toggleNovaAudioSway?.(typeof feat === 'function' ? feat('audioSway') !== false : true);
       updateUI();
       updateMediaSession();
       preloadNextAyah();
@@ -623,6 +618,7 @@
   function pauseAudio() {
     primaryAudio.pause();
     state.isPlaying = false;
+    window.toggleNovaAudioSway?.(false);
     window.setNovaMood?.('idle');
     updateUI();
   }
