@@ -85,9 +85,10 @@
     },
     "appx": {
       "applicationId": "HyperNovaDynamicIsland",
-      "identityName": "AhmedMusa.HyperNova",
-      "publisher": "CN=AhmedMusa",
-      "publisherDisplayName": "Ahmed Musa",
+      "displayName": "HyperNova - Dynamic Island for Desktop",
+      "identityName": "AhmedM.Mousa.HyperNova-DynamicIslandforDesktop",
+      "publisher": "CN=28C37B9C-0B57-433F-964D-134222A801CE",
+      "publisherDisplayName": "A. Mousa",
       "artifactName": "HyperNova-Store-${version}.${ext}",
       "showNameOnTiles": true,
       "backgroundColor": "#0c0d14",
