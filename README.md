@@ -129,6 +129,26 @@ HyperNova is an independent, engineered desktop productivity and ambient Dynamic
 
 <div align="center">
 
+### Store & Studio Showcase (`1920 × 1080` HD)
+
+| Quran Radio & 114 Surahs | Clickable Notifications, History & Compact HUD |
+|:---:|:---:|
+| <img src="screenshots/store/01-store-quran-radio.png" width="460" /> | <img src="screenshots/store/02-store-notifications-hud.png" width="460" /> |
+
+| Prayer Times, 1-Click Alert Bell & Salawat | NeuroFocus Pomodoro & Timers |
+|:---:|:---:|
+| <img src="screenshots/store/03-store-prayer-salawat.png" width="460" /> | <img src="screenshots/store/04-store-neurofocus-timer.png" width="460" /> |
+
+| Spotlight Launcher (`Alt+Space`), Tools & Shelf | Live System Telemetry & Weather |
+|:---:|:---:|
+| <img src="screenshots/store/05-store-tools-spotlight.png" width="460" /> | <img src="screenshots/store/06-store-system-weather.png" width="460" /> |
+
+| Sizes (`S/M/L`) & Liquid Glass (`0%–120%`) | 100% Local Privacy & Direct Support |
+|:---:|:---:|
+| <img src="screenshots/store/07-store-settings-customization.png" width="460" /> | <img src="screenshots/store/08-store-about-privacy.png" width="460" /> |
+
+<br/>
+
 ### Island Interactive Views
 
 | Quran Radio & Recitations | Prayer Times & Salawat Inspiration |
